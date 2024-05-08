@@ -11,29 +11,20 @@ Column {
             text: qsTr("Console")
         }
         TabButton {
-            text: qsTr("Discover")
-        }
-        TabButton {
-            text: qsTr("Activity")
+            text: qsTr("Server Parameters")
         }
     }
 
-    StackLayout {
+    SwipeView {
         anchors.right: parent.right
         anchors.left: parent.left
         currentIndex: bar.currentIndex
+        clip: true
         ConsolePage {
             id: homeTab
         }
-        Rectangle {
+        ServerParametersPage {
             id: discoverTab
-            color: "blue"
-            implicitHeight: 100
-        }
-        Rectangle {
-            id: activityTab
-            color: "yellow"
-            implicitHeight: 200
         }
     }
 }

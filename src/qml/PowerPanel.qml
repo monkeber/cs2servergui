@@ -7,22 +7,36 @@ RowLayout {
     id: panel
     property bool isRunning: ProcessHandler.isRunning
 
+    Item {
+        Layout.fillWidth: true
+    }
+
     Button {
         id: startButton
         text: "Start"
         onClicked: ProcessHandler.start()
         Layout.alignment: Qt.AlignRight
     }
-    Label {
-        id: statusLabel
-        text: "Stopped"
-        Layout.alignment: Qt.AlignHCenter
+    Rectangle {
+        width: startButton.width
+        height: startButton.height
+        radius: 10
+
+        Layout.alignment: Qt.AlignRight
+
+        Label {
+            id: statusLabel
+            anchors.centerIn: parent
+
+            text: "Stopped"
+        }
     }
+
     Button {
         id: stopButton
         text: "Stop"
         onClicked: ProcessHandler.stop()
-        Layout.alignment: Qt.AlignLeft
+        Layout.alignment: Qt.AlignRight
     }
 
     states: [

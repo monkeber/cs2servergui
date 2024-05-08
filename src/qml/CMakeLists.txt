@@ -26,6 +26,7 @@ qt6_add_qml_module(${PROJECT_NAME}
 		Main.qml
 		MainMenu.qml
 		PowerPanel.qml
+		ServerParametersPage.qml
 		Spoiler.qml
 		TerminalOutput.qml
 	RESOURCES

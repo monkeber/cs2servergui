@@ -27,8 +27,8 @@ Window {
         }
 
         Column {
-            parent: scrollArea
-            width: parent.width - scrollBar.width
+            // Column here is a child of contentItem property of scrollArea, so we can't use parent.width here.
+            width: scrollArea.width - scrollBar.width
             PowerPanel {
                 width: parent.width
             }

@@ -20,6 +20,8 @@ public:
 	ProcessHandler(QObject* parent = nullptr);
 
 public slots:
+	void setFilePath(QString filePath);
+	void setStartPatameters(QString startParameters);
 	void start();
 	void stop();
 
@@ -28,6 +30,8 @@ private slots:
 	void readErrors();
 
 private:
+	QString m_filePath;
+	QString m_startParameters;
 	QString m_output;
 	QProcess m_process;
 	bool m_isRunning;

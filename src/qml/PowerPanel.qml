@@ -22,7 +22,7 @@ RowLayout {
 
             onAccepted: {
                 selectedFileLabel.text = fileDialog.selectedFile
-                ProcessHandler.setFilePath(fileDialog.selectedFile)
+                Settings.setExecutablePath(fileDialog.selectedFile)
                 console.log("You chose: " + fileDialog.selectedFile)
             }
             onRejected: {

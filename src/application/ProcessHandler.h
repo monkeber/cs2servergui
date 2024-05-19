@@ -20,8 +20,6 @@ public:
 	ProcessHandler(QObject* parent = nullptr);
 
 public slots:
-	void setFilePath(QString filePath);
-	void setStartPatameters(QString startParameters);
 	void start();
 	void stop();
 

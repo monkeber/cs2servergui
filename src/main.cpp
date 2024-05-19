@@ -1,7 +1,7 @@
 // Copyright (C) 2021 The Qt Company Ltd.
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR GPL-3.0-only
 
-#include <ProcessHandler.h>
+#include <AppData.h>
 
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
@@ -15,10 +15,10 @@ int main(int argc, char* argv[])
 
 	QGuiApplication app(argc, argv);
 
-	QScopedPointer<ProcessHandler> serverOutputTerminal(new ProcessHandler);
-
 	QQmlApplicationEngine engine;
-	qmlRegisterSingletonInstance("cs2server", 1, 0, "ProcessHandler", serverOutputTerminal.get());
+	qmlRegisterSingletonInstance(
+		"cs2server", 1, 0, "ProcessHandler", AppData::Instance().serverProcess.get());
+	qmlRegisterSingletonInstance("cs2server", 1, 0, "Settings", AppData::Instance().settings.get());
 
 	const QUrl url(u"qrc:/qt/qml/Main/Main.qml"_qs);
 	QObject::connect(

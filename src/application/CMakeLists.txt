@@ -2,9 +2,13 @@ project(application LANGUAGES CXX)
 
 set(${PROJECT_NAME}_SRC
 	app_environment.h
+	AppData.cpp
+	AppData.h
 	import_qml_plugins.h
 	ProcessHandler.cpp
 	ProcessHandler.h
+	Settings.cpp
+	Settings.h
 )
 
 add_library(${PROJECT_NAME}

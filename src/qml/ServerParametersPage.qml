@@ -9,6 +9,6 @@ Column {
         anchors.right: parent.right
         height: 20
 
-        input.onTextEdited: ProcessHandler.setStartPatameters(text)
+        input.onTextEdited: Settings.startParameters = input.text
     }
 }

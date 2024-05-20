@@ -10,5 +10,6 @@ Column {
         height: 20
 
         input.onTextEdited: Settings.startParameters = input.text
+        input.text: Settings.startParameters
     }
 }

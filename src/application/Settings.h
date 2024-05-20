@@ -11,16 +11,18 @@ class Settings : public QObject
 
 	Q_PROPERTY(QString executablePath READ getExecutablePath WRITE setExecutablePath NOTIFY
 			executablePathChanged)
-	Q_PROPERTY(QString startParameters MEMBER m_startParameters)
+	Q_PROPERTY(QString startParameters MEMBER m_startParameters NOTIFY startParametersChanged)
 public:
 	explicit Settings(QObject* parent = nullptr);
+	~Settings();
 
 signals:
 	void executablePathChanged(const QString& newPath);
+	void startParametersChanged(const QString& newPath);
 
 public:
 	QString getExecutablePath() const;
-	QString GetStartParameters() const;
+	QString getStartParameters() const;
 
 public slots:
 	void setExecutablePath(QString fileUrl);

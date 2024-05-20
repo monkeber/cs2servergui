@@ -43,13 +43,13 @@ RowLayout {
             id: selectedFileLabel
             anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter
-
-            MouseArea {
-                anchors.fill: parent
-                hoverEnabled: true
-                ToolTip.visible: selectedFileLabel.text.length ? containsMouse : false
-                ToolTip.text: selectedFileLabel.text
-            }
+            text: Settings.executablePath
+        }
+        MouseArea {
+            anchors.fill: parent
+            hoverEnabled: true
+            ToolTip.visible: selectedFileLabel.text.length ? containsMouse : false
+            ToolTip.text: selectedFileLabel.text
         }
     }
 

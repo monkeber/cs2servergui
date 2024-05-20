@@ -2,6 +2,7 @@
 #include "AppData.h"
 
 #include <QFileInfo>
+#include <QtLogging>
 
 ProcessHandler::ProcessHandler(QObject* parent)
 	: QObject{ parent }
@@ -12,13 +13,24 @@ ProcessHandler::ProcessHandler(QObject* parent)
 	connect(&m_process, &QProcess::readyReadStandardError, this, &ProcessHandler::readErrors);
 }
 
+void ProcessHandler::execCommand(const QString& cmd)
+{
+	const qint64 result = m_process.write(cmd.toUtf8());
+	if (result < 1)
+	{
+		qWarning("Something went wrong while writing to the process, bytes written:", result);
+	}
+}
+
 void ProcessHandler::start()
 {
 	m_process.setProgram(AppData::Instance().settings->getExecutablePath());
-	m_process.setNativeArguments(AppData::Instance().settings->GetStartParameters());
+	m_process.setNativeArguments(AppData::Instance().settings->getStartParameters());
 	const QFileInfo file{ AppData::Instance().settings->getExecutablePath() };
 	m_process.setWorkingDirectory(file.absolutePath());
+	m_process.setInputChannelMode(QProcess::InputChannelMode::ForwardedInputChannel);
 	m_process.start();
+	m_process.closeWriteChannel();
 
 	m_isRunning = true;
 

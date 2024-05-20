@@ -20,6 +20,7 @@ public:
 	ProcessHandler(QObject* parent = nullptr);
 
 public slots:
+	void execCommand(const QString& cmd);
 	void start();
 	void stop();
 

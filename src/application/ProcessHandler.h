@@ -1,5 +1,7 @@
 #pragma once
 
+#include <any>
+
 #include <QObject>
 #include <QProcess>
 #include <QQmlEngine>
@@ -32,6 +34,7 @@ private:
 	QString m_filePath;
 	QString m_startParameters;
 	QString m_output;
-	QProcess m_process;
 	bool m_isRunning;
+	std::any m_processInfo;
+	std::any m_startupInfo;
 };

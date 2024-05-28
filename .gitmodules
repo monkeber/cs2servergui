@@ -1,0 +1,3 @@
+[submodule "third_party/rconpp"]
+	path = third_party/rconpp
+	url = git@github.com:Jaskowicz1/rconpp.git

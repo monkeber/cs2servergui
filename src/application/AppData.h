@@ -3,6 +3,7 @@
 #include <memory>
 
 #include "ProcessHandler.h"
+#include "RCONClient.h"
 #include "Settings.h"
 
 class AppData
@@ -12,6 +13,7 @@ public:
 
 public:
 	std::unique_ptr<ProcessHandler> serverProcess;
+	std::unique_ptr<RCONClient> rconclient;
 	std::unique_ptr<Settings> settings;
 
 private:

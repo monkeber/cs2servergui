@@ -30,11 +30,14 @@ Settings::Settings(QObject* parent)
 	jsonFile.close();
 	if (!doc.isObject())
 	{
-		qWarning("Config data is ill-formed, skipping.");
+		qWarning("Config data is ill-formed, skipping");
+		return;
 	}
 
 	const QJsonObject obj{ doc.object() };
 	m_executablePath = obj.value("executablePath").toString("");
+	m_rconPass = obj.value("rconPass").toString("");
+	m_serverIP = obj.value("serverIP").toString("");
 	m_startParameters = obj.value("startParameters").toString("");
 }
 
@@ -44,6 +47,8 @@ Settings::~Settings()
 	{
 		QJsonObject obj;
 		obj.insert("executablePath", m_executablePath);
+		obj.insert("rconPass", m_rconPass);
+		obj.insert("serverIP", m_serverIP);
 		obj.insert("startParameters", m_startParameters);
 
 		QJsonDocument doc;
@@ -56,17 +61,27 @@ Settings::~Settings()
 	}
 	catch (const std::exception& e)
 	{
-		qWarning("Caught exception while saving the config:", e.what());
+		qWarning("Exception while saving the config:", e.what());
 	}
 	catch (...)
 	{
-		qWarning("Caught unknown exception while saving the config");
+		qWarning("Unknown exception while saving the config");
 	}
 }
 
 QString Settings::getExecutablePath() const
 {
 	return m_executablePath;
+}
+
+QString Settings::getRconPass() const
+{
+	return m_rconPass;
+}
+
+QString Settings::getServerIP() const
+{
+	return m_serverIP;
 }
 
 QString Settings::getStartParameters() const

@@ -6,6 +6,18 @@
 
 #include <windows.h>
 
+BOOL CALLBACK SendWMCloseMsg(HWND hwnd, LPARAM lParam)
+{
+	DWORD dwProcessId = 0;
+	GetWindowThreadProcessId(hwnd, &dwProcessId);
+	if (dwProcessId == lParam)
+	{
+		PostMessage(hwnd, WM_CLOSE, 0, 0);
+	}
+
+	return TRUE;
+}
+
 ProcessHandler::ProcessHandler(QObject* parent)
 	: QObject{ parent }
 	, m_isRunning{ false }
@@ -14,11 +26,7 @@ ProcessHandler::ProcessHandler(QObject* parent)
 
 void ProcessHandler::execCommand(const QString& cmd)
 {
-	// const qint64 result = m_process.write(cmd.toUtf8());
-	// if (result < 1)
-	// {
-	// 	qWarning("Something went wrong while writing to the process, bytes written:", result);
-	// }
+	AppData::Instance().rconclient->Exec(cmd);
 }
 
 void ProcessHandler::start()
@@ -40,6 +48,8 @@ void ProcessHandler::start()
 	std::wstring command{ L"\"" + AppData::Instance().settings->getExecutablePath().toStdWString()
 		+ L"\" " + startParams };
 
+	const QFileInfo file{ AppData::Instance().settings->getExecutablePath() };
+
 	if (!CreateProcess(NULL,							   // No module name (use command line)
 			command.data(),								   // Command line
 			NULL,										   // Process handle not inheritable
@@ -47,7 +57,8 @@ void ProcessHandler::start()
 			FALSE,										   // Set handle inheritance to FALSE
 			0,											   // No creation flags
 			NULL,										   // Use parent's environment block
-			NULL,										   // Use parent's starting directory
+			file.absolutePath().toStdWString().c_str(),	   // Use the parent directory of a chosen
+														   // executable as a starting directory
 			std::any_cast<STARTUPINFO>(&m_startupInfo),	   // Pointer to STARTUPINFO structure
 			std::any_cast<PROCESS_INFORMATION>(
 				&m_processInfo))	// Pointer to PROCESS_INFORMATION structure
@@ -64,21 +75,25 @@ void ProcessHandler::start()
 
 void ProcessHandler::stop()
 {
+	EnumWindows(&SendWMCloseMsg, std::any_cast<PROCESS_INFORMATION>(m_processInfo).dwProcessId);
+	if (WaitForSingleObject(std::any_cast<PROCESS_INFORMATION>(m_processInfo).hProcess, 500)
+		== WAIT_TIMEOUT)
+	{
+		TerminateProcess(std::any_cast<PROCESS_INFORMATION>(m_processInfo).hProcess, 0);
+	}
 	CloseHandle(std::any_cast<PROCESS_INFORMATION>(m_processInfo).hProcess);
 	CloseHandle(std::any_cast<PROCESS_INFORMATION>(m_processInfo).hThread);
-	// m_process.terminate();
+
 	m_isRunning = false;
 	emit runningStateChanged(m_isRunning);
 }
 
 void ProcessHandler::readData()
 {
-	// m_output = m_process.readAllStandardOutput();
 	emit outputChanged(m_output);
 }
 
 void ProcessHandler::readErrors()
 {
-	// m_output = m_process.readAllStandardError();
 	emit outputChanged(m_output);
 }

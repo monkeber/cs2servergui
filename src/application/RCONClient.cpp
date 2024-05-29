@@ -8,6 +8,12 @@ RCONClient::RCONClient(QObject* parent)
 	: QObject{ parent }
 	, m_client{ nullptr }
 {
+	connect(
+		AppData::Instance().settings.get(), &Settings::rconPassChanged, this, &RCONClient::Reset);
+	connect(
+		AppData::Instance().settings.get(), &Settings::rconPortChanged, this, &RCONClient::Reset);
+	connect(
+		AppData::Instance().settings.get(), &Settings::serverIPChanged, this, &RCONClient::Reset);
 }
 
 void RCONClient::Exec(const QString& cmd)
@@ -22,10 +28,11 @@ void RCONClient::Exec(const QString& cmd)
 
 void RCONClient::Reset()
 {
-	m_client.reset(
-		new rconpp::rcon_client{ AppData::Instance().settings->getServerIP().toStdString(),
-			27015,
-			AppData::Instance().settings->getRconPass().toStdString() });
+	m_client.reset(new rconpp::rcon_client{
+		AppData::Instance().settings->getServerIP().toStdString(),
+		AppData::Instance().settings->getRconPort(),
+		AppData::Instance().settings->getRconPass().toStdString(),
+	});
 
 	m_client->on_log = [](const std::string_view& log) {
 		qWarning(std::string{ log }.c_str());

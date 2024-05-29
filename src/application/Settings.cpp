@@ -37,6 +37,7 @@ Settings::Settings(QObject* parent)
 	const QJsonObject obj{ doc.object() };
 	m_executablePath = obj.value("executablePath").toString("");
 	m_rconPass = obj.value("rconPass").toString("");
+	m_rconPort = obj.value("rconPort").toInt();
 	m_serverIP = obj.value("serverIP").toString("");
 	m_startParameters = obj.value("startParameters").toString("");
 }
@@ -48,6 +49,7 @@ Settings::~Settings()
 		QJsonObject obj;
 		obj.insert("executablePath", m_executablePath);
 		obj.insert("rconPass", m_rconPass);
+		obj.insert("rconPort", m_rconPort);
 		obj.insert("serverIP", m_serverIP);
 		obj.insert("startParameters", m_startParameters);
 
@@ -77,6 +79,11 @@ QString Settings::getExecutablePath() const
 QString Settings::getRconPass() const
 {
 	return m_rconPass;
+}
+
+quint16 Settings::getRconPort() const
+{
+	return m_rconPort;
 }
 
 QString Settings::getServerIP() const

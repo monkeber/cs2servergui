@@ -14,6 +14,7 @@ public:
 
 public:
 	void Exec(const QString& cmd);
+public slots:
 	void Reset();
 
 private:

@@ -17,16 +17,3 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 	Qt6::Widgets
 	rconpp
 )
-
-install(TARGETS ${PROJECT_NAME}
-	BUNDLE  DESTINATION .
-	RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-)
-
-qt_generate_deploy_app_script(
-	TARGET ${PROJECT_NAME}
-	OUTPUT_SCRIPT deploy_script
-	NO_UNSUPPORTED_PLATFORM_ERROR
-)
-install(SCRIPT ${deploy_script})

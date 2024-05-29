@@ -30,4 +30,14 @@ Column {
         input.onEditingFinished: Settings.rconPass = input.text
         input.text: Settings.rconPass
     }
+    InputField {
+        text: "RCON Port"
+        anchors.left: parent.left
+        anchors.right: parent.right
+        height: 20
+
+        input.onEditingFinished: Settings.rconPort = parseInt(input.text)
+        input.text: Settings.rconPort
+        input.inputMethodHints: Qt.ImhDigitsOnly
+    }
 }

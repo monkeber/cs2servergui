@@ -12,7 +12,7 @@ RCONClient::RCONClient(QObject* parent)
 
 void RCONClient::Exec(const QString& cmd)
 {
-	if (!m_client)
+	if (!m_client || !m_client->connected.load())
 	{
 		Reset();
 	}
@@ -22,14 +22,19 @@ void RCONClient::Exec(const QString& cmd)
 
 void RCONClient::Reset()
 {
-	m_client.reset(
-		new rconpp::rcon_client{ AppData::Instance().settings->getServerIP().toStdString(),
-			27015,
-			AppData::Instance().settings->getRconPass().toStdString() });
+	// Use shared pointers in case the client gets reset again before detached thread finishes.
+	m_client = std::make_shared<rconpp::rcon_client>(
+		AppData::Instance().settings->getServerIP().toStdString(),
+		AppData::Instance().settings->getRconPort(),
+		AppData::Instance().settings->getRconPass().toStdString());
 
 	m_client->on_log = [](const std::string_view& log) {
 		qWarning(std::string{ log }.c_str());
 	};
 
-	m_client->start(true);
+	// Avoid hanging the main app thread.
+	std::thread startingThread{ [client = this->m_client]() {
+		client->start(true);
+	} };
+	startingThread.detach();
 }

@@ -14,8 +14,9 @@ public:
 
 public:
 	void Exec(const QString& cmd);
+public slots:
 	void Reset();
 
 private:
-	std::unique_ptr<rconpp::rcon_client> m_client;
+	std::shared_ptr<rconpp::rcon_client> m_client;
 };

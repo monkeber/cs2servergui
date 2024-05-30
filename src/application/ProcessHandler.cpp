@@ -2,7 +2,9 @@
 #include "AppData.h"
 
 #include <QFileInfo>
+#include <QRegularExpression>
 #include <QtLogging>
+#include <QUrlQuery>
 
 #include <windows.h>
 
@@ -27,6 +29,50 @@ ProcessHandler::ProcessHandler(QObject* parent)
 void ProcessHandler::execCommand(const QString& cmd)
 {
 	AppData::Instance().rconclient->Exec(cmd);
+}
+
+void ProcessHandler::execScriptName(const QString& scriptName)
+{
+	execCommand(QString{ "exec %1" }.arg(scriptName));
+}
+
+void ProcessHandler::hostWorkshopMap(const QString& map)
+{
+	constexpr qsizetype sizeLimit{ 1000 };
+	if (map.size() > sizeLimit)
+	{
+		qWarning("Received map link or id exceeds size limit, size: %d, limit: %d",
+			map.size(),
+			sizeLimit);
+	}
+
+	QString mapId;
+	// If the provided string contains only numbers we assume its just a map id.
+	static const QRegularExpression re{ "^\\d*$" };
+	if (re.match(map).hasMatch())
+	{
+		mapId = map;
+	}
+	// Otherwise we try to parse a link from steam workshop.
+	else
+	{
+		const QUrl url{ map };
+		if (!url.isValid())
+		{
+			qWarning("Provided url is not valid: %s", qUtf8Printable(map));
+			return;
+		}
+
+		const QUrlQuery query{ url };
+		mapId = query.queryItemValue("id");
+		if (mapId.isEmpty())
+		{
+			qWarning("Provided url does not contain id: %s", qUtf8Printable(map));
+			return;
+		}
+	}
+
+	execCommand(QString{ "host_workshop_map %1" }.arg(mapId));
 }
 
 void ProcessHandler::start()

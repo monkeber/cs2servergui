@@ -43,10 +43,6 @@ Window {
             MainMenu {
                 width: parent.width
             }
-            Rectangle {
-                width: parent.width
-                height: 100
-            }
         }
     }
 }

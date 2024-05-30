@@ -26,6 +26,8 @@ Row {
             anchors.leftMargin: parent.border.width * 2
             anchors.rightMargin: parent.border.width * 2
             focus: true
+            selectByMouse: true
+            clip: true
         }
 
         HoverHandler {

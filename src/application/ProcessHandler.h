@@ -23,6 +23,8 @@ public:
 
 public slots:
 	void execCommand(const QString& cmd);
+	void execScriptName(const QString& scriptName);
+	void hostWorkshopMap(const QString& map);
 	void start();
 	void stop();
 

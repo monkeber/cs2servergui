@@ -1,15 +1,15 @@
 import QtQuick 6.2
+import QtQuick.Layouts
 import cs2server 1.0
 
-Column {
+ColumnLayout {
     id: column
     InputField {
         text: "Console"
-        anchors.left: parent.left
-        anchors.right: parent.right
+        Layout.fillWidth: true
         height: 20
 
-        input.onEditingFinished: {
+        input.onAccepted: {
             if (input.text.length > 0) {
                 ProcessHandler.execCommand(input.text)
                 input.text = ""
@@ -18,17 +18,28 @@ Column {
     }
     Row {
         height: 20
-        anchors.left: parent.left
-        anchors.right: parent.right
+        Layout.fillWidth: true
         InputField {
             text: "Host Workshop Map"
             height: parent.height
             width: parent.width / 2
+            input.onAccepted: {
+                if (input.text.length > 0) {
+                    ProcessHandler.hostWorkshopMap(input.text)
+                    input.text = ""
+                }
+            }
         }
         InputField {
             text: "Exec"
             height: parent.height
             width: parent.width / 2
+            input.onAccepted: {
+                if (input.text.length > 0) {
+                    ProcessHandler.execScriptName(input.text)
+                    input.text = ""
+                }
+            }
         }
     }
 }

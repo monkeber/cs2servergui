@@ -19,6 +19,7 @@ Column {
         anchors.right: parent.right
         anchors.left: parent.left
         currentIndex: bar.currentIndex
+        interactive: false
         clip: true
         ConsolePage {
             id: homeTab

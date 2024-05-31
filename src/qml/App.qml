@@ -32,14 +32,14 @@ Window {
             PowerPanel {
                 width: parent.width
             }
-
-            Spoiler {
-                width: parent.width
-                TerminalOutput {
-                    id: termOut
-                    height: window.height / 3
-                }
-            }
+            // TODO: Find a way to redirect logs to terminal output.
+            // Spoiler {
+            //     width: parent.width
+            //     TerminalOutput {
+            //         id: termOut
+            //         height: window.height / 3
+            //     }
+            // }
             MainMenu {
                 width: parent.width
             }

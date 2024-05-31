@@ -34,3 +34,7 @@ Versions of dependencies used:
 - Qt 6.6.0 (MSVC 2019)
 - [rconpp](https://github.com/Jaskowicz1/rconpp) at [d77993b](https://github.com/Jaskowicz1/rconpp/commit/d77993b1e8993701dbf6b2974b41045a915c7b42)
 - CMake 3.29.2
+
+### Supported Platforms
+
+For now it only works on `Windows`. Maybe there will be Linux support in the future. Tested on Windows 10 22H2 (19045.4412), but in theory should work on any version of win10 and above.

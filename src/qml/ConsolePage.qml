@@ -15,6 +15,19 @@ ColumnLayout {
                 input.text = ""
             }
         }
+
+        input.Keys.onPressed: event => {
+                                  if (event.key === Qt.Key_Up) {
+                                      console.log(
+                                          ProcessHandler.getGeneralHistory())
+                                      input.text = ProcessHandler.getGeneralHistory(
+                                          ).getOlder()
+                                  }
+                                  if (event.key === Qt.Key_Down) {
+                                      input.text = ProcessHandler.getGeneralHistory(
+                                          ).getNewer()
+                                  }
+                              }
     }
     Row {
         height: 20
@@ -40,6 +53,16 @@ ColumnLayout {
                     input.text = ""
                 }
             }
+            input.Keys.onPressed: event => {
+                                      if (event.key === Qt.Key_Up) {
+                                          input.text = ProcessHandler.getScriptHistory(
+                                              ).getOlder()
+                                      }
+                                      if (event.key === Qt.Key_Down) {
+                                          input.text = ProcessHandler.getScriptHistory(
+                                              ).getNewer()
+                                      }
+                                  }
         }
     }
 }

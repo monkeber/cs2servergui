@@ -23,17 +23,34 @@ BOOL CALLBACK SendWMCloseMsg(HWND hwnd, LPARAM lParam)
 ProcessHandler::ProcessHandler(QObject* parent)
 	: QObject{ parent }
 	, m_isRunning{ false }
+	, m_generalHistory{ this }
+	, m_scriptHistory{ this }
 {
 }
 
-void ProcessHandler::execCommand(const QString& cmd)
+CommandHistory* ProcessHandler::getGeneralHistory()
+{
+	return &m_generalHistory;
+}
+
+CommandHistory* ProcessHandler::getScriptHistory()
+{
+	return &m_scriptHistory;
+}
+
+void ProcessHandler::execCommand(const QString& cmd, const bool recordInGeneralHistory)
 {
 	AppData::Instance().rconclient->Exec(cmd);
+	if (recordInGeneralHistory)
+	{
+		m_generalHistory.add(cmd);
+	}
 }
 
 void ProcessHandler::execScriptName(const QString& scriptName)
 {
-	execCommand(QString{ "exec %1" }.arg(scriptName));
+	execCommand(QString{ "exec %1" }.arg(scriptName), false);
+	m_scriptHistory.add(scriptName);
 }
 
 void ProcessHandler::hostWorkshopMap(const QString& map)
@@ -72,7 +89,7 @@ void ProcessHandler::hostWorkshopMap(const QString& map)
 		}
 	}
 
-	execCommand(QString{ "host_workshop_map %1" }.arg(mapId));
+	execCommand(QString{ "host_workshop_map %1" }.arg(mapId), false);
 }
 
 void ProcessHandler::start()
@@ -132,14 +149,4 @@ void ProcessHandler::stop()
 
 	m_isRunning = false;
 	emit runningStateChanged(m_isRunning);
-}
-
-void ProcessHandler::readData()
-{
-	emit outputChanged(m_output);
-}
-
-void ProcessHandler::readErrors()
-{
-	emit outputChanged(m_output);
 }

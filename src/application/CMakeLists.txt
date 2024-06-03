@@ -4,6 +4,8 @@ set(${PROJECT_NAME}_SRC
 	app_environment.h
 	AppData.cpp
 	AppData.h
+	CommandHistory.cpp
+	CommandHistory.h
 	ProcessHandler.cpp
 	ProcessHandler.h
 	RCONClient.cpp

@@ -18,7 +18,17 @@ signals:
 	void runningStateChanged(const bool isRunning);
 
 public:
-	ProcessHandler(QObject* parent = nullptr);
+	ProcessHandler(QObject* parent);
+	ProcessHandler();
+
+	static ProcessHandler* create(QQmlEngine* qmlEngine, QJSEngine* jsEngine)
+	{
+		ProcessHandler* result = new ProcessHandler{};
+		QJSEngine::setObjectOwnership(result, QJSEngine::ObjectOwnership::CppOwnership);
+		// Create the object using some custom constructor or factory.
+		// The QML engine will assume ownership and delete it, eventually.
+		return result;
+	}
 
 public slots:
 	CommandHistory* getGeneralHistory();

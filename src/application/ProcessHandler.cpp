@@ -28,6 +28,14 @@ ProcessHandler::ProcessHandler(QObject* parent)
 {
 }
 
+ProcessHandler::ProcessHandler()
+	: QObject{ nullptr }
+	, m_isRunning{ false }
+	, m_generalHistory{ this }
+	, m_scriptHistory{ this }
+{
+}
+
 CommandHistory* ProcessHandler::getGeneralHistory()
 {
 	return &m_generalHistory;

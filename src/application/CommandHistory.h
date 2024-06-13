@@ -1,10 +1,13 @@
 #pragma once
 
+#include "qqmlintegration.h"
 #include <QObject>
 
 class CommandHistory : public QObject
 {
 	Q_OBJECT
+	QML_ELEMENT
+	QML_UNCREATABLE("This property should be provided only from C++ code")
 
 public:
 	CommandHistory(QObject* parent = nullptr);

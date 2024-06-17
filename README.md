@@ -22,6 +22,8 @@ Written in C++ and QML as an exercise.
 
 ✅ History of the entered commands
 
+⬜️ Scaling on different resolutions, currently app is built and tested on 1440p display and nothing else
+
 ⬜️ Good looking design
 
 ⬜️ Redirect server cmd output into a panel inside the application and get rid of standalone window if possible

@@ -4,14 +4,6 @@ set(QML_IMPORT_PATH
 	${QT_QML_OUTPUT_DIRECTORY}
 	CACHE PATH "Import paths for Qt Creator's code model" FORCE)
 
-message("---------------${QML_IMPORT_PATH}")
-
-# make IDEs aware of the QML import path
-# set(QML_IMPORT_PATH
-# 	${PROJECT_BINARY_DIR}/qml
-# 	CACHE PATH "Path to the custom QML components defined by the project")
-message("---------------${QML_IMPORT_PATH}")
-
 qt_add_library(${PROJECT_NAME} STATIC)
 set_source_files_properties(Constants.qml PROPERTIES QT_QML_SINGLETON_TYPE true)
 

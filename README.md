@@ -20,6 +20,10 @@ Written in C++ and QML as an exercise.
 
 ✅ RCON Console and some additional helpful inputs
 
+✅ History of the entered commands
+
+⬜️ Scaling on different resolutions, currently app is built and tested on 1440p display and nothing else
+
 ⬜️ Good looking design
 
 ⬜️ Redirect server cmd output into a panel inside the application and get rid of standalone window if possible
@@ -28,13 +32,28 @@ Written in C++ and QML as an exercise.
 
 Open the project in Qt Creator and hit build.
 
-Versions of dependencies used:
+Versions of dependencies used, probably will work on newer versions as well:
 
 - QtCreator 13.0.0
-- Qt 6.6.0 (MSVC 2019)
+- Qt 6.7.0 (MSVC 2019)
 - [rconpp](https://github.com/Jaskowicz1/rconpp) at [d77993b](https://github.com/Jaskowicz1/rconpp/commit/d77993b1e8993701dbf6b2974b41045a915c7b42)
 - CMake 3.29.2
 
+## Deploy
+
+In order to deploy the built binary you need to have `windeployqt.exe` reachable from the `powershell` (easiest way is to set `QTDIR` environment variable on your system).
+
+There are a couple of scripts, one to move the binary and all required dependencies:
+```powershell
+# From project root directory.
+.\scripts\deploy_win.ps1 .\build\Release-Desktop_Qt_6_7_0_MSVC2019_64bit_MSVC2022 deploy\cs2guiserver
+```
+
+And the second is to package the new directory into an archive:
+```powershell
+.\scripts\package_win.ps1 .\deploy\cs2guiserver
+```
+
 ### Supported Platforms
 
-For now it only works on `Windows`. Maybe there will be Linux support in the future. Tested on Windows 10 22H2 (19045.4412), but in theory should work on any version of win10 and above.
+For now it only works on `Windows`. Maybe there will be Linux support in the future. Tested on Windows 10 22H2 (19045.4412), but in theory should work on any version of Win10 and above.

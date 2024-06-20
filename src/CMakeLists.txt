@@ -9,7 +9,7 @@ set(QT_QML_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/qml)
 add_subdirectory(application)
 add_subdirectory(qml)
 
-qt_add_executable(${PROJECT_NAME} main.cpp)
+qt_add_executable(${PROJECT_NAME} WIN32 main.cpp)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
     Qt6::Core

@@ -1,7 +1,7 @@
 // Copyright (C) 2021 The Qt Company Ltd.
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR GPL-3.0-only
 
-#include <AppData.h>
+// #include "AppData.h"
 
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
@@ -21,7 +21,7 @@ int main(int argc, char* argv[])
 	// qmlRegisterSingletonInstance("cs2server", 1, 0, "Settings",
 	// AppData::Instance().settings.get());
 
-	const QUrl url(u"qrc:/qt/qml/Main/Main.qml"_qs);
+	const QUrl url(u"qrc:/qt/qml/ui/Main.qml"_qs);
 	QObject::connect(
 		&engine,
 		&QQmlApplicationEngine::objectCreated,

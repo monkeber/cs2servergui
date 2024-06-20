@@ -2,7 +2,7 @@ import QtQuick 6.2
 import QtQuick.Controls
 import QtQuick.Layouts
 import QtQuick.Window
-import cs2server 1.0
+import application 1.0
 
 Window {
     id: window

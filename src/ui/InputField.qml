@@ -1,6 +1,6 @@
 import QtQuick 6.2
 import QtQuick.Controls
-import cs2server 1.0
+import application 1.0
 
 Row {
     property string text

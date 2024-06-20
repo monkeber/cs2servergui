@@ -1,4 +1,4 @@
-project(application LANGUAGES CXX)
+project(applicationlib LANGUAGES CXX)
 
 set(${PROJECT_NAME}_SRC
 	app_environment.h
@@ -16,15 +16,9 @@ set(${PROJECT_NAME}_SRC
 
 qt_add_library(${PROJECT_NAME} STATIC)
 
-# add_library(${PROJECT_NAME}
-# 	STATIC
-# 		${${PROJECT_NAME}_SRC}
-# )
-
-qt6_add_qml_module(${PROJECT_NAME}
-	URI cs2server
+qt_add_qml_module(${PROJECT_NAME}
+	URI application
 	VERSION 1.0
-	NO_PLUGIN
 	SOURCES
 		${${PROJECT_NAME}_SRC}
 )

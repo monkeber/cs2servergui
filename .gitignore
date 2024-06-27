@@ -1,5 +1,8 @@
+.vs/
 build/
 deploy/
 
 *.user*
 *.qtds*
+
+CMakeSettings.json

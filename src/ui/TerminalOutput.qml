@@ -22,10 +22,10 @@ Rectangle {
         }
     }
     Connections {
-        target: ProcessHandler
+        target: AppData.serverProcess
         onOutputChanged: {
             listModel.append({
-                                 "content": ProcessHandler.output
+                                 "content": AppData.serverProcess.output
                              })
             view.positionViewAtEnd()
         }

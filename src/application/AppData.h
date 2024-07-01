@@ -1,21 +1,31 @@
 #pragma once
 
-#include <memory>
-
 #include "ProcessHandler.h"
 #include "RCONClient.h"
 #include "Settings.h"
 
-class AppData
+class AppData : public QObject
 {
-public:
-	static AppData& Instance();
+	Q_OBJECT
+	QML_ELEMENT
+	QML_SINGLETON
+
+	Q_PROPERTY(ProcessHandler* serverProcess READ serverProcess CONSTANT)
+	Q_PROPERTY(Settings* settings READ settings CONSTANT)
 
 public:
-	std::unique_ptr<ProcessHandler> serverProcess;
-	std::unique_ptr<RCONClient> rconclient;
-	std::unique_ptr<Settings> settings;
+	static AppData& Instance();
+	static AppData* create(QQmlEngine*, QJSEngine* engine);
+
+	RCONClient* rconclient();
+	ProcessHandler* serverProcess();
+	Settings* settings();
 
 private:
 	AppData();
+
+private:
+	ProcessHandler m_serverProcess;
+	RCONClient m_rconclient;
+	Settings m_settings;
 };

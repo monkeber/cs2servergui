@@ -11,7 +11,7 @@ ColumnLayout {
 
         input.onAccepted: {
             if (input.text.length > 0) {
-                ProcessHandler.execCommand(input.text)
+                AppData.serverProcess.execCommand(input.text)
                 input.text = ""
             }
         }
@@ -19,12 +19,13 @@ ColumnLayout {
         input.Keys.onPressed: event => {
                                   if (event.key === Qt.Key_Up) {
                                       console.log(
-                                          ProcessHandler.getGeneralHistory())
-                                      input.text = ProcessHandler.getGeneralHistory(
+                                          AppData.serverProcess.getGeneralHistory(
+                                              ))
+                                      input.text = AppData.serverProcess.getGeneralHistory(
                                           ).getOlder()
                                   }
                                   if (event.key === Qt.Key_Down) {
-                                      input.text = ProcessHandler.getGeneralHistory(
+                                      input.text = AppData.serverProcess.getGeneralHistory(
                                           ).getNewer()
                                   }
                               }
@@ -38,7 +39,7 @@ ColumnLayout {
             width: parent.width / 2
             input.onAccepted: {
                 if (input.text.length > 0) {
-                    ProcessHandler.hostWorkshopMap(input.text)
+                    AppData.serverProcess.hostWorkshopMap(input.text)
                     input.text = ""
                 }
             }
@@ -49,17 +50,17 @@ ColumnLayout {
             width: parent.width / 2
             input.onAccepted: {
                 if (input.text.length > 0) {
-                    ProcessHandler.execScriptName(input.text)
+                    AppData.serverProcess.execScriptName(input.text)
                     input.text = ""
                 }
             }
             input.Keys.onPressed: event => {
                                       if (event.key === Qt.Key_Up) {
-                                          input.text = ProcessHandler.getScriptHistory(
+                                          input.text = AppData.serverProcess.getScriptHistory(
                                               ).getOlder()
                                       }
                                       if (event.key === Qt.Key_Down) {
-                                          input.text = ProcessHandler.getScriptHistory(
+                                          input.text = AppData.serverProcess.getScriptHistory(
                                               ).getNewer()
                                       }
                                   }

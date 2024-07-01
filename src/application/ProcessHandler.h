@@ -11,24 +11,13 @@ class ProcessHandler : public QObject
 {
 	Q_OBJECT
 	QML_ELEMENT
-	QML_SINGLETON
 	Q_PROPERTY(bool isRunning MEMBER m_isRunning NOTIFY runningStateChanged)
 
 signals:
 	void runningStateChanged(const bool isRunning);
 
 public:
-	ProcessHandler(QObject* parent);
-	ProcessHandler();
-
-	static ProcessHandler* create(QQmlEngine* qmlEngine, QJSEngine* jsEngine)
-	{
-		ProcessHandler* result = new ProcessHandler{};
-		QJSEngine::setObjectOwnership(result, QJSEngine::ObjectOwnership::CppOwnership);
-		// Create the object using some custom constructor or factory.
-		// The QML engine will assume ownership and delete it, eventually.
-		return result;
-	}
+	ProcessHandler(QObject* parent = nullptr);
 
 public slots:
 	CommandHistory* getGeneralHistory();

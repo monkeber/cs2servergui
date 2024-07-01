@@ -6,7 +6,7 @@ import application 1.0
 
 RowLayout {
     id: panel
-    property bool isRunning: ProcessHandler.isRunning
+    property bool isRunning: AppData.serverProcess.isRunning
 
     Button {
         id: selectButton
@@ -22,7 +22,7 @@ RowLayout {
 
             onAccepted: {
                 selectedFileLabel.text = fileDialog.selectedFile
-                Settings.setExecutablePath(fileDialog.selectedFile)
+                AppData.settings.setExecutablePath(fileDialog.selectedFile)
                 console.log("You chose: " + fileDialog.selectedFile)
             }
             onRejected: {
@@ -43,7 +43,7 @@ RowLayout {
             id: selectedFileLabel
             anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter
-            text: Settings.executablePath
+            text: AppData.settings.executablePath
         }
         MouseArea {
             anchors.fill: parent
@@ -61,7 +61,7 @@ RowLayout {
     Button {
         id: startButton
         text: "Start"
-        onClicked: ProcessHandler.start()
+        onClicked: AppData.serverProcess.start()
         Layout.alignment: Qt.AlignRight
     }
     Rectangle {
@@ -82,7 +82,7 @@ RowLayout {
     Button {
         id: stopButton
         text: "Stop"
-        onClicked: ProcessHandler.stop()
+        onClicked: AppData.serverProcess.stop()
         Layout.alignment: Qt.AlignRight
     }
 

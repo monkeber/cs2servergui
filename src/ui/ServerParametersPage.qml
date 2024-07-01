@@ -9,32 +9,34 @@ ColumnLayout {
         Layout.fillWidth: true
         height: 20
 
-        input.onEditingFinished: Settings.startParameters = input.text
-        input.text: Settings.startParameters
+        input.onEditingFinished: AppData.settings.startParameters = input.text
+        input.text: AppData.settings.startParameters
     }
     InputField {
         text: "Server IP"
         Layout.fillWidth: true
         height: 20
 
-        input.onEditingFinished: Settings.serverIP = input.text
-        input.text: Settings.serverIP
+        input.onEditingFinished: AppData.settings.serverIP = input.text
+        input.text: AppData.settings.serverIP
     }
     InputField {
         text: "RCON Password"
         Layout.fillWidth: true
         height: 20
 
-        input.onEditingFinished: Settings.rconPass = input.text
-        input.text: Settings.rconPass
+        input.onEditingFinished: AppData.settings.rconPass = input.text
+        input.text: AppData.settings.rconPass
     }
     InputField {
         text: "RCON Port"
         Layout.fillWidth: true
         height: 20
 
-        input.onEditingFinished: Settings.rconPort = parseInt(input.text)
-        input.text: Settings.rconPort
+        input.onEditingFinished: {
+            AppData.settings.rconPort = parseInt(input.text)
+        }
+        input.text: AppData.settings.rconPort
         input.inputMethodHints: Qt.ImhDigitsOnly
         input.validator: IntValidator {
             bottom: 0

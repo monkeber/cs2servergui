@@ -16,10 +16,6 @@ int main(int argc, char* argv[])
 	QGuiApplication app(argc, argv);
 
 	QQmlApplicationEngine engine;
-	// qmlRegisterSingletonInstance(
-	// 	"cs2server", 1, 0, "ProcessHandler", AppData::Instance().serverProcess.get());
-	// qmlRegisterSingletonInstance("cs2server", 1, 0, "Settings",
-	// AppData::Instance().settings.get());
 
 	const QUrl url(u"qrc:/qt/qml/ui/Main.qml"_qs);
 	QObject::connect(

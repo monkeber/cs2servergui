@@ -1,4 +1,4 @@
-project(application LANGUAGES CXX)
+project(applicationlib LANGUAGES CXX)
 
 set(${PROJECT_NAME}_SRC
 	app_environment.h
@@ -14,8 +14,12 @@ set(${PROJECT_NAME}_SRC
 	Settings.h
 )
 
-add_library(${PROJECT_NAME}
-	STATIC
+qt_add_library(${PROJECT_NAME} STATIC)
+
+qt_add_qml_module(${PROJECT_NAME}
+	URI application
+	VERSION 1.0
+	SOURCES
 		${${PROJECT_NAME}_SRC}
 )
 

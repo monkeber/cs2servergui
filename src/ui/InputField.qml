@@ -1,8 +1,10 @@
 import QtQuick 6.2
 import QtQuick.Controls
+import application 1.0
 
 Row {
     property string text
+    // property CommandHistory history
     property alias input: input
 
     Label {

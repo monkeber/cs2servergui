@@ -40,7 +40,7 @@ CommandHistory* ProcessHandler::getScriptHistory()
 
 void ProcessHandler::execCommand(const QString& cmd, const bool recordInGeneralHistory)
 {
-	AppData::Instance().rconclient->Exec(cmd);
+	AppData::Instance().rconclient()->Exec(cmd);
 	if (recordInGeneralHistory)
 	{
 		m_generalHistory.add(cmd);
@@ -105,13 +105,13 @@ void ProcessHandler::start()
 		sizeof(std::any_cast<PROCESS_INFORMATION>(m_processInfo)));
 
 	const std::wstring startParams{
-		AppData::Instance().settings->getStartParameters().toStdWString()
+		AppData::Instance().settings()->getStartParameters().toStdWString()
 	};
 
-	std::wstring command{ L"\"" + AppData::Instance().settings->getExecutablePath().toStdWString()
+	std::wstring command{ L"\"" + AppData::Instance().settings()->getExecutablePath().toStdWString()
 		+ L"\" " + startParams };
 
-	const QFileInfo file{ AppData::Instance().settings->getExecutablePath() };
+	const QFileInfo file{ AppData::Instance().settings()->getExecutablePath() };
 
 	if (!CreateProcess(NULL,							   // No module name (use command line)
 			command.data(),								   // Command line

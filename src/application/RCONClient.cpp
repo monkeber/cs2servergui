@@ -24,9 +24,9 @@ void RCONClient::Reset()
 {
 	// Use shared pointers in case the client gets reset again before detached thread finishes.
 	m_client = std::make_shared<rconpp::rcon_client>(
-		AppData::Instance().settings->getServerIP().toStdString(),
-		AppData::Instance().settings->getRconPort(),
-		AppData::Instance().settings->getRconPass().toStdString());
+		AppData::Instance().settings()->getServerIP().toStdString(),
+		AppData::Instance().settings()->getRconPort(),
+		AppData::Instance().settings()->getRconPass().toStdString());
 
 	m_client->on_log = [](const std::string_view& log) {
 		qWarning(std::string{ log }.c_str());

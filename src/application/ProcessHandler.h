@@ -11,7 +11,6 @@ class ProcessHandler : public QObject
 {
 	Q_OBJECT
 	QML_ELEMENT
-	QML_SINGLETON
 	Q_PROPERTY(bool isRunning MEMBER m_isRunning NOTIFY runningStateChanged)
 
 signals:

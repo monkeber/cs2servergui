@@ -5,7 +5,7 @@ set(QML_IMPORT_PATH
 	CACHE PATH "Import paths for Qt Creator's code model" FORCE)
 
 qt_add_library(${PROJECT_NAME} STATIC)
-set_source_files_properties(Constants.qml PROPERTIES QT_QML_SINGLETON_TYPE true)
+set_source_files_properties(Globals.qml PROPERTIES QT_QML_SINGLETON_TYPE true)
 
 qt_add_qml_module(${PROJECT_NAME}
 	URI ui
@@ -13,8 +13,9 @@ qt_add_qml_module(${PROJECT_NAME}
 	RESOURCE_PREFIX "/qt/qml"
 	QML_FILES
 		App.qml
+		AppMenuBar.qml
 		ConsolePage.qml
-		Constants.qml
+		Globals.qml
 		InputField.qml
 		Main.qml
 		MainMenu.qml

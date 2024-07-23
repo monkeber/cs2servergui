@@ -86,6 +86,11 @@ quint16 Settings::getRconPort() const
 	return m_rconPort;
 }
 
+qreal Settings::getScaleFactor() const
+{
+	return m_scaleFactor;
+}
+
 QString Settings::getServerIP() const
 {
 	return m_serverIP;

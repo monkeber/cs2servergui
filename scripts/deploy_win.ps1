@@ -30,4 +30,7 @@ if (-Not $(Test-Path -Path $DeployDir))
 Copy-Item -Path $(Join-Path $BuildDir $BinaryName) -Destination $DeployDir
 Copy-Item -Path $(Join-Path $BuildDir "rconpp.dll") -Destination $DeployDir
 
-windeployqt.exe --qmldir $(Join-Path $BuildDir "qml") $(Join-Path $DeployDir $BinaryName)
+$QmlDir = $(Join-Path $BuildDir "qt")
+$QmlDir = $(Join-Path $QmlDir "qml")
+
+windeployqt.exe --qmldir $QmlDir $(Join-Path $DeployDir $BinaryName)

@@ -4,26 +4,34 @@ import QtQuick.Dialogs
 import QtQuick.Layouts
 import application 1.0
 
-RowLayout {
+GridLayout {
     id: panel
+
     property bool isRunning: AppData.serverProcess.isRunning
+
+    rows: 1
+    columns: 7
 
     Button {
         id: selectButton
-        text: "Select Executable"
-        onClicked: fileDialog.open()
+
+        Layout.fillHeight: true
         Layout.alignment: Qt.AlignLeft
+
+        text: "Select Executable"
+        font: Globals.font
+        onClicked: fileDialog.open()
 
         FileDialog {
             id: fileDialog
-            title: "Please choose an executable file"
+            title: "Please select an executable file"
             options: FileDialog.ReadOnly
             nameFilters: ["Executable files (*.exe)"]
 
             onAccepted: {
                 selectedFileLabel.text = fileDialog.selectedFile
                 AppData.settings.setExecutablePath(fileDialog.selectedFile)
-                console.log("You chose: " + fileDialog.selectedFile)
+                console.log("You selected: " + fileDialog.selectedFile)
             }
             onRejected: {
                 console.log("Canceled")
@@ -32,24 +40,33 @@ RowLayout {
     }
 
     Rectangle {
-        width: selectButton.width * 2
-        height: startButton.height
+        Layout.columnSpan: 2
+        Layout.fillHeight: true
+        Layout.fillWidth: true
+        Layout.alignment: Qt.AlignLeft
+
         radius: 10
         clip: true
 
-        Layout.alignment: Qt.AlignLeft
+        ToolTip {
+            parent: parent
+            visible: selectedFileLabel.text.length ? mouseArea.containsMouse : false
+            text: selectedFileLabel.text
+            font: Globals.font
+        }
 
         Label {
             id: selectedFileLabel
             anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter
             text: AppData.settings.executablePath
+            font: Globals.font
         }
         MouseArea {
+            id: mouseArea
+
             anchors.fill: parent
             hoverEnabled: true
-            ToolTip.visible: selectedFileLabel.text.length ? containsMouse : false
-            ToolTip.text: selectedFileLabel.text
         }
     }
 
@@ -60,30 +77,39 @@ RowLayout {
 
     Button {
         id: startButton
-        text: "Start"
-        onClicked: AppData.serverProcess.start()
-        Layout.alignment: Qt.AlignRight
-    }
-    Rectangle {
-        width: startButton.width
-        height: startButton.height
-        radius: 10
 
         Layout.alignment: Qt.AlignRight
+
+        text: "Start"
+        font: Globals.font
+        onClicked: AppData.serverProcess.start()
+    }
+    Rectangle {
+        Layout.alignment: Qt.AlignRight
+        Layout.preferredWidth: startButton.width
+        Layout.fillHeight: true
+
+        radius: 10
 
         Label {
             id: statusLabel
+
             anchors.centerIn: parent
 
             text: "Stopped"
+            font: Globals.font
         }
     }
 
     Button {
         id: stopButton
-        text: "Stop"
-        onClicked: AppData.serverProcess.stop()
+
         Layout.alignment: Qt.AlignRight
+
+        text: "Stop"
+        font: Globals.font
+
+        onClicked: AppData.serverProcess.stop()
     }
 
     states: [

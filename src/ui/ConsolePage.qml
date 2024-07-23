@@ -5,10 +5,10 @@ import application 1.0
 ColumnLayout {
     id: column
     InputField {
-        text: "Console"
         Layout.fillWidth: true
-        height: 20
+        Layout.preferredHeight: Globals.inputFieldsHeight
 
+        text: "Console"
         input.onAccepted: {
             if (input.text.length > 0) {
                 AppData.serverProcess.execCommand(input.text)
@@ -30,13 +30,16 @@ ColumnLayout {
                                   }
                               }
     }
-    Row {
-        height: 20
+    RowLayout {
+        Layout.preferredHeight: Globals.inputFieldsHeight
         Layout.fillWidth: true
+
+        // Set both inputs fields preferredWidth to the same value so they will occupy exactly half of the row.
         InputField {
+            Layout.fillHeight: true
+            Layout.preferredWidth: 1
+
             text: "Host Workshop Map"
-            height: parent.height
-            width: parent.width / 2
             input.onAccepted: {
                 if (input.text.length > 0) {
                     AppData.serverProcess.hostWorkshopMap(input.text)
@@ -45,9 +48,10 @@ ColumnLayout {
             }
         }
         InputField {
+            Layout.fillHeight: true
+            Layout.preferredWidth: 1
+
             text: "Exec"
-            height: parent.height
-            width: parent.width / 2
             input.onAccepted: {
                 if (input.text.length > 0) {
                     AppData.serverProcess.execScriptName(input.text)

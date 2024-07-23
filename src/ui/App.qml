@@ -4,17 +4,22 @@ import QtQuick.Layouts
 import QtQuick.Window
 import application 1.0
 
-Window {
+ApplicationWindow {
     id: window
-    visible: true
-    title: "CS2 Server Manager"
-    color: Constants.backgroundColor
+
     width: Screen.width / 2
     height: Screen.height / 2
+
+    title: "CS2 Server Manager"
+    visible: true
+    color: Globals.backgroundColor
+
+    menuBar: AppMenuBar {}
 
     ScrollView {
         id: scrollArea
         anchors.fill: parent
+        anchors.topMargin: mainContent.spacing
 
         // Define a custom scroll bar so we can access its width and make scroll bar not overlay with content.
         ScrollBar.vertical: ScrollBar {
@@ -25,12 +30,21 @@ Window {
             height: scrollArea.availableHeight
             policy: ScrollBar.AlwaysOn
         }
+        ScrollBar.horizontal: ScrollBar {
+            parent: scrollArea
+            anchors.top: scrollArea.top
+            anchors.right: scrollArea.right
+            height: scrollArea.availableHeight
+            policy: ScrollBar.AsNeeded
+        }
 
-        Column {
-            // Column here is a child of contentItem property of scrollArea, so we can't use parent.width here.
+        ColumnLayout {
+            id: mainContent
+            // ColumnLayout here is a child of contentItem property of scrollArea, so we can't use parent.width here.
             width: scrollArea.width - scrollBar.width
             PowerPanel {
-                width: parent.width
+                // width: parent.width
+                Layout.fillWidth: true
             }
             // TODO: Find a way to redirect logs to terminal output.
             // Spoiler {
@@ -41,7 +55,8 @@ Window {
             //     }
             // }
             MainMenu {
-                width: parent.width
+                // width: parent.width
+                Layout.fillWidth: true
             }
         }
     }

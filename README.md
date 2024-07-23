@@ -43,15 +43,20 @@ Versions of dependencies used, probably will work on newer versions as well:
 
 In order to deploy the built binary you need to have `windeployqt.exe` reachable from the `powershell` (easiest way is to set `QTDIR` environment variable on your system).
 
-There are a couple of scripts, one to move the binary and all required dependencies:
+There are a few scripts, one to move the binary and all required dependencies:
 ```powershell
 # From project root directory.
-.\scripts\deploy_win.ps1 .\build\Release-Desktop_Qt_6_7_0_MSVC2019_64bit_MSVC2022 deploy\cs2guiserver
+.\scripts\deploy_win.ps1 .\build\Release-Desktop_Qt_6_7_0_MSVC2019_64bit_MSVC2022 .\deploy\cs2guiserver
 ```
 
 And the second is to package the new directory into an archive:
 ```powershell
 .\scripts\package_win.ps1 .\deploy\cs2guiserver
+```
+
+For convenience there is also a combined script:
+```powershell
+.\scripts\deploy_and_package_win.ps1 .\build\Release-Desktop_Qt_6_7_0_MSVC2019_64bit_MSVC2022 .\deploy\cs2guiserver
 ```
 
 ### Supported Platforms

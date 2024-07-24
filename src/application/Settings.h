@@ -39,9 +39,13 @@ public slots:
 	void setExecutablePath(QString fileUrl);
 
 private:
+	void fromJson(const QJsonDocument json);
+	QJsonDocument toJson() const;
+
+private:
 	QString m_executablePath;
 	QString m_rconPass;
-	quint16 m_rconPort;
+	quint16 m_rconPort = 0;
 	qreal m_scaleFactor = 1.0;
 	QString m_serverIP;
 	QString m_startParameters;

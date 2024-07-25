@@ -43,7 +43,6 @@ ApplicationWindow {
             // ColumnLayout here is a child of contentItem property of scrollArea, so we can't use parent.width here.
             width: scrollArea.width - scrollBar.width
             PowerPanel {
-                // width: parent.width
                 Layout.fillWidth: true
             }
             // TODO: Find a way to redirect logs to terminal output.
@@ -55,7 +54,6 @@ ApplicationWindow {
             //     }
             // }
             MainMenu {
-                // width: parent.width
                 Layout.fillWidth: true
             }
         }

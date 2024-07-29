@@ -14,12 +14,14 @@ ApplicationWindow {
     visible: true
     color: Globals.backgroundColor
 
-    menuBar: AppMenuBar {}
+    menuBar: AppMenuBar {
+        height: Globals.menuBarHeight
+    }
 
     ScrollView {
         id: scrollArea
         anchors.fill: parent
-        anchors.topMargin: mainContent.spacing
+        topPadding: mainContent.spacing
 
         // Define a custom scroll bar so we can access its width and make scroll bar not overlay with content.
         ScrollBar.vertical: ScrollBar {

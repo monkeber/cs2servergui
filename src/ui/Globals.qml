@@ -16,12 +16,8 @@ QtObject {
         return n * sizeRatio * AppData.settings.scaleFactor
     }
 
-    function sizeFont(n) {
-        return n * sizeRatioFont
-    }
-
     property int inputFieldsHeight: size(20)
-    property int inputLabelHeight: sizeFont(9)
+    property int menuBarHeight: size(30)
 
     property string relativeFontDirectory: "fonts"
     /* Edit this comment to add your custom font */

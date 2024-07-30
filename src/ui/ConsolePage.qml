@@ -8,7 +8,7 @@ ColumnLayout {
         Layout.fillWidth: true
         Layout.preferredHeight: Globals.inputFieldsHeight
 
-        text: "Console"
+        text: qsTr("Console")
         input.onAccepted: {
             if (input.text.length > 0) {
                 AppData.serverProcess.execCommand(input.text)
@@ -39,7 +39,7 @@ ColumnLayout {
             Layout.fillHeight: true
             Layout.preferredWidth: 1
 
-            text: "Host Workshop Map"
+            text: qsTr("Host Workshop Map")
             input.onAccepted: {
                 if (input.text.length > 0) {
                     AppData.serverProcess.hostWorkshopMap(input.text)
@@ -51,7 +51,7 @@ ColumnLayout {
             Layout.fillHeight: true
             Layout.preferredWidth: 1
 
-            text: "Exec"
+            text: qsTr("Exec")
             input.onAccepted: {
                 if (input.text.length > 0) {
                     AppData.serverProcess.execScriptName(input.text)

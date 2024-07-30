@@ -5,7 +5,7 @@ import application 1.0
 ColumnLayout {
     id: column
     InputField {
-        text: "Server Start Parameters"
+        text: qsTr("Server Start Parameters")
         Layout.fillWidth: true
         height: Globals.inputFieldsHeight
 
@@ -13,7 +13,7 @@ ColumnLayout {
         input.text: AppData.settings.startParameters
     }
     InputField {
-        text: "Server IP"
+        text: qsTr("Server IP")
         Layout.fillWidth: true
         height: Globals.inputFieldsHeight
 
@@ -21,7 +21,7 @@ ColumnLayout {
         input.text: AppData.settings.serverIP
     }
     InputField {
-        text: "RCON Password"
+        text: qsTr("RCON Password")
         Layout.fillWidth: true
         height: Globals.inputFieldsHeight
 
@@ -29,7 +29,7 @@ ColumnLayout {
         input.text: AppData.settings.rconPass
     }
     InputField {
-        text: "RCON Port"
+        text: qsTr("RCON Port")
         Layout.fillWidth: true
         height: Globals.inputFieldsHeight
 

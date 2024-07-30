@@ -18,13 +18,13 @@ GridLayout {
         Layout.fillHeight: true
         Layout.alignment: Qt.AlignLeft
 
-        text: "Select Executable"
+        text: qsTr("Select Executable")
         font: Globals.font
         onClicked: fileDialog.open()
 
         FileDialog {
             id: fileDialog
-            title: "Please select an executable file"
+            title: qsTr("Please select an executable file")
             options: FileDialog.ReadOnly
             nameFilters: ["Executable files (*.exe)"]
 
@@ -32,9 +32,6 @@ GridLayout {
                 selectedFileLabel.text = fileDialog.selectedFile
                 AppData.settings.setExecutablePath(fileDialog.selectedFile)
                 console.log("You selected: " + fileDialog.selectedFile)
-            }
-            onRejected: {
-                console.log("Canceled")
             }
         }
     }
@@ -80,7 +77,7 @@ GridLayout {
 
         Layout.alignment: Qt.AlignRight
 
-        text: "Start"
+        text: qsTr("Start")
         font: Globals.font
         onClicked: AppData.serverProcess.start()
     }
@@ -96,7 +93,7 @@ GridLayout {
 
             anchors.centerIn: parent
 
-            text: "Stopped"
+            text: qsTr("Stopped")
             font: Globals.font
         }
     }
@@ -106,7 +103,7 @@ GridLayout {
 
         Layout.alignment: Qt.AlignRight
 
-        text: "Stop"
+        text: qsTr("Stop")
         font: Globals.font
 
         onClicked: AppData.serverProcess.stop()
@@ -122,7 +119,7 @@ GridLayout {
             }
             PropertyChanges {
                 target: statusLabel
-                text: "Running..."
+                text: qsTr("Running...")
             }
         },
         State {

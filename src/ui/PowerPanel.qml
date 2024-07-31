@@ -37,6 +37,7 @@ GridLayout {
     }
 
     Rectangle {
+        id: fileRect
         Layout.columnSpan: 2
         Layout.fillHeight: true
         Layout.fillWidth: true
@@ -54,10 +55,31 @@ GridLayout {
 
         Label {
             id: selectedFileLabel
-            anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter
             text: AppData.settings.executablePath
             font: Globals.font
+            states: [
+                State {
+                    name: "rightSide"
+                    when: selectedFileLabel.paintedWidth > fileRect.width
+
+                    AnchorChanges {
+                        target: selectedFileLabel
+                        anchors.right: parent.right
+                        anchors.horizontalCenter: undefined
+                    }
+                },
+                State {
+                    name: "middle"
+                    when: selectedFileLabel.paintedWidth < fileRect.width
+
+                    AnchorChanges {
+                        target: selectedFileLabel
+                        anchors.right: undefined
+                        anchors.horizontalCenter: parent.horizontalCenter
+                    }
+                }
+            ]
         }
         MouseArea {
             id: mouseArea

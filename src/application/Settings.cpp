@@ -26,35 +26,15 @@ Settings::Settings(QObject* parent)
 	}
 
 	jsonFile.open(QFile::ReadOnly);
-	const QJsonDocument doc{ QJsonDocument::fromJson(jsonFile.readAll()) };
+	fromJson(std::move(QJsonDocument::fromJson(jsonFile.readAll())));
 	jsonFile.close();
-	if (!doc.isObject())
-	{
-		qWarning("Config data is ill-formed, skipping");
-		return;
-	}
-
-	const QJsonObject obj{ doc.object() };
-	m_executablePath = obj.value("executablePath").toString("");
-	m_rconPass = obj.value("rconPass").toString("");
-	m_rconPort = obj.value("rconPort").toInt();
-	m_serverIP = obj.value("serverIP").toString("");
-	m_startParameters = obj.value("startParameters").toString("");
 }
 
 Settings::~Settings()
 {
 	try
 	{
-		QJsonObject obj;
-		obj.insert("executablePath", m_executablePath);
-		obj.insert("rconPass", m_rconPass);
-		obj.insert("rconPort", m_rconPort);
-		obj.insert("serverIP", m_serverIP);
-		obj.insert("startParameters", m_startParameters);
-
-		QJsonDocument doc;
-		doc.setObject(obj);
+		const QJsonDocument doc = toJson();
 
 		QFile jsonFile{ details::ConfigFilePath };
 		jsonFile.open(QFile::WriteOnly);
@@ -86,6 +66,11 @@ quint16 Settings::getRconPort() const
 	return m_rconPort;
 }
 
+qreal Settings::getScaleFactor() const
+{
+	return m_scaleFactor;
+}
+
 QString Settings::getServerIP() const
 {
 	return m_serverIP;
@@ -102,4 +87,49 @@ void Settings::setExecutablePath(QString fileUrl)
 	m_executablePath = QDir::toNativeSeparators(url.toLocalFile());
 
 	emit executablePathChanged(m_executablePath);
+}
+
+void Settings::fromJson(const QJsonDocument json)
+{
+	if (!json.isObject())
+	{
+		qWarning("Config data is ill-formed, skipping");
+		return;
+	}
+
+	const QJsonObject obj{ json.object() };
+
+	// Settings related to server configuration.
+	const QJsonObject server{ obj.value("server").toObject() };
+	m_executablePath = server.value("executablePath").toString("");
+	m_rconPass = server.value("rconPass").toString("");
+	m_rconPort = server.value("rconPort").toInt();
+	m_serverIP = server.value("serverIP").toString("");
+	m_startParameters = server.value("startParameters").toString("");
+
+	// Settings related to config of the app itself - scale, theme, etc.
+	const QJsonObject app{ obj.value("application").toObject() };
+	m_scaleFactor = app.value("scalingFactor").toDouble(1.0);
+}
+
+QJsonDocument Settings::toJson() const
+{
+	QJsonObject server;
+	server.insert("executablePath", m_executablePath);
+	server.insert("rconPass", m_rconPass);
+	server.insert("rconPort", m_rconPort);
+	server.insert("serverIP", m_serverIP);
+	server.insert("startParameters", m_startParameters);
+
+	QJsonObject app;
+	app.insert("scalingFactor", m_scaleFactor);
+
+	QJsonObject obj;
+	obj.insert("server", server);
+	obj.insert("application", app);
+
+	QJsonDocument doc;
+	doc.setObject(obj);
+
+	return doc;
 }

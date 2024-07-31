@@ -5,33 +5,33 @@ import application 1.0
 ColumnLayout {
     id: column
     InputField {
-        text: "Server Start Parameters"
+        text: qsTr("Server Start Parameters")
         Layout.fillWidth: true
-        height: 20
+        height: Globals.inputFieldsHeight
 
         input.onEditingFinished: AppData.settings.startParameters = input.text
         input.text: AppData.settings.startParameters
     }
     InputField {
-        text: "Server IP"
+        text: qsTr("Server IP")
         Layout.fillWidth: true
-        height: 20
+        height: Globals.inputFieldsHeight
 
         input.onEditingFinished: AppData.settings.serverIP = input.text
         input.text: AppData.settings.serverIP
     }
     InputField {
-        text: "RCON Password"
+        text: qsTr("RCON Password")
         Layout.fillWidth: true
-        height: 20
+        height: Globals.inputFieldsHeight
 
         input.onEditingFinished: AppData.settings.rconPass = input.text
         input.text: AppData.settings.rconPass
     }
     InputField {
-        text: "RCON Port"
+        text: qsTr("RCON Port")
         Layout.fillWidth: true
-        height: 20
+        height: Globals.inputFieldsHeight
 
         input.onEditingFinished: {
             AppData.settings.rconPort = parseInt(input.text)

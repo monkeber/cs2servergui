@@ -2,22 +2,22 @@ import QtQuick 6.2
 import QtQuick.Controls
 import QtQuick.Layouts
 
-Column {
+ColumnLayout {
     TabBar {
         id: bar
-        anchors.right: parent.right
-        anchors.left: parent.left
+        Layout.fillWidth: true
         TabButton {
             text: qsTr("Console")
+            font: Globals.font
         }
         TabButton {
             text: qsTr("Server Parameters")
+            font: Globals.font
         }
     }
 
     SwipeView {
-        anchors.right: parent.right
-        anchors.left: parent.left
+        Layout.fillWidth: true
         currentIndex: bar.currentIndex
         interactive: false
         clip: true

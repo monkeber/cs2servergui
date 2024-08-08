@@ -15,6 +15,7 @@ class Settings : public QObject
 	Q_PROPERTY(qreal scaleFactor MEMBER m_scaleFactor NOTIFY scaleFactorChanged)
 	Q_PROPERTY(QString serverIP MEMBER m_serverIP NOTIFY serverIPChanged)
 	Q_PROPERTY(QString startParameters MEMBER m_startParameters NOTIFY startParametersChanged)
+	Q_PROPERTY(QString theme MEMBER m_theme NOTIFY themeChanged)
 public:
 	explicit Settings(QObject* parent = nullptr);
 	~Settings();
@@ -26,6 +27,7 @@ signals:
 	void scaleFactorChanged(const qreal& newScaleFactor);
 	void serverIPChanged(const QString& newServerIP);
 	void startParametersChanged(const QString& newPath);
+	void themeChanged(const QString& newThemeName);
 
 public:
 	QString getExecutablePath() const;
@@ -34,6 +36,7 @@ public:
 	qreal getScaleFactor() const;
 	QString getServerIP() const;
 	QString getStartParameters() const;
+	QString getTheme() const;
 
 public slots:
 	void setExecutablePath(QString fileUrl);
@@ -49,4 +52,5 @@ private:
 	qreal m_scaleFactor = 1.0;
 	QString m_serverIP;
 	QString m_startParameters;
+	QString m_theme;
 };

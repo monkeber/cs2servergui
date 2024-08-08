@@ -81,6 +81,11 @@ QString Settings::getStartParameters() const
 	return m_startParameters;
 }
 
+QString Settings::getTheme() const
+{
+	return m_theme;
+}
+
 void Settings::setExecutablePath(QString fileUrl)
 {
 	const QUrl url{ fileUrl };
@@ -110,6 +115,7 @@ void Settings::fromJson(const QJsonDocument json)
 	// Settings related to config of the app itself - scale, theme, etc.
 	const QJsonObject app{ obj.value("application").toObject() };
 	m_scaleFactor = app.value("scalingFactor").toDouble(1.0);
+	m_theme = app.value("theme").toString("");
 }
 
 QJsonDocument Settings::toJson() const
@@ -123,6 +129,7 @@ QJsonDocument Settings::toJson() const
 
 	QJsonObject app;
 	app.insert("scalingFactor", m_scaleFactor);
+	app.insert("theme", m_theme);
 
 	QJsonObject obj;
 	obj.insert("server", server);

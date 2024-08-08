@@ -6,6 +6,7 @@ set(QML_IMPORT_PATH
 
 qt_add_library(${PROJECT_NAME} STATIC)
 set_source_files_properties(Globals.qml PROPERTIES QT_QML_SINGLETON_TYPE true)
+set_source_files_properties(Theme.qml PROPERTIES QT_QML_SINGLETON_TYPE true)
 
 qt_add_qml_module(${PROJECT_NAME}
 	URI ui
@@ -23,6 +24,7 @@ qt_add_qml_module(${PROJECT_NAME}
 		ServerParametersPage.qml
 		Spoiler.qml
 		TerminalOutput.qml
+		Theme.qml
 	RESOURCES
 		fonts/fonts.txt
 )

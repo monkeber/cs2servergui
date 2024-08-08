@@ -12,7 +12,8 @@ ApplicationWindow {
 
     title: "CS2 Server Manager"
     visible: true
-    color: Globals.backgroundColor
+
+    Material.theme: Theme.currentTheme
 
     menuBar: AppMenuBar {
         height: Globals.menuBarHeight

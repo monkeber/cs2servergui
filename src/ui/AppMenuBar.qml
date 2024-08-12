@@ -3,6 +3,8 @@ import QtQuick.Controls
 import application 1.0
 
 MenuBar {
+    id: bar
+
     clip: true
     Menu {
         id: viewMenu
@@ -70,5 +72,15 @@ MenuBar {
     delegate: MenuBarItem {
         font: Globals.font
         height: parent.height
+    }
+
+    background: Rectangle {
+        color: Theme.divider
+        Rectangle {
+            anchors.fill: parent
+            anchors.bottomMargin: 1
+
+            color: bar.Material.background
+        }
     }
 }

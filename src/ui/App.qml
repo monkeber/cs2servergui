@@ -14,6 +14,10 @@ ApplicationWindow {
     visible: true
 
     Material.theme: Theme.currentTheme
+    Material.background: Theme.background
+    Material.foreground: Theme.foreground
+    Material.primary: Theme.primary
+    Material.accent: Theme.accent
 
     menuBar: AppMenuBar {
         height: Globals.menuBarHeight

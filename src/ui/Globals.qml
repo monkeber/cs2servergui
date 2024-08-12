@@ -16,7 +16,7 @@ QtObject {
         return n * sizeRatio * AppData.settings.scaleFactor
     }
 
-    property int inputFieldsHeight: size(20)
+    property int inputFieldsHeight: size(30)
     property int menuBarHeight: size(30)
 
     property string relativeFontDirectory: "fonts"

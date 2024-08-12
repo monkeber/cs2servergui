@@ -21,9 +21,23 @@ Item {
             return "Light"
         }
     }
+    function str2Type(str) {
+        switch (str) {
+        case "Dark":
+            return Theme.Type.Dark
+        case "Light":
+        default:
+            return Theme.Type.Light
+        }
+    }
 
     property int currentTheme: Theme.Type.Light
     property int themeId: Material.Light
+    property color background: Material.background
+    property color foreground: Material.foreground
+    property color primary: "#1976d2"
+    property color accent: "#4caf50"
+    property color divider: "#BDBDBD"
 
     states: [
         State {
@@ -32,6 +46,9 @@ Item {
             PropertyChanges {
                 target: theme
                 themeId: Material.Light
+                background: "#ededed"
+                foreground: "#212121"
+                divider: "#BDBDBD"
             }
         },
         State {
@@ -40,9 +57,13 @@ Item {
             PropertyChanges {
                 target: theme
                 themeId: Material.Dark
+                background: "#212121"
+                foreground: "#FFFFFF"
+                divider: "#474747"
             }
         }
     ]
 
     onCurrentThemeChanged: AppData.settings.theme = type2Str(currentTheme)
+    Component.onCompleted: currentTheme = str2Type(AppData.settings.theme)
 }

@@ -13,29 +13,12 @@ RowLayout {
         font: Globals.font
         text: parent.text + ":"
     }
-    Rectangle {
+    TextField {
+        id: input
+
         Layout.fillWidth: true
         Layout.fillHeight: true
 
-        color: "transparent"
-        border.color: "black"
-        border.width: 2
-        TextInput {
-            id: input
-
-            anchors.fill: parent
-            anchors.leftMargin: parent.border.width * 2
-            anchors.rightMargin: parent.border.width * 2
-
-            focus: true
-            selectByMouse: true
-            clip: true
-            font: Globals.font
-        }
-
-        HoverHandler {
-            acceptedDevices: PointerDevice.Mouse
-            cursorShape: Qt.IBeamCursor
-        }
+        font: Globals.font
     }
 }

@@ -18,9 +18,6 @@ ColumnLayout {
 
         input.Keys.onPressed: event => {
                                   if (event.key === Qt.Key_Up) {
-                                      console.log(
-                                          AppData.serverProcess.getGeneralHistory(
-                                              ))
                                       input.text = AppData.serverProcess.getGeneralHistory(
                                           ).getOlder()
                                   }

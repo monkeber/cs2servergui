@@ -35,9 +35,10 @@ Item {
     property int themeId: Material.Light
     property color background: Material.background
     property color foreground: Material.foreground
-    property color primary: "#1976d2"
+    property color primary: "#A5D6A7"
     property color accent: "#4caf50"
     property color divider: "#BDBDBD"
+    property color alert: "#E57373"
 
     states: [
         State {
@@ -48,6 +49,7 @@ Item {
                 themeId: Material.Light
                 background: "#ededed"
                 foreground: "#212121"
+                primary: "#A5D6A7"
                 divider: "#BDBDBD"
             }
         },
@@ -59,6 +61,7 @@ Item {
                 themeId: Material.Dark
                 background: "#212121"
                 foreground: "#FFFFFF"
+                primary: "#388E3C"
                 divider: "#474747"
             }
         }

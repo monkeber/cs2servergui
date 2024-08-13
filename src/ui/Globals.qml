@@ -16,7 +16,7 @@ QtObject {
         return n * sizeRatio * AppData.settings.scaleFactor
     }
 
-    property int inputFieldsHeight: size(30)
+    property int inputFieldsHeight: size(35)
     property int menuBarHeight: size(30)
 
     property string relativeFontDirectory: "fonts"
@@ -31,8 +31,6 @@ QtObject {
                                                   "family": Qt.application.font.family,
                                                   "pixelSize": Qt.application.font.pixelSize * 1.6 * sizeRatioFont * AppData.settings.scaleFactor
                                               })
-
-    readonly property color backgroundColor: "#EAEAEA"
 
     Component.onCompleted: {
         let height = Screen.height

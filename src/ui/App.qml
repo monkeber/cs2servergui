@@ -49,8 +49,11 @@ ApplicationWindow {
             id: mainContent
             // ColumnLayout here is a child of contentItem property of scrollArea, so we can't use parent.width here.
             width: scrollArea.width - scrollBar.width
+
             PowerPanel {
                 Layout.fillWidth: true
+                Layout.leftMargin: mainContent.spacing
+                Layout.rightMargin: mainContent.spacing
             }
             // TODO: Find a way to redirect logs to terminal output.
             // Spoiler {

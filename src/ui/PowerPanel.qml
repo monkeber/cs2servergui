@@ -22,6 +22,8 @@ GridLayout {
         font: Globals.font
         onClicked: fileDialog.open()
 
+        Material.background: Theme.primary
+
         FileDialog {
             id: fileDialog
             title: qsTr("Please select an executable file")
@@ -38,6 +40,7 @@ GridLayout {
 
     Rectangle {
         id: fileRect
+
         Layout.columnSpan: 2
         Layout.fillHeight: true
         Layout.fillWidth: true
@@ -45,12 +48,14 @@ GridLayout {
 
         radius: 10
         clip: true
+        color: Theme.divider
 
         ToolTip {
             parent: parent
             visible: selectedFileLabel.text.length ? mouseArea.containsMouse : false
             text: selectedFileLabel.text
             font: Globals.font
+            Material.background: Theme.divider
         }
 
         Label {
@@ -99,16 +104,23 @@ GridLayout {
 
         Layout.alignment: Qt.AlignRight
 
+        Material.background: Theme.primary
+
         text: qsTr("Start")
         font: Globals.font
         onClicked: AppData.serverProcess.start()
     }
     Rectangle {
+        id: statusRect
+
         Layout.alignment: Qt.AlignRight
-        Layout.preferredWidth: startButton.width
+        Layout.preferredWidth: startButton.width * 1.2
         Layout.fillHeight: true
 
         radius: 10
+        color: Theme.divider
+        border.color: Theme.alert
+        border.width: 2
 
         Label {
             id: statusLabel
@@ -125,6 +137,8 @@ GridLayout {
 
         Layout.alignment: Qt.AlignRight
 
+        Material.background: Theme.alert
+
         text: qsTr("Stop")
         font: Globals.font
 
@@ -137,11 +151,15 @@ GridLayout {
             when: panel.isRunning
             PropertyChanges {
                 target: startButton
-                down: true
+                enabled: false
             }
             PropertyChanges {
                 target: statusLabel
                 text: qsTr("Running...")
+            }
+            PropertyChanges {
+                target: statusRect
+                border.color: Theme.primary
             }
         },
         State {
@@ -149,7 +167,7 @@ GridLayout {
             when: !panel.isRunning
             PropertyChanges {
                 target: stopButton
-                down: true
+                enabled: false
             }
         }
     ]

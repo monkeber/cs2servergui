@@ -91,7 +91,10 @@ ColumnLayout {
         }
         model: model
 
-        onItemAdded: (_, item) => item.Layout.preferredHeight = Globals.inputFieldsHeight
+        onItemAdded: (_, item) => item.Layout.preferredHeight = Qt.binding(
+                         function () {
+                             return Globals.inputFieldsHeight
+                         })
     }
     function createQuickCommand(commandText = "") {
         model.append({

@@ -1,7 +1,6 @@
 import QtQuick 6.2
 import QtQuick.Controls
 import QtQuick.Layouts
-import application 1.0
 
 RowLayout {
     property string text

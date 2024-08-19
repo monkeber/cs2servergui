@@ -1,5 +1,7 @@
 import QtQuick 6.2
+import QtQuick.Controls
 import QtQuick.Layouts
+import QtQml.Models
 import application 1.0
 
 ColumnLayout {
@@ -65,6 +67,51 @@ ColumnLayout {
                                               ).getNewer()
                                       }
                                   }
+        }
+    }
+
+    Button {
+        Layout.alignment: Qt.AlignLeft
+        text: qsTr("Add quick command")
+        font: Globals.font
+        onClicked: createQuickCommand()
+
+        Material.background: Theme.primary
+    }
+
+    ListModel {
+        id: model
+    }
+
+    Repeater {
+        id: repeater
+
+        delegate: QuickCommand {
+            onDeleteRequested: model.remove(index)
+        }
+        model: model
+
+        onItemAdded: (_, item) => item.Layout.preferredHeight = Globals.inputFieldsHeight
+    }
+    function createQuickCommand(commandText = "") {
+        model.append({
+                         "initialText": commandText
+                     })
+    }
+
+    Component.onCompleted: {
+        for (const cmd of AppData.settings.quickCommands) {
+            createQuickCommand(cmd)
+        }
+    }
+
+    Component.onDestruction: {
+        AppData.settings.quickCommands = []
+        for (var i = 0; i < repeater.count; i++) {
+            let cmdText = repeater.itemAt(i).text
+            if (cmdText.length > 0) {
+                AppData.settings.quickCommands.push(cmdText)
+            }
         }
     }
 }

@@ -10,6 +10,7 @@ class Settings : public QObject
 
 	Q_PROPERTY(QString executablePath READ getExecutablePath WRITE setExecutablePath NOTIFY
 			executablePathChanged)
+	Q_PROPERTY(QStringList quickCommands MEMBER m_quickCommands NOTIFY quickCommandsChanged)
 	Q_PROPERTY(QString rconPass MEMBER m_rconPass NOTIFY rconPassChanged)
 	Q_PROPERTY(quint16 rconPort MEMBER m_rconPort NOTIFY rconPortChanged)
 	Q_PROPERTY(qreal scaleFactor MEMBER m_scaleFactor NOTIFY scaleFactorChanged)
@@ -22,6 +23,7 @@ public:
 
 signals:
 	void executablePathChanged(const QString& newPath);
+	void quickCommandsChanged(const QStringList& newQuickCommands);
 	void rconPassChanged(const QString& newRconPass);
 	void rconPortChanged(const quint16& newRconPort);
 	void scaleFactorChanged(const qreal& newScaleFactor);
@@ -31,6 +33,7 @@ signals:
 
 public:
 	QString getExecutablePath() const;
+	QStringList getQuickCommands() const;
 	QString getRconPass() const;
 	quint16 getRconPort() const;
 	qreal getScaleFactor() const;
@@ -47,6 +50,7 @@ private:
 
 private:
 	QString m_executablePath;
+	QStringList m_quickCommands;
 	QString m_rconPass;
 	quint16 m_rconPort = 0;
 	qreal m_scaleFactor = 1.0;

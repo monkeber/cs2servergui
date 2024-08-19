@@ -3,6 +3,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 
 ColumnLayout {
+    id: main
     TabBar {
         id: bar
         Layout.fillWidth: true
@@ -18,14 +19,13 @@ ColumnLayout {
 
     SwipeView {
         Layout.fillWidth: true
+        Layout.leftMargin: main.spacing
+
         currentIndex: bar.currentIndex
         interactive: false
         clip: true
-        ConsolePage {
-            id: homeTab
-        }
-        ServerParametersPage {
-            id: discoverTab
-        }
+
+        ConsolePage {}
+        ServerParametersPage {}
     }
 }

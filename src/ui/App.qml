@@ -37,13 +37,6 @@ ApplicationWindow {
             height: scrollArea.availableHeight
             policy: ScrollBar.AlwaysOn
         }
-        ScrollBar.horizontal: ScrollBar {
-            parent: scrollArea
-            anchors.top: scrollArea.top
-            anchors.right: scrollArea.right
-            height: scrollArea.availableHeight
-            policy: ScrollBar.AsNeeded
-        }
 
         ColumnLayout {
             id: mainContent

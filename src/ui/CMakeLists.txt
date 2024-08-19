@@ -21,12 +21,11 @@ qt_add_qml_module(${PROJECT_NAME}
 		Main.qml
 		MainMenu.qml
 		PowerPanel.qml
+		QuickCommand.qml
 		ServerParametersPage.qml
 		Spoiler.qml
 		TerminalOutput.qml
 		Theme.qml
-	RESOURCES
-		fonts/fonts.txt
 )
 
 qt_add_resources(${PROJECT_NAME} "configuration" PREFIX "/" FILES qtquickcontrols2.conf)

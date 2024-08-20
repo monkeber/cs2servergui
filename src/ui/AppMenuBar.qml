@@ -3,6 +3,8 @@ import QtQuick.Controls
 import application 1.0
 
 MenuBar {
+    id: bar
+
     clip: true
     Menu {
         id: viewMenu
@@ -39,8 +41,46 @@ MenuBar {
         }
     }
 
+    Menu {
+        id: themeMenu
+        title: qsTr("Theme")
+        font: Globals.font
+
+        Action {
+            text: qsTr("Light")
+            onTriggered: Theme.currentTheme = Theme.Type.Light
+        }
+
+        Action {
+            text: qsTr("Dark")
+            onTriggered: Theme.currentTheme = Theme.Type.Dark
+        }
+
+        Component.onCompleted: {
+            let maxWidth = 0
+            // Since menu appears to hold only menu items in that list we can use for each.
+            // If the behaviour of Qt changes here we might encounter some visual bugs.
+            themeMenu.contentData.forEach(function (child) {
+                maxWidth = Math.max(maxWidth, child.width)
+            })
+            contentWidth = Qt.binding(function () {
+                return maxWidth * AppData.settings.scaleFactor
+            })
+        }
+    }
+
     delegate: MenuBarItem {
         font: Globals.font
         height: parent.height
+    }
+
+    background: Rectangle {
+        color: Theme.divider
+        Rectangle {
+            anchors.fill: parent
+            anchors.bottomMargin: 1
+
+            color: bar.Material.background
+        }
     }
 }

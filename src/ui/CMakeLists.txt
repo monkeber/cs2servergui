@@ -6,6 +6,7 @@ set(QML_IMPORT_PATH
 
 qt_add_library(${PROJECT_NAME} STATIC)
 set_source_files_properties(Globals.qml PROPERTIES QT_QML_SINGLETON_TYPE true)
+set_source_files_properties(Theme.qml PROPERTIES QT_QML_SINGLETON_TYPE true)
 
 qt_add_qml_module(${PROJECT_NAME}
 	URI ui
@@ -20,11 +21,11 @@ qt_add_qml_module(${PROJECT_NAME}
 		Main.qml
 		MainMenu.qml
 		PowerPanel.qml
+		QuickCommand.qml
 		ServerParametersPage.qml
 		Spoiler.qml
 		TerminalOutput.qml
-	RESOURCES
-		fonts/fonts.txt
+		Theme.qml
 )
 
 qt_add_resources(${PROJECT_NAME} "configuration" PREFIX "/" FILES qtquickcontrols2.conf)

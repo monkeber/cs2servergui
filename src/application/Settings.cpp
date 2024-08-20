@@ -2,6 +2,7 @@
 
 #include <QDir>
 #include <QFile>
+#include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QtLogging>
@@ -56,6 +57,11 @@ QString Settings::getExecutablePath() const
 	return m_executablePath;
 }
 
+QStringList Settings::getQuickCommands() const
+{
+	return m_quickCommands;
+}
+
 QString Settings::getRconPass() const
 {
 	return m_rconPass;
@@ -79,6 +85,11 @@ QString Settings::getServerIP() const
 QString Settings::getStartParameters() const
 {
 	return m_startParameters;
+}
+
+QString Settings::getTheme() const
+{
+	return m_theme;
 }
 
 void Settings::setExecutablePath(QString fileUrl)
@@ -106,10 +117,12 @@ void Settings::fromJson(const QJsonDocument json)
 	m_rconPort = server.value("rconPort").toInt();
 	m_serverIP = server.value("serverIP").toString("");
 	m_startParameters = server.value("startParameters").toString("");
+	m_quickCommands = server.value("quickCommands").toVariant().toStringList();
 
 	// Settings related to config of the app itself - scale, theme, etc.
 	const QJsonObject app{ obj.value("application").toObject() };
 	m_scaleFactor = app.value("scalingFactor").toDouble(1.0);
+	m_theme = app.value("theme").toString("");
 }
 
 QJsonDocument Settings::toJson() const
@@ -120,9 +133,14 @@ QJsonDocument Settings::toJson() const
 	server.insert("rconPort", m_rconPort);
 	server.insert("serverIP", m_serverIP);
 	server.insert("startParameters", m_startParameters);
+	if (!m_quickCommands.empty())
+	{
+		server.insert("quickCommands", QJsonArray::fromStringList(m_quickCommands));
+	}
 
 	QJsonObject app;
 	app.insert("scalingFactor", m_scaleFactor);
+	app.insert("theme", m_theme);
 
 	QJsonObject obj;
 	obj.insert("server", server);

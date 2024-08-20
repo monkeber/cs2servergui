@@ -7,7 +7,7 @@ ColumnLayout {
     InputField {
         text: qsTr("Server Start Parameters")
         Layout.fillWidth: true
-        height: Globals.inputFieldsHeight
+        Layout.preferredHeight: Globals.inputFieldsHeight
 
         input.onEditingFinished: AppData.settings.startParameters = input.text
         input.text: AppData.settings.startParameters
@@ -15,7 +15,7 @@ ColumnLayout {
     InputField {
         text: qsTr("Server IP")
         Layout.fillWidth: true
-        height: Globals.inputFieldsHeight
+        Layout.preferredHeight: Globals.inputFieldsHeight
 
         input.onEditingFinished: AppData.settings.serverIP = input.text
         input.text: AppData.settings.serverIP
@@ -23,7 +23,7 @@ ColumnLayout {
     InputField {
         text: qsTr("RCON Password")
         Layout.fillWidth: true
-        height: Globals.inputFieldsHeight
+        Layout.preferredHeight: Globals.inputFieldsHeight
 
         input.onEditingFinished: AppData.settings.rconPass = input.text
         input.text: AppData.settings.rconPass
@@ -31,7 +31,7 @@ ColumnLayout {
     InputField {
         text: qsTr("RCON Port")
         Layout.fillWidth: true
-        height: Globals.inputFieldsHeight
+        Layout.preferredHeight: Globals.inputFieldsHeight
 
         input.onEditingFinished: {
             AppData.settings.rconPort = parseInt(input.text)

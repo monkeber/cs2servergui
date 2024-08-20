@@ -12,7 +12,12 @@ ApplicationWindow {
 
     title: "CS2 Server Manager"
     visible: true
-    color: Globals.backgroundColor
+
+    Material.theme: Theme.currentTheme
+    Material.background: Theme.background
+    Material.foreground: Theme.foreground
+    Material.primary: Theme.primary
+    Material.accent: Theme.accent
 
     menuBar: AppMenuBar {
         height: Globals.menuBarHeight
@@ -32,20 +37,16 @@ ApplicationWindow {
             height: scrollArea.availableHeight
             policy: ScrollBar.AlwaysOn
         }
-        ScrollBar.horizontal: ScrollBar {
-            parent: scrollArea
-            anchors.top: scrollArea.top
-            anchors.right: scrollArea.right
-            height: scrollArea.availableHeight
-            policy: ScrollBar.AsNeeded
-        }
 
         ColumnLayout {
             id: mainContent
             // ColumnLayout here is a child of contentItem property of scrollArea, so we can't use parent.width here.
             width: scrollArea.width - scrollBar.width
+
             PowerPanel {
                 Layout.fillWidth: true
+                Layout.leftMargin: mainContent.spacing
+                Layout.rightMargin: mainContent.spacing
             }
             // TODO: Find a way to redirect logs to terminal output.
             // Spoiler {

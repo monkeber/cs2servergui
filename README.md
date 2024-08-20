@@ -8,7 +8,7 @@ Written in C++ and QML as an exercise.
 
 ## Interface
 
-![Console Page](docs/consolePage.png) ![Server Params Page](docs/serverParametersPage.png)
+![Console Page](docs/consolePage.png) ![Console Page Light](docs/consolePageLight.png) ![Server Params Page](docs/serverParametersPage.png)
 
 ## Features
 
@@ -22,9 +22,9 @@ Written in C++ and QML as an exercise.
 
 ✅ History of the entered commands
 
-⬜️ Scaling on different resolutions, currently app is built and tested on 1440p display and nothing else
+✅ Scaling on different resolutions, users also change the scale from app settings
 
-⬜️ Good looking design
+✅ Light and dark themes
 
 ⬜️ Redirect server cmd output into a panel inside the application and get rid of standalone window if possible
 

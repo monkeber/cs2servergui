@@ -69,6 +69,34 @@ MenuBar {
         }
     }
 
+    Menu {
+        id: helpMenu
+        title: qsTr("Help")
+        font: Globals.font
+
+        Action {
+            text: qsTr("Show Logs")
+            onTriggered: logWindow.setVisible(!logWindow.visible)
+        }
+
+        Component.onCompleted: {
+            let maxWidth = 0
+            // Since menu appears to hold only menu items in that list we can use for each.
+            // If the behaviour of Qt changes here we might encounter some visual bugs.
+            themeMenu.contentData.forEach(function (child) {
+                maxWidth = Math.max(maxWidth, child.width)
+            })
+            contentWidth = Qt.binding(function () {
+                return maxWidth * AppData.settings.scaleFactor
+            })
+        }
+    }
+
+    LogWindow {
+        id: logWindow
+        visible: false
+    }
+
     delegate: MenuBarItem {
         font: Globals.font
         height: parent.height

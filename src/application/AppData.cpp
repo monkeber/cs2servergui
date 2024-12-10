@@ -1,7 +1,8 @@
 #include "AppData.h"
 
 AppData::AppData()
-	: m_serverProcess{}
+	: m_log{}
+	, m_serverProcess{}
 	, m_rconclient{}
 	, m_settings{}
 {
@@ -20,6 +21,11 @@ AppData* AppData::create(QQmlEngine*, QJSEngine* engine)
 	QJSEngine::setObjectOwnership(&Instance(), QJSEngine::CppOwnership);
 
 	return &Instance();
+}
+
+Log* AppData::log()
+{
+	return &m_log;
 }
 
 RCONClient* AppData::rconclient()

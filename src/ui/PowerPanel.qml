@@ -60,9 +60,16 @@ GridLayout {
 
         Label {
             id: selectedFileLabel
+
+            anchors.left: parent.left
+            anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter
+            anchors.leftMargin: Globals.elementsLeftMargin
+            anchors.rightMargin: Globals.elementsLeftMargin
+
             text: AppData.settings.executablePath
             font: Globals.font
+            elide: Qt.ElideLeft
             states: [
                 State {
                     name: "rightSide"

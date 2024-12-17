@@ -12,32 +12,30 @@ ApplicationWindow {
     ListModel {
         id: listModel
     }
-    ScrollView {
+    ListView {
+        id: view
+
         anchors.fill: parent
-        contentWidth: rootWindow.width * 2
+        leftMargin: Globals.elementsLeftMargin
 
-        clip: true
+        flickableDirection: Flickable.HorizontalAndVerticalFlick
+        // We need to set content width to the maximum width of listview elements in order to have working horizontal scroll.
+        contentWidth: view.contentItem.childrenRect.width + ScrollBar.vertical.width
 
-        ScrollBar.horizontal: ScrollBar {
+        model: listModel
+        delegate: Label {
+            text: content
+            font: Globals.font
+        }
+
+        ScrollBar.vertical: ScrollBar {
             active: true
             visible: true
         }
 
-        ListView {
-            id: view
-            anchors.fill: parent
-            leftMargin: Globals.elementsLeftMargin
-
-            model: listModel
-            delegate: Label {
-                text: content
-                font: Globals.font
-            }
-
-            ScrollBar.vertical: ScrollBar {
-                active: true
-                visible: true
-            }
+        ScrollBar.horizontal: ScrollBar {
+            active: true
+            visible: true
         }
     }
 

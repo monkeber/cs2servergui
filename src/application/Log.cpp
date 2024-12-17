@@ -4,12 +4,22 @@
 
 #include "AppData.h"
 
+namespace
+{
+namespace details
+{
+
+const char* LogFilePath{ "log.txt" };
+
+}	 // namespace details
+}	 // namespace
+
 QtMessageHandler originalHandler = nullptr;
 
 FILE* InitFile()
 {
 	FILE* f = nullptr;
-	fopen_s(&f, "log.txt", "a");
+	fopen_s(&f, details::LogFilePath, "a");
 
 	return f;
 }

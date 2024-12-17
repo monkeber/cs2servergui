@@ -41,7 +41,9 @@ void MessageOutput(QtMsgType type, const QMessageLogContext& context, const QStr
 	AppData::Instance().log()->AddNewMessage(formattedMsg);
 
 	if (originalHandler)
+	{
 		originalHandler(type, context, msg);
+	}
 }
 
 void SetOriginalHandler(QtMessageHandler handler)

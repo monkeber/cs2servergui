@@ -12,7 +12,7 @@ namespace
 namespace details
 {
 
-static QString ConfigFilePath{ "config.json" };
+const QString ConfigFilePath{ "config.json" };
 
 }	 // namespace details
 }	 // namespace

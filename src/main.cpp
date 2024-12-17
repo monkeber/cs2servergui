@@ -3,10 +3,15 @@
 #include <QScopedPointer>
 
 #include "app_environment.h"
+#include "Log.h"
 
 int main(int argc, char* argv[])
 {
 	set_qt_environment();
+
+	InitLogging();
+
+	SetOriginalHandler(qInstallMessageHandler(MessageOutput));
 
 	QGuiApplication app(argc, argv);
 

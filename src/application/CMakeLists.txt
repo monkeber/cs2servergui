@@ -6,6 +6,8 @@ set(${PROJECT_NAME}_SRC
 	AppData.h
 	CommandHistory.cpp
 	CommandHistory.h
+	Log.cpp
+	Log.h
 	ProcessHandler.cpp
 	ProcessHandler.h
 	RCONClient.cpp

@@ -26,7 +26,7 @@ ApplicationWindow {
     ScrollView {
         id: scrollArea
         anchors.fill: parent
-        topPadding: mainContent.spacing
+        topPadding: Globals.elementsLeftMargin
 
         // Define a custom scroll bar so we can access its width and make scroll bar not overlay with content.
         ScrollBar.vertical: ScrollBar {
@@ -45,8 +45,8 @@ ApplicationWindow {
 
             PowerPanel {
                 Layout.fillWidth: true
-                Layout.leftMargin: mainContent.spacing
-                Layout.rightMargin: mainContent.spacing
+                Layout.leftMargin: Globals.elementsLeftMargin
+                Layout.rightMargin: Globals.elementsLeftMargin
             }
             // TODO: Find a way to redirect logs to terminal output.
             // Spoiler {

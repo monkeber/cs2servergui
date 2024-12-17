@@ -18,6 +18,7 @@ qt_add_qml_module(${PROJECT_NAME}
 		ConsolePage.qml
 		Globals.qml
 		InputField.qml
+		LogWindow.qml
 		Main.qml
 		MainMenu.qml
 		PowerPanel.qml

@@ -30,6 +30,23 @@ Written in C++ and QML as an exercise.
 
 ## Build
 
+### Prerequisits
+
+The project uses Conan 2, so make sure the Conan is installed and is invokable, e.g.:
+```
+$ pip install conan
+
+$ conan --version
+Conan version 2.11.0
+```
+
+If build fails with conan profile related issue, try:
+```
+conan profile detect --force
+```
+
+### Build Process
+
 Open the project in Qt Creator and hit build.
 
 Versions of dependencies used, probably will work on newer versions as well:

@@ -1,5 +1,6 @@
 #include "ProcessHandler.h"
 #include "AppData.h"
+#include "MapHistory.h"
 
 #include <QFileInfo>
 #include <QRegularExpression>
@@ -7,6 +8,7 @@
 #include <QUrlQuery>
 
 #include <windows.h>
+#include <cpr/cpr.h>
 
 BOOL CALLBACK SendWMCloseMsg(HWND hwnd, LPARAM lParam)
 {
@@ -44,6 +46,16 @@ void ProcessHandler::execCommand(const QString& cmd, const bool recordInGeneralH
 	if (recordInGeneralHistory)
 	{
 		m_generalHistory.add(cmd);
+	}
+
+	if (cmd.trimmed().startsWith("host_workshop_map"))
+	{
+		const auto argList{ cmd.trimmed().split(" ", Qt::SkipEmptyParts) };
+		if (argList.size() > 1)
+		{
+			std::thread worker{ MapHistory::Add, argList.at(1).toStdString() };
+			worker.detach();
+		}
 	}
 }
 

@@ -1,0 +1,15 @@
+[requires]
+cpr/1.11.1
+nlohmann_json/3.11.3
+rapidcsv/8.84
+libcurl/8.11.1
+
+[generators]
+CMakeDeps
+CMakeToolchain
+
+[layout]
+cmake_layout
+
+[options]
+libcurl/*:with_ssl=schannel

@@ -11,7 +11,7 @@ int main(int argc, char* argv[])
 
 	InitLogging();
 
-	SetOriginalHandler(qInstallMessageHandler(MessageOutput));
+	SetOriginalHandler(qInstallMessageHandler(LogHandler::MessageOutput));
 
 	QGuiApplication app(argc, argv);
 

@@ -5,16 +5,6 @@
 #include <cpr/cpr.h>
 #include <rapidcsv.h>
 
-namespace
-{
-namespace details
-{
-
-const std::string HistoryFilePath{ "map_history.csv" };
-
-}	 // namespace details
-}	 // namespace
-
 MapHistory::MapHistory()
 {
 }
@@ -24,7 +14,7 @@ void MapHistory::Add(const std::string& mapId)
 	const nl::json resp = GetMapInfo(mapId);
 
 	const nl::json::json_pointer infoPath{ "/reposne/publishedfiledetails/0" };
-	if (resp.contains(infoPath))
+	if (!resp.contains(infoPath))
 	{
 		qWarning(
 			"Was not able to access the path '%s' in the response from Steam API with the body: %s",
@@ -37,7 +27,7 @@ void MapHistory::Add(const std::string& mapId)
 	const nl::json info = resp.at(infoPath);
 
 	const std::string previewUrlField{ "preview_url" };
-	if (resp.contains(previewUrlField))
+	if (!resp.contains(previewUrlField))
 	{
 		qWarning("Was not able to find the '%s' in the response from Steam API with the body: %s",
 			previewUrlField.c_str(),
@@ -48,7 +38,7 @@ void MapHistory::Add(const std::string& mapId)
 	const std::string previewUrl{ info.at(previewUrlField) };
 
 	const std::string titleField{ "title" };
-	if (resp.contains(previewUrlField))
+	if (!resp.contains(previewUrlField))
 	{
 		qWarning("Was not able to find the '%s' in the response from Steam API with the body: %s",
 			titleField.c_str(),

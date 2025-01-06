@@ -1,8 +1,8 @@
 #include "Log.h"
 
-#include <QString>
+#include <fstream>
 
-#include "AppData.h"
+#include <QString>
 
 namespace
 {
@@ -16,34 +16,9 @@ const char* LogFilePath{ "log.txt" };
 
 QtMessageHandler originalHandler = nullptr;
 
-FILE* InitFile()
-{
-	FILE* f = nullptr;
-	fopen_s(&f, details::LogFilePath, "a");
-
-	return f;
-}
-
 void InitLogging()
 {
 	qSetMessagePattern("[%{time yyyy-MM-dd h:mm:ss.zzz} %{type}] %{file}:%{line} - %{message}");
-}
-
-void MessageOutput(QtMsgType type, const QMessageLogContext& context, const QString& msg)
-{
-	static FILE* f = InitFile();
-
-	const auto formattedMsg{ qFormatLogMessage(type, context, msg) };
-
-	fprintf(f, "%s\n", qPrintable(formattedMsg));
-	fflush(f);
-
-	AppData::Instance().log()->AddNewMessage(formattedMsg);
-
-	if (originalHandler)
-	{
-		originalHandler(type, context, msg);
-	}
 }
 
 void SetOriginalHandler(QtMessageHandler handler)
@@ -54,9 +29,36 @@ void SetOriginalHandler(QtMessageHandler handler)
 Log::Log(QObject* parent)
 	: QObject{ parent }
 {
+	connect(&LogHandler::Instance(), &LogHandler::newLogReceived, this, &Log::AddNewMessage);
 }
 
 void Log::AddNewMessage(const QString& newmsg)
 {
 	emit newLogMessageCaptured(newmsg);
+}
+
+LogHandler& LogHandler::Instance()
+{
+	static LogHandler instance;
+
+	return instance;
+}
+
+void LogHandler::MessageOutput(
+	QtMsgType type, const QMessageLogContext& context, const QString& msg)
+{
+	static std::ofstream logFile{ std::filesystem::path{ details::LogFilePath },
+		std::ios::out | std::ios::app };
+
+	const auto formattedMsg{ qFormatLogMessage(type, context, msg) };
+
+	logFile << qPrintable(formattedMsg) << "\n";
+	logFile.flush();
+
+	emit LogHandler::Instance().newLogReceived(formattedMsg);
+
+	if (originalHandler)
+	{
+		originalHandler(type, context, msg);
+	}
 }

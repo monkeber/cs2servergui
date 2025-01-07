@@ -13,13 +13,12 @@ void MapHistory::Add(const std::string& mapId)
 {
 	const nl::json resp = GetMapInfo(mapId);
 
-	const nl::json::json_pointer infoPath{ "/reposne/publishedfiledetails/0" };
+	const nl::json::json_pointer infoPath{ "/response/publishedfiledetails/0" };
 	if (!resp.contains(infoPath))
 	{
-		qWarning(
-			"Was not able to access the path '%s' in the response from Steam API with the body: %s",
+		qWarning("Was not able to access the path '%s' in the response from Steam API, map ID: %s",
 			infoPath.to_string().c_str(),
-			resp.dump().c_str());
+			mapId.c_str());
 
 		return;
 	}
@@ -27,22 +26,22 @@ void MapHistory::Add(const std::string& mapId)
 	const nl::json info = resp.at(infoPath);
 
 	const std::string previewUrlField{ "preview_url" };
-	if (!resp.contains(previewUrlField))
+	if (!info.contains(previewUrlField))
 	{
-		qWarning("Was not able to find the '%s' in the response from Steam API with the body: %s",
+		qWarning("Was not able to find the '%s' in the response from Steam API, map ID: %s",
 			previewUrlField.c_str(),
-			resp.dump().c_str());
+			mapId.c_str());
 
 		return;
 	}
 	const std::string previewUrl{ info.at(previewUrlField) };
 
 	const std::string titleField{ "title" };
-	if (!resp.contains(previewUrlField))
+	if (!info.contains(previewUrlField))
 	{
-		qWarning("Was not able to find the '%s' in the response from Steam API with the body: %s",
+		qWarning("Was not able to find the '%s' in the response from Steam API, map ID: %s",
 			titleField.c_str(),
-			resp.dump().c_str());
+			mapId.c_str());
 
 		return;
 	}
@@ -50,7 +49,7 @@ void MapHistory::Add(const std::string& mapId)
 
 	const auto filePath{ DownloadPreview(mapId, previewUrl) };
 
-	SaveMapEntry(mapId, mapName, filePath.relative_path().string());
+	SaveMapEntry(mapId, mapName, filePath.relative_path().generic_string());
 }
 
 std::filesystem::path MapHistory::DownloadPreview(const std::string& mapId, const std::string& url)

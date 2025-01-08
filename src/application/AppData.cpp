@@ -2,6 +2,7 @@
 
 AppData::AppData()
 	: m_log{}
+	, m_mapHistory{}
 	, m_serverProcess{}
 	, m_rconclient{}
 	, m_settings{}

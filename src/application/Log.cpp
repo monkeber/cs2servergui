@@ -29,12 +29,8 @@ void SetOriginalHandler(QtMessageHandler handler)
 Log::Log(QObject* parent)
 	: QObject{ parent }
 {
-	connect(&LogHandler::Instance(), &LogHandler::newLogReceived, this, &Log::AddNewMessage);
-}
-
-void Log::AddNewMessage(const QString& newmsg)
-{
-	emit newLogMessageCaptured(newmsg);
+	connect(
+		&LogHandler::Instance(), &LogHandler::newLogReceived, this, &Log::newLogMessageCaptured);
 }
 
 LogHandler& LogHandler::Instance()

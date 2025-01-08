@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Log.h"
+#include "MapHistory.h"
 #include "ProcessHandler.h"
 #include "RCONClient.h"
 #include "Settings.h"
@@ -29,6 +30,7 @@ private:
 
 private:
 	Log m_log;
+	MapHistory m_mapHistory;
 	ProcessHandler m_serverProcess;
 	RCONClient m_rconclient;
 	Settings m_settings;

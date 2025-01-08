@@ -18,9 +18,6 @@ signals:
 
 public:
 	Log(QObject* parent = nullptr);
-
-public:
-	void AddNewMessage(const QString& newmsg);
 };
 
 /*

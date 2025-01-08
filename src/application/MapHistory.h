@@ -1,12 +1,20 @@
 #pragma once
 
+#include <QObject>
+#include <QQmlEngine>
+
 #include <string>
 
-class MapHistory
+class MapHistory : public QObject
 {
-public:
-	MapHistory();
+	Q_OBJECT
+	QML_ELEMENT
 
+public:
+	MapHistory(QObject* parent = nullptr);
+
+public:
+	//! Adds a new entry into the history. Handles saving of the info, downloading the preview, etc.
 	static void Add(const std::string& mapId);
 
 private:
@@ -19,4 +27,6 @@ private:
 	//! does not exist yet.
 	static void SaveMapEntry(
 		const std::string& mapId, const std::string& mapName, const std::string& previewPath);
+
+	void Init();
 };

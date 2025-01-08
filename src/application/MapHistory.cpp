@@ -5,8 +5,20 @@
 #include <cpr/cpr.h>
 #include <rapidcsv.h>
 
-MapHistory::MapHistory()
+namespace
 {
+namespace details
+{
+
+const std::filesystem::path MapHistoryFilePath{ "map_history.csv" };
+
+}	 // namespace details
+}	 // namespace
+
+MapHistory::MapHistory(QObject* parent)
+	: QObject{ parent }
+{
+	Init();
 }
 
 void MapHistory::Add(const std::string& mapId)
@@ -94,20 +106,34 @@ nl::json MapHistory::GetMapInfo(const std::string& mapId)
 void MapHistory::SaveMapEntry(
 	const std::string& mapId, const std::string& mapName, const std::string& previewPath)
 {
-	static const std::filesystem::path historyFilePath{ "map_history.csv" };
-	if (!std::filesystem::exists(historyFilePath)
-		|| !std::filesystem::is_regular_file(historyFilePath))
+	if (!std::filesystem::exists(details::MapHistoryFilePath)
+		|| !std::filesystem::is_regular_file(details::MapHistoryFilePath))
 	{
-		std::ofstream of{ historyFilePath, std::ios::out };
+		std::ofstream of{ details::MapHistoryFilePath, std::ios::out };
 		of << "Map Workshop ID,Map Name,Downloaded At,PreviewPath\n";
 		of.close();
 	}
 
-	std::ofstream of{ historyFilePath, std::ios::app };
+	std::ofstream of{ details::MapHistoryFilePath, std::ios::app };
 	const std::chrono::zoned_time currentTime{ std::chrono::current_zone(),
 		std::chrono::system_clock::now() };
 
 	of << mapId << "," << mapName << "," << currentTime << "," << previewPath << "\n";
 
 	of.close();
+}
+
+void MapHistory::Init()
+{
+	if (!std::filesystem::exists(details::MapHistoryFilePath)
+		|| !std::filesystem::is_regular_file(details::MapHistoryFilePath))
+	{
+		return;
+	}
+
+	rapidcsv::Document doc{ details::MapHistoryFilePath.string(), rapidcsv::LabelParams{ 0 } };
+	for (const auto& name : doc.GetColumnNames())
+	{
+		qInfo(name.c_str());
+	}
 }

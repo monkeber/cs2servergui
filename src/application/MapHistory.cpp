@@ -10,7 +10,17 @@ namespace
 namespace details
 {
 
-const std::filesystem::path MapHistoryFilePath{ "map_history.csv" };
+const char* MapHistoryFilePath{ "map_history.csv" };
+
+namespace columns
+{
+
+const char* MapWorkshopId{ "Map Workshop ID" };
+const char* DownloadedAt{ "Map Name" };
+const char* MapName{ "Downloaded At" };
+const char* PreviewPath{ "Preview Path" };
+
+}	 // namespace columns
 
 }	 // namespace details
 }	 // namespace
@@ -19,6 +29,11 @@ MapHistory::MapHistory(QObject* parent)
 	: QObject{ parent }
 {
 	Init();
+}
+
+QList<QVariantMap> MapHistory::get() const
+{
+	return m_history;
 }
 
 void MapHistory::Add(const std::string& mapId)
@@ -106,15 +121,17 @@ nl::json MapHistory::GetMapInfo(const std::string& mapId)
 void MapHistory::SaveMapEntry(
 	const std::string& mapId, const std::string& mapName, const std::string& previewPath)
 {
-	if (!std::filesystem::exists(details::MapHistoryFilePath)
-		|| !std::filesystem::is_regular_file(details::MapHistoryFilePath))
+	const std::filesystem::path historyFilePath{ details::MapHistoryFilePath };
+	if (!std::filesystem::exists(historyFilePath)
+		|| !std::filesystem::is_regular_file(historyFilePath))
 	{
-		std::ofstream of{ details::MapHistoryFilePath, std::ios::out };
-		of << "Map Workshop ID,Map Name,Downloaded At,PreviewPath\n";
+		std::ofstream of{ historyFilePath, std::ios::out };
+		of << details::columns::MapWorkshopId << ',' << details::columns::MapName << ','
+		   << details::columns::DownloadedAt << ',' << details::columns::PreviewPath << '\n';
 		of.close();
 	}
 
-	std::ofstream of{ details::MapHistoryFilePath, std::ios::app };
+	std::ofstream of{ historyFilePath, std::ios::app };
 	const std::chrono::zoned_time currentTime{ std::chrono::current_zone(),
 		std::chrono::system_clock::now() };
 
@@ -125,15 +142,46 @@ void MapHistory::SaveMapEntry(
 
 void MapHistory::Init()
 {
-	if (!std::filesystem::exists(details::MapHistoryFilePath)
-		|| !std::filesystem::is_regular_file(details::MapHistoryFilePath))
+	const std::filesystem::path historyFilePath{ details::MapHistoryFilePath };
+	if (!std::filesystem::exists(historyFilePath)
+		|| !std::filesystem::is_regular_file(historyFilePath))
 	{
 		return;
 	}
 
-	rapidcsv::Document doc{ details::MapHistoryFilePath.string(), rapidcsv::LabelParams{ 0 } };
-	for (const auto& name : doc.GetColumnNames())
+	rapidcsv::Document doc{ historyFilePath.string(), rapidcsv::LabelParams{ 0 } };
+	const auto getValue = [&doc](const std::string& columnName, const std::size_t rowNum) {
+		try
+		{
+			return QString::fromStdString(doc.GetCell<std::string>(columnName, rowNum));
+		}
+		catch (const std::exception& e)
+		{
+			qWarning(
+				"Can't retrieve value from map history file, column name: %s, row number: %d, "
+				"error: %s",
+				columnName.c_str(),
+				rowNum,
+				e.what());
+		}
+		catch (...)
+		{
+			qWarning("Can't retrieve value from map history file, column name: %s, row number: %d",
+				columnName.c_str(),
+				rowNum);
+		}
+
+		return QString{};
+	};
+
+	for (std::size_t i = 0; i < doc.GetRowCount(); ++i)
 	{
-		qInfo(name.c_str());
+		QVariantMap record;
+		record["workshopID"] = getValue(details::columns::MapWorkshopId, i);
+		record["mapName"] = getValue(details::columns::MapName, i);
+		record["downloadedAt"] = getValue(details::columns::DownloadedAt, i);
+		record["previewPath"] = getValue(details::columns::PreviewPath, i);
+
+		m_history.append(record);
 	}
 }

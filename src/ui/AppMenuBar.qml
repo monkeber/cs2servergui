@@ -76,7 +76,7 @@ MenuBar {
 
         Action {
             text: qsTr("Map History")
-            onTriggered: logWindow.setVisible(!logWindow.visible)
+            onTriggered: mapHistoryWindow.setVisible(!mapHistoryWindow.visible)
         }
 
         Component.onCompleted: {
@@ -117,6 +117,11 @@ MenuBar {
 
     LogWindow {
         id: logWindow
+        visible: false
+    }
+
+    MapHistoryWindow {
+        id: mapHistoryWindow
         visible: false
     }
 

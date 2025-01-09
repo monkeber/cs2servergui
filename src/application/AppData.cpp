@@ -29,6 +29,11 @@ Log* AppData::log()
 	return &m_log;
 }
 
+MapHistory* AppData::mapHistory()
+{
+	return &m_mapHistory;
+}
+
 RCONClient* AppData::rconclient()
 {
 	return &m_rconclient;

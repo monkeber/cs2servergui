@@ -14,6 +14,8 @@ public:
 	MapHistory(QObject* parent = nullptr);
 
 public:
+	//! Returns history data.
+	Q_INVOKABLE QList<QVariantMap> get() const;
 	//! Adds a new entry into the history. Handles saving of the info, downloading the preview, etc.
 	static void Add(const std::string& mapId);
 
@@ -28,5 +30,9 @@ private:
 	static void SaveMapEntry(
 		const std::string& mapId, const std::string& mapName, const std::string& previewPath);
 
+	//! Initializes the state (i.e. reads the map history file if such exists) and stores the data.
 	void Init();
+
+private:
+	QList<QVariantMap> m_history;
 };

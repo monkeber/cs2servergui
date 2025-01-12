@@ -1,6 +1,6 @@
 import QtQuick 6.2
 import QtQuick.Controls
-import Qt.labs.qmlmodels
+import QtQuick.Layouts
 import application 1.0
 
 ApplicationWindow {
@@ -25,24 +25,46 @@ ApplicationWindow {
 
         model: listModel
 
-        delegate: Row {
+        delegate: GridLayout {
+            rows: 1
+            columns: 5
+
+            width: rootWindow.width
+
             Label {
+                Layout.fillHeight: true
+                Layout.fillWidth: true
+                Layout.alignment: Qt.AlignCenter
+
                 text: workshopID
                 font: Globals.font
             }
             Label {
+                Layout.fillHeight: true
+                Layout.fillWidth: true
+                Layout.alignment: Qt.AlignCenter
+
                 text: mapName
                 font: Globals.font
             }
             Label {
+                Layout.fillHeight: true
+                Layout.fillWidth: true
+                Layout.alignment: Qt.AlignCenter
+
                 text: downloadedAt
                 font: Globals.font
             }
             Image {
+                Layout.columnSpan: 2
+                Layout.fillHeight: true
+                Layout.fillWidth: true
+                Layout.alignment: Qt.AlignCenter
+
                 source: previewPath
                 // width: 130
                 // height: 100
-                // fillMode: Image.PreserveAspectFit
+                fillMode: Image.PreserveAspectFit
             }
         }
 

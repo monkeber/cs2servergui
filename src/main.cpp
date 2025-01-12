@@ -13,11 +13,11 @@ int main(int argc, char* argv[])
 
 	SetOriginalHandler(qInstallMessageHandler(LogHandler::MessageOutput));
 
-	QGuiApplication app(argc, argv);
-
+	QGuiApplication app{ argc, argv };
 	QQmlApplicationEngine engine;
 
-	const QUrl url(u"qrc:/qt/qml/ui/Main.qml"_qs);
+	using namespace Qt::StringLiterals;
+	const QUrl url(u"qrc:/qt/qml/ui/Main.qml"_s);
 	QObject::connect(
 		&engine,
 		&QQmlApplicationEngine::objectCreated,

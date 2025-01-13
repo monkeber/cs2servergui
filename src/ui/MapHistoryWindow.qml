@@ -27,10 +27,9 @@ ApplicationWindow {
 
         delegate: GridLayout {
             rows: 1
-            columns: 5
+            columns: 4
 
-            width: rootWindow.width
-
+            width: view.width
             Label {
                 Layout.fillHeight: true
                 Layout.fillWidth: true
@@ -56,14 +55,11 @@ ApplicationWindow {
                 font: Globals.font
             }
             Image {
-                Layout.columnSpan: 2
                 Layout.fillHeight: true
                 Layout.fillWidth: true
-                Layout.alignment: Qt.AlignCenter
+                Layout.alignment: Qt.AlignRight
 
                 source: previewPath
-                // width: 130
-                // height: 100
                 fillMode: Image.PreserveAspectFit
             }
         }
@@ -78,12 +74,25 @@ ApplicationWindow {
             visible: true
         }
     }
-    Component.onCompleted: {
+
+    function appendElement(element) {
         listModel.append({
-                             "workshopID": "some",
-                             "mapName": "some map",
-                             "downloadedAt": "2024",
-                             "previewPath": new URL("file:///E:/Projects/cs2guiserver/build/Debug-Desktop_Qt_6_8_1_MSVC2022_64bit/previews/preview_3379564935.jpeg")
+                             "workshopID": element.workshopID,
+                             "mapName": element.mapName,
+                             "downloadedAt": element.downloadedAt,
+                             "previewPath": new URL(element.previewPath)
                          })
+    }
+
+    Component.onCompleted: {
+        AppData.mapHistory.get().forEach(appendElement)
+    }
+
+    Connections {
+        target: AppData.mapHistory
+        onEntryAdded: {
+            listModel.clear()
+            AppData.mapHistory.get().forEach(appendElement)
+        }
     }
 }

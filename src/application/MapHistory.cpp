@@ -1,4 +1,5 @@
 #include "MapHistory.h"
+#include "AppData.h"
 
 #include <QtLogging>
 
@@ -28,7 +29,7 @@ const char* PreviewPath{ "Preview Path" };
 MapHistory::MapHistory(QObject* parent)
 	: QObject{ parent }
 {
-	Init();
+	ReloadFile();
 }
 
 QList<QVariantMap> MapHistory::get() const
@@ -77,6 +78,10 @@ void MapHistory::Add(const std::string& mapId)
 	const auto filePath{ DownloadPreview(mapId, previewUrl) };
 
 	SaveMapEntry(mapId, mapName, filePath.relative_path().generic_string());
+
+	AppData::Instance().mapHistory()->ReloadFile();
+
+	emit AppData::Instance().mapHistory()->entryAdded();
 }
 
 std::filesystem::path MapHistory::DownloadPreview(const std::string& mapId, const std::string& url)
@@ -135,13 +140,15 @@ void MapHistory::SaveMapEntry(
 	const std::chrono::zoned_time currentTime{ std::chrono::current_zone(),
 		std::chrono::system_clock::now() };
 
-	of << mapId << "," << mapName << "," << currentTime << "," << previewPath << "\n";
+	of << mapId << "," << mapName << "," << currentTime.get_local_time() << "," << previewPath
+	   << "\n";
 
 	of.close();
 }
 
-void MapHistory::Init()
+void MapHistory::ReloadFile()
 {
+	m_history.clear();
 	const std::filesystem::path historyFilePath{ details::MapHistoryFilePath };
 	if (!std::filesystem::exists(historyFilePath)
 		|| !std::filesystem::is_regular_file(historyFilePath))
@@ -180,7 +187,15 @@ void MapHistory::Init()
 		record["workshopID"] = getValue(details::columns::MapWorkshopId, i);
 		record["mapName"] = getValue(details::columns::MapName, i);
 		record["downloadedAt"] = getValue(details::columns::DownloadedAt, i);
-		record["previewPath"] = getValue(details::columns::PreviewPath, i);
+
+		const std::filesystem::path path{
+			getValue(details::columns::PreviewPath, i).toStdString()
+		};
+		if (std::filesystem::exists(path))
+		{
+			record["previewPath"] =
+				QString{ "file:///%1" }.arg(std::filesystem::canonical(path).string().c_str());
+		}
 
 		m_history.append(record);
 	}

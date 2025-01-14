@@ -15,10 +15,15 @@ ColumnLayout {
             text: qsTr("Server Parameters")
             font: Globals.font
         }
+        TabButton {
+            text: qsTr("Map History")
+            font: Globals.font
+        }
     }
 
     SwipeView {
         Layout.fillWidth: true
+        Layout.fillHeight: true
         Layout.leftMargin: main.spacing
 
         currentIndex: bar.currentIndex
@@ -27,5 +32,6 @@ ColumnLayout {
 
         ConsolePage {}
         ServerParametersPage {}
+        MapHistoryPage {}
     }
 }

@@ -21,7 +21,8 @@ qt_add_qml_module(${PROJECT_NAME}
 		LogWindow.qml
 		Main.qml
 		MainMenu.qml
-		MapHistoryWindow.qml
+		MapHistoryModel.qml
+		MapHistoryPage.qml
 		PowerPanel.qml
 		QuickCommand.qml
 		ServerParametersPage.qml

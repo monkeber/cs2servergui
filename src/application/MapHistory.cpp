@@ -30,6 +30,7 @@ MapHistory::MapHistory(QObject* parent)
 	: QObject{ parent }
 {
 	ReloadFile();
+	m_modelRef = QVariant::fromValue(&m_model);
 }
 
 QList<QVariantMap> MapHistory::get() const
@@ -183,6 +184,11 @@ void MapHistory::ReloadFile()
 
 	for (std::size_t i = 0; i < doc.GetRowCount(); ++i)
 	{
+		MapHistoryEntry entry;
+		entry.m_workshopID = getValue(details::columns::MapWorkshopId, i);
+		entry.m_mapName = getValue(details::columns::MapName, i);
+		entry.m_downloadedAt = getValue(details::columns::DownloadedAt, i);
+
 		QVariantMap record;
 		record["workshopID"] = getValue(details::columns::MapWorkshopId, i);
 		record["mapName"] = getValue(details::columns::MapName, i);
@@ -193,10 +199,13 @@ void MapHistory::ReloadFile()
 		};
 		if (std::filesystem::exists(path))
 		{
+			entry.m_previewPath =
+				QString{ "file:///%1" }.arg(std::filesystem::canonical(path).string().c_str());
 			record["previewPath"] =
 				QString{ "file:///%1" }.arg(std::filesystem::canonical(path).string().c_str());
 		}
 
 		m_history.append(record);
+		m_model.AddEntry(entry);
 	}
 }

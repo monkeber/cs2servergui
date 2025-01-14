@@ -3,12 +3,16 @@
 #include <QObject>
 #include <QQmlEngine>
 
+#include "MapHistoryModel.h"
+
 #include <string>
 
 class MapHistory : public QObject
 {
 	Q_OBJECT
 	QML_ELEMENT
+
+	Q_PROPERTY(QVariant model MEMBER m_modelRef CONSTANT)
 
 public:
 	MapHistory(QObject* parent = nullptr);
@@ -39,4 +43,6 @@ private:
 
 private:
 	QList<QVariantMap> m_history;
+	MapHistoryModel m_model;
+	QVariant m_modelRef;
 };

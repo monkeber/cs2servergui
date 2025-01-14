@@ -10,6 +10,8 @@ set(${PROJECT_NAME}_SRC
 	Log.h
 	MapHistory.cpp
 	MapHistory.h
+	MapHistoryModel.cpp
+	MapHistoryModel.h
 	ProcessHandler.cpp
 	ProcessHandler.h
 	RCONClient.cpp

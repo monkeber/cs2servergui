@@ -58,6 +58,7 @@ ApplicationWindow {
             // }
             MainMenu {
                 Layout.fillWidth: true
+                Layout.fillHeight: true
             }
         }
     }

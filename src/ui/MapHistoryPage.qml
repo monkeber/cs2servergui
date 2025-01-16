@@ -3,24 +3,39 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import application 1.0
 
-Item {
-    TableView {
-        id: view
+TableView {
+    id: view
 
-        anchors.fill: parent
-        leftMargin: Globals.elementsLeftMargin
+    clip: true
+    leftMargin: Globals.elementsLeftMargin
 
-        flickableDirection: Flickable.HorizontalAndVerticalFlick
+    flickableDirection: Flickable.HorizontalAndVerticalFlick
 
-        // We need to set content width to the maximum width of listview elements in order to have working horizontal scroll.
-        // contentWidth: view.contentItem.childrenRect.width + ScrollBar.vertical.width
-        model: AppData.mapHistory.model
+    model: AppData.mapHistory.model
 
-        delegate: Rectangle {
-            implicitWidth: 100
-            implicitHeight: 50
-            Text {
-                text: display
+    delegate: Loader {
+        sourceComponent: column === 3 ? imageDelegate : textDelegate
+
+        Component {
+            id: textDelegate
+            Item {
+                implicitWidth: view.width / view.model.columnCount()
+                implicitHeight: 50
+                Text {
+                    text: display
+                }
+            }
+        }
+        Component {
+            id: imageDelegate
+            Item {
+                implicitWidth: view.width / view.model.columnCount()
+                implicitHeight: 50
+                Image {
+                    anchors.fill: parent
+                    source: new URL(display)
+                    fillMode: Image.PreserveAspectFit
+                }
             }
         }
     }

@@ -19,6 +19,7 @@ int MapHistoryModel::rowCount(const QModelIndex& index) const
 int MapHistoryModel::columnCount(const QModelIndex& index) const
 {
 	// The number of members in MapHistoryEntry struct.
+	Q_UNUSED(index);
 	return 4;
 }
 

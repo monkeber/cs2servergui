@@ -21,27 +21,22 @@ ColumnLayout {
         }
     }
 
-    SwipeView {
+    StackLayout {
         id: view
+
         Layout.fillWidth: true
         Layout.fillHeight: true
         Layout.leftMargin: main.spacing
 
         currentIndex: bar.currentIndex
-        interactive: false
         clip: true
 
-        // TODO: the setting of the visibility was required because SwipeView would show the
-        // adjacent pages when being resized. This is still not a proper fix because
-        // it during resizing the page could wander off the window.
         ConsolePage {
-            visible: view.currentIndex === 0
+            Layout.fillHeight: false
         }
         ServerParametersPage {
-            visible: view.currentIndex === 1
+            Layout.fillHeight: false
         }
-        MapHistoryPage {
-            visible: view.currentIndex === 2
-        }
+        MapHistoryPage {}
     }
 }

@@ -3,53 +3,58 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import application 1.0
 
-TableView {
-    id: view
-
-    QtObject {
-        id: internal
+ColumnLayout {
+    HorizontalHeaderView {
+        id: horizontalHeader
+        Layout.fillWidth: true
+        syncView: view
+        clip: true
+    }
+    TableView {
+        id: view
 
         readonly property int rowHeight: Screen.height / 10
         readonly property int columnWidth: view.width / view.model.columnCount()
-    }
 
-    clip: true
-    leftMargin: Globals.elementsLeftMargin
-    flickableDirection: Flickable.HorizontalAndVerticalFlick
-    // Provide implicit height so the table view can be positioned by a layout.
-    implicitHeight: internal.rowHeight * rows
+        Layout.fillHeight: true
+        Layout.fillWidth: true
 
-    model: AppData.mapHistory.model
+        clip: true
+        leftMargin: Globals.elementsLeftMargin
+        flickableDirection: Flickable.HorizontalAndVerticalFlick
+        // Provide implicit height so the table view can be positioned by a layout.
+        implicitHeight: rowHeight * rows
 
-    delegate: Loader {
-        sourceComponent: column === 3 ? imageDelegate : textDelegate
+        model: AppData.mapHistory.model
 
-        Component {
-            id: textDelegate
-            Item {
-                implicitWidth: internal.columnWidth
-                implicitHeight: internal.rowHeight
-                Text {
-                    text: display
+        delegate: Loader {
+            sourceComponent: column === 3 ? imageDelegate : textDelegate
+
+            Component {
+                id: textDelegate
+                Item {
+                    implicitWidth: view.columnWidth
+                    implicitHeight: view.rowHeight
+                    Label {
+                        anchors.centerIn: parent
+                        // anchors.fill: parent
+                        text: display
+                        wrapMode: Text.WordWrap
+                    }
+                }
+            }
+            Component {
+                id: imageDelegate
+                Item {
+                    implicitWidth: view.columnWidth
+                    implicitHeight: view.rowHeight
+                    Image {
+                        anchors.fill: parent
+                        source: new URL(display)
+                        fillMode: Image.PreserveAspectFit
+                    }
                 }
             }
         }
-        Component {
-            id: imageDelegate
-            Item {
-                implicitWidth: internal.columnWidth
-                implicitHeight: internal.rowHeight
-                Image {
-                    anchors.fill: parent
-                    source: new URL(display)
-                    fillMode: Image.PreserveAspectFit
-                }
-            }
-        }
     }
-    // delegate: Rectangle {
-    //     implicitWidth: view.width / view.model.columnCount()
-    //     implicitHeight: internal.rowHeight
-    //     color: Qt.rgba(Math.random(), Math.random(), Math.random(), 1)
-    // }
 }

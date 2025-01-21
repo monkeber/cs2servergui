@@ -50,6 +50,28 @@ QVariant MapHistoryModel::data(const QModelIndex& index, int role) const
 	return QVariant();
 }
 
+QVariant MapHistoryModel::headerData(int section, Qt::Orientation orientation, int) const
+{
+	if (orientation == Qt::Orientation::Vertical)
+	{
+		return "Undefined";
+	}
+
+	switch (section)
+	{
+	case 0:
+		return "Workshop ID";
+	case 1:
+		return "Map Name";
+	case 2:
+		return "Downloaded At";
+	case 3:
+		return "Preview";
+	default:
+		return QString{ "Column index is not handled" };
+	}
+}
+
 QHash<int, QByteArray> MapHistoryModel::roleNames() const
 {
 	return {

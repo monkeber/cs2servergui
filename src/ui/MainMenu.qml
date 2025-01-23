@@ -7,6 +7,7 @@ ColumnLayout {
     TabBar {
         id: bar
         Layout.fillWidth: true
+        Layout.alignment: Qt.AlignTop
         TabButton {
             text: qsTr("Console")
             font: Globals.font
@@ -21,22 +22,28 @@ ColumnLayout {
         }
     }
 
-    StackLayout {
-        id: view
-
+    ConsolePage {
         Layout.fillWidth: true
         Layout.fillHeight: true
-        Layout.leftMargin: main.spacing
+        Layout.leftMargin: Globals.elementsLeftMargin
+        visible: bar.currentIndex === 0
+    }
+    ServerParametersPage {
+        Layout.fillWidth: true
+        Layout.fillHeight: true
+        Layout.leftMargin: Globals.elementsLeftMargin
+        Layout.rightMargin: Globals.elementsLeftMargin
+        Layout.maximumHeight: implicitHeight
+        visible: bar.currentIndex === 1
+    }
+    MapHistoryPage {
+        Layout.fillWidth: true
+        Layout.fillHeight: true
+        visible: bar.currentIndex === 2
+    }
 
-        currentIndex: bar.currentIndex
-        clip: true
-
-        ConsolePage {
-            Layout.fillHeight: false
-        }
-        ServerParametersPage {
-            Layout.fillHeight: false
-        }
-        MapHistoryPage {}
+    // A spacer to push other elements to top.
+    Item {
+        Layout.fillHeight: true
     }
 }

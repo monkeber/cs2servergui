@@ -19,7 +19,7 @@ ApplicationWindow {
         leftMargin: Globals.elementsLeftMargin
 
         flickableDirection: Flickable.HorizontalAndVerticalFlick
-        interactive: false
+        boundsBehavior: Flickable.OvershootBounds
         // We need to set content width to the maximum width of listview elements in order to have working horizontal scroll.
         contentWidth: view.contentItem.childrenRect.width + ScrollBar.vertical.width
 
@@ -30,6 +30,7 @@ ApplicationWindow {
 
             text: content
             font: Globals.font
+            color: Theme.foreground
         }
 
         ScrollBar.vertical: ScrollBar {

@@ -23,43 +23,28 @@ ApplicationWindow {
         height: Globals.menuBarHeight
     }
 
-    ScrollView {
-        id: scrollArea
+    ColumnLayout {
+        id: mainContent
         anchors.fill: parent
-        topPadding: Globals.elementsLeftMargin
+        anchors.topMargin: Globals.elementsLeftMargin
 
-        // Define a custom scroll bar so we can access its width and make scroll bar not overlay with content.
-        ScrollBar.vertical: ScrollBar {
-            id: scrollBar
-            parent: scrollArea
-            anchors.top: scrollArea.top
-            anchors.right: scrollArea.right
-            height: scrollArea.availableHeight
-            policy: ScrollBar.AlwaysOn
+        PowerPanel {
+            Layout.fillWidth: true
+            Layout.leftMargin: Globals.elementsLeftMargin
+            Layout.rightMargin: Globals.elementsLeftMargin
+            Layout.maximumHeight: implicitHeight
         }
-
-        ColumnLayout {
-            id: mainContent
-            // ColumnLayout here is a child of contentItem property of scrollArea, so we can't use parent.width here.
-            width: scrollArea.width - scrollBar.width
-
-            PowerPanel {
-                Layout.fillWidth: true
-                Layout.leftMargin: Globals.elementsLeftMargin
-                Layout.rightMargin: Globals.elementsLeftMargin
-            }
-            // TODO: Find a way to redirect logs to terminal output.
-            // Spoiler {
-            //     width: parent.width
-            //     TerminalOutput {
-            //         id: termOut
-            //         height: window.height / 3
-            //     }
-            // }
-            MainMenu {
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-            }
+        // TODO: Find a way to redirect logs to terminal output.
+        // Spoiler {
+        //     width: parent.width
+        //     TerminalOutput {
+        //         id: termOut
+        //         height: window.height / 3
+        //     }
+        // }
+        MainMenu {
+            Layout.fillWidth: true
+            Layout.fillHeight: true
         }
     }
 }

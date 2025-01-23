@@ -18,6 +18,7 @@ ColumnLayout {
 
         syncView: view
         clip: true
+        interactive: false
 
         delegate: Item {
             implicitWidth: label.implicitWidth * 2
@@ -43,8 +44,10 @@ ColumnLayout {
     TableView {
         id: view
 
-        readonly property int rowHeight: Screen.height / 10
-        readonly property int columnWidth: view.width / view.model.columnCount()
+        readonly property int rowHeight: Screen.height * AppData.settings.scaleFactor / 10
+        // Column width should account for margins, otherwise margins don't work.
+        readonly property int columnWidth: (view.width - leftMargin - rightMargin)
+                                           / view.model.columnCount()
 
         Layout.fillHeight: true
         Layout.fillWidth: true
@@ -52,8 +55,16 @@ ColumnLayout {
         // Provide implicit height so the table view can be positioned by a layout.
         implicitHeight: rowHeight * rows
         leftMargin: Globals.elementsLeftMargin
+        rightMargin: scrollBar.width
         clip: true
-        interactive: false
+        interactive: true
+        flickableDirection: Flickable.VerticalFlick
+        boundsBehavior: Flickable.OvershootBounds
+
+        ScrollBar.vertical: ScrollBar {
+            id: scrollBar
+            policy: ScrollBar.AlwaysOn
+        }
 
         model: AppData.mapHistory.model
 
@@ -76,6 +87,7 @@ ColumnLayout {
 
                         text: display
                         font: Globals.font
+                        color: Theme.foreground
                     }
                     Rectangle {
                         anchors.bottom: parent.bottom

@@ -8,6 +8,7 @@ GridLayout {
     id: panel
 
     property bool isRunning: AppData.serverProcess.isRunning
+    implicitHeight: Math.max(fileRect.implicitHeight, statusRect.implicitHeight)
 
     rows: 1
     columns: 7

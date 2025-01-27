@@ -29,13 +29,10 @@ const char* PreviewPath{ "Preview Path" };
 MapHistory::MapHistory(QObject* parent)
 	: QObject{ parent }
 {
-	ReloadFile();
 	m_modelRef = QVariant::fromValue(&m_model);
-}
 
-QList<QVariantMap> MapHistory::get() const
-{
-	return m_history;
+	QObject::connect(this, &MapHistory::entryAdded, &m_model, &MapHistoryModel::AddEntry);
+	ReloadFile();
 }
 
 void MapHistory::Add(const std::string& mapId)
@@ -81,8 +78,6 @@ void MapHistory::Add(const std::string& mapId)
 	SaveMapEntry(mapId, mapName, filePath.relative_path().generic_string());
 
 	AppData::Instance().mapHistory()->ReloadFile();
-
-	emit AppData::Instance().mapHistory()->entryAdded();
 }
 
 std::filesystem::path MapHistory::DownloadPreview(const std::string& mapId, const std::string& url)
@@ -149,7 +144,6 @@ void MapHistory::SaveMapEntry(
 
 void MapHistory::ReloadFile()
 {
-	m_history.clear();
 	const std::filesystem::path historyFilePath{ details::MapHistoryFilePath };
 	if (!std::filesystem::exists(historyFilePath)
 		|| !std::filesystem::is_regular_file(historyFilePath))
@@ -189,11 +183,6 @@ void MapHistory::ReloadFile()
 		entry.m_mapName = getValue(details::columns::MapName, i);
 		entry.m_downloadedAt = getValue(details::columns::DownloadedAt, i);
 
-		QVariantMap record;
-		record["workshopID"] = getValue(details::columns::MapWorkshopId, i);
-		record["mapName"] = getValue(details::columns::MapName, i);
-		record["downloadedAt"] = getValue(details::columns::DownloadedAt, i);
-
 		const std::filesystem::path path{
 			getValue(details::columns::PreviewPath, i).toStdString()
 		};
@@ -201,11 +190,9 @@ void MapHistory::ReloadFile()
 		{
 			entry.m_previewPath =
 				QString{ "file:///%1" }.arg(std::filesystem::canonical(path).string().c_str());
-			record["previewPath"] =
-				QString{ "file:///%1" }.arg(std::filesystem::canonical(path).string().c_str());
 		}
 
-		m_history.append(record);
-		m_model.AddEntry(entry);
+		// m_model.AddEntry(entry);
+		emit entryAdded(entry);
 	}
 }

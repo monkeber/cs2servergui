@@ -19,8 +19,11 @@ class MapHistoryModel : public QAbstractTableModel
 
 public:
 	MapHistoryModel();
+
+public slots:
 	void AddEntry(const MapHistoryEntry& entry);
 
+public:
 	int columnCount(const QModelIndex& = QModelIndex()) const override;
 	int rowCount(const QModelIndex& = QModelIndex()) const override;
 

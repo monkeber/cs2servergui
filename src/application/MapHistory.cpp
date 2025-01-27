@@ -31,7 +31,7 @@ MapHistory::MapHistory(QObject* parent)
 {
 	m_modelRef = QVariant::fromValue(&m_model);
 
-	// QObject::connect(this, &MapHistory::entryAdded, &m_model, &MapHistoryModel::AddEntry);
+	QObject::connect(this, &MapHistory::entryAdded, &m_model, &MapHistoryModel::AddEntry);
 	ReloadFile();
 }
 
@@ -193,6 +193,6 @@ void MapHistory::ReloadFile()
 		}
 
 		// m_model.AddEntry(entry);
-		emit AppData::Instance().mapHistory()->entryAdded(entry);
+		emit entryAdded(entry);
 	}
 }

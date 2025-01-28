@@ -48,6 +48,7 @@ void ProcessHandler::execCommand(const QString& cmd, const bool recordInGeneralH
 		m_generalHistory.add(cmd);
 	}
 
+	// TODO: Only add if rcon did not return any errors (e.g. not connected).
 	if (cmd.trimmed().startsWith("host_workshop_map"))
 	{
 		const auto argList{ cmd.trimmed().split(" ", Qt::SkipEmptyParts) };

@@ -110,7 +110,8 @@ ColumnLayout {
                         anchors.topMargin: Globals.mapHistoryRowSpacing
                         anchors.bottomMargin: anchors.topMargin
 
-                        source: new URL(display)
+                        source: display.length
+                                === 0 ? "qrc:///images/no_preview.png" : new URL(display)
                         fillMode: Image.PreserveAspectFit
                     }
                     Rectangle {

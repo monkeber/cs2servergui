@@ -19,6 +19,7 @@ public:
 
 signals:
 	void entryAdded(const MapHistoryEntry& entry);
+	void resetHistory();
 
 public:
 	//! Adds a new entry into the history. Handles saving of the info, downloading the preview, etc.

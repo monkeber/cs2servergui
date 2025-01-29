@@ -32,6 +32,7 @@ MapHistory::MapHistory(QObject* parent)
 	m_modelRef = QVariant::fromValue(&m_model);
 
 	QObject::connect(this, &MapHistory::entryAdded, &m_model, &MapHistoryModel::AddEntry);
+	QObject::connect(this, &MapHistory::resetHistory, &m_model, &MapHistoryModel::ClearModel);
 	ReloadFile();
 }
 
@@ -144,6 +145,8 @@ void MapHistory::SaveMapEntry(
 
 void MapHistory::ReloadFile()
 {
+	emit resetHistory();
+
 	const std::filesystem::path historyFilePath{ details::MapHistoryFilePath };
 	if (!std::filesystem::exists(historyFilePath)
 		|| !std::filesystem::is_regular_file(historyFilePath))
@@ -176,7 +179,7 @@ void MapHistory::ReloadFile()
 		return QString{};
 	};
 
-	for (std::size_t i = 0; i < doc.GetRowCount(); ++i)
+	for (int i = doc.GetRowCount() - 1; i >= 0; --i)
 	{
 		MapHistoryEntry entry;
 		entry.m_workshopID = getValue(details::columns::MapWorkshopId, i);
@@ -192,7 +195,6 @@ void MapHistory::ReloadFile()
 				QString{ "file:///%1" }.arg(std::filesystem::canonical(path).string().c_str());
 		}
 
-		// m_model.AddEntry(entry);
 		emit entryAdded(entry);
 	}
 }

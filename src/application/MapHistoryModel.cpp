@@ -11,6 +11,13 @@ void MapHistoryModel::AddEntry(const MapHistoryEntry& entry)
 	endInsertRows();
 }
 
+void MapHistoryModel::ClearModel()
+{
+	beginResetModel();
+	m_history.clear();
+	endResetModel();
+}
+
 int MapHistoryModel::rowCount(const QModelIndex& index) const
 {
 	return m_history.size();

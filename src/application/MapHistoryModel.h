@@ -22,6 +22,7 @@ public:
 
 public slots:
 	void AddEntry(const MapHistoryEntry& entry);
+	void ClearModel();
 
 public:
 	int columnCount(const QModelIndex& = QModelIndex()) const override;

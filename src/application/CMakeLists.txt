@@ -8,6 +8,10 @@ set(${PROJECT_NAME}_SRC
 	CommandHistory.h
 	Log.cpp
 	Log.h
+	MapHistory.cpp
+	MapHistory.h
+	MapHistoryModel.cpp
+	MapHistoryModel.h
 	ProcessHandler.cpp
 	ProcessHandler.h
 	RCONClient.cpp
@@ -31,9 +35,16 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
 	Qt6::Qml
 	Qt6::Quick
 	rconpp
+	cpr::cpr
+	nlohmann_json::nlohmann_json
+	rapidcsv::rapidcsv
 )
 
 target_include_directories(${PROJECT_NAME}
 	PUBLIC
 		.
+)
+
+target_precompile_headers(${PROJECT_NAME} PUBLIC
+	pch.h
 )

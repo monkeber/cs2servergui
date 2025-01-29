@@ -6,3 +6,4 @@ deploy/
 *.qtds*
 
 CMakeSettings.json
+CMakeUserPresets.json

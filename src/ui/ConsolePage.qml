@@ -1,119 +1,133 @@
 import QtQuick 6.2
 import QtQuick.Controls
 import QtQuick.Layouts
-import QtQml.Models
 import application 1.0
 
-ColumnLayout {
-    id: column
-    InputField {
-        Layout.fillWidth: true
-        Layout.preferredHeight: Globals.inputFieldsHeight
+ScrollView {
+    id: scrollArea
 
-        text: qsTr("Console")
-        input.onAccepted: {
-            if (input.text.length > 0) {
-                AppData.serverProcess.execCommand(input.text)
-                input.text = ""
-            }
-        }
-
-        input.Keys.onPressed: event => {
-                                  if (event.key === Qt.Key_Up) {
-                                      input.text = AppData.serverProcess.getGeneralHistory(
-                                          ).getOlder()
-                                  }
-                                  if (event.key === Qt.Key_Down) {
-                                      input.text = AppData.serverProcess.getGeneralHistory(
-                                          ).getNewer()
-                                  }
-                              }
+    ScrollBar.vertical: ScrollBar {
+        id: scrollBar
+        parent: scrollArea
+        anchors.top: scrollArea.top
+        anchors.right: scrollArea.right
+        height: scrollArea.availableHeight
+        policy: ScrollBar.AlwaysOn
     }
-    RowLayout {
-        Layout.preferredHeight: Globals.inputFieldsHeight
-        Layout.fillWidth: true
 
-        // Set both inputs fields preferredWidth to the same value so they will occupy exactly half of the row.
+    ColumnLayout {
+        id: column
+        width: scrollArea.width - scrollBar.width
+
         InputField {
-            Layout.fillHeight: true
-            Layout.preferredWidth: 1
+            Layout.fillWidth: true
+            Layout.preferredHeight: Globals.inputFieldsHeight
 
-            text: qsTr("Host Workshop Map")
+            text: qsTr("Console")
             input.onAccepted: {
                 if (input.text.length > 0) {
-                    AppData.serverProcess.hostWorkshopMap(input.text)
+                    AppData.serverProcess.execCommand(input.text)
                     input.text = ""
                 }
             }
-        }
-        InputField {
-            Layout.fillHeight: true
-            Layout.preferredWidth: 1
 
-            text: qsTr("Exec")
-            input.onAccepted: {
-                if (input.text.length > 0) {
-                    AppData.serverProcess.execScriptName(input.text)
-                    input.text = ""
-                }
-            }
             input.Keys.onPressed: event => {
                                       if (event.key === Qt.Key_Up) {
-                                          input.text = AppData.serverProcess.getScriptHistory(
+                                          input.text = AppData.serverProcess.getGeneralHistory(
                                               ).getOlder()
                                       }
                                       if (event.key === Qt.Key_Down) {
-                                          input.text = AppData.serverProcess.getScriptHistory(
+                                          input.text = AppData.serverProcess.getGeneralHistory(
                                               ).getNewer()
                                       }
                                   }
         }
-    }
+        RowLayout {
+            Layout.preferredHeight: Globals.inputFieldsHeight
+            Layout.fillWidth: true
 
-    Button {
-        Layout.alignment: Qt.AlignLeft
-        text: qsTr("Add quick command")
-        font: Globals.font
-        onClicked: createQuickCommand()
+            // Set both inputs fields preferredWidth to the same value so they will occupy exactly half of the row.
+            InputField {
+                Layout.fillHeight: true
+                Layout.preferredWidth: 1
 
-        Material.background: Theme.primary
-    }
+                text: qsTr("Host Workshop Map")
+                input.onAccepted: {
+                    if (input.text.length > 0) {
+                        AppData.serverProcess.hostWorkshopMap(input.text)
+                        input.text = ""
+                    }
+                }
+            }
+            InputField {
+                Layout.fillHeight: true
+                Layout.preferredWidth: 1
 
-    ListModel {
-        id: model
-    }
-
-    Repeater {
-        id: repeater
-
-        delegate: QuickCommand {
-            onDeleteRequested: model.remove(index)
+                text: qsTr("Exec")
+                input.onAccepted: {
+                    if (input.text.length > 0) {
+                        AppData.serverProcess.execScriptName(input.text)
+                        input.text = ""
+                    }
+                }
+                input.Keys.onPressed: event => {
+                                          if (event.key === Qt.Key_Up) {
+                                              input.text = AppData.serverProcess.getScriptHistory(
+                                                  ).getOlder()
+                                          }
+                                          if (event.key === Qt.Key_Down) {
+                                              input.text = AppData.serverProcess.getScriptHistory(
+                                                  ).getNewer()
+                                          }
+                                      }
+            }
         }
-        model: model
 
-        onItemAdded: (_, item) => item.Layout.preferredHeight = Qt.binding(
-                         function () {
-                             return Globals.inputFieldsHeight
+        Button {
+            Layout.alignment: Qt.AlignLeft
+            text: qsTr("Add quick command")
+            font: Globals.font
+            onClicked: column.createQuickCommand()
+
+            Material.background: Theme.primary
+        }
+
+        ListModel {
+            id: model
+        }
+
+        Repeater {
+            id: repeater
+
+            delegate: QuickCommand {
+                onDeleteRequested: model.remove(index)
+            }
+            model: model
+
+            onItemAdded: (_, item) => item.Layout.preferredHeight = Qt.binding(
+                             function () {
+                                 return Globals.inputFieldsHeight
+                             })
+        }
+        function createQuickCommand(commandText = "") {
+            model.append({
+                             "initialText": commandText
                          })
-    }
-    function createQuickCommand(commandText = "") {
-        model.append({
-                         "initialText": commandText
-                     })
-    }
-
-    Component.onCompleted: {
-        for (const cmd of AppData.settings.quickCommands) {
-            createQuickCommand(cmd)
         }
-    }
 
-    Component.onDestruction: {
-        AppData.settings.quickCommands = []
-        for (var i = 0; i < repeater.count; i++) {
-            let cmdText = repeater.itemAt(i).text
-            if (cmdText.length > 0) {
-                AppData.settings.quickCommands.push(cmdText)
+        Component.onCompleted: {
+            for (const cmd of AppData.settings.quickCommands) {
+                createQuickCommand(cmd)
+            }
+        }
+
+        Component.onDestruction: {
+            AppData.settings.quickCommands = []
+            for (var i = 0; i < repeater.count; i++) {
+                let cmdText = repeater.itemAt(i).text
+                if (cmdText.length > 0) {
+                    AppData.settings.quickCommands.push(cmdText)
+                }
             }
         }
     }

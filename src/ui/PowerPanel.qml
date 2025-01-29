@@ -8,6 +8,7 @@ GridLayout {
     id: panel
 
     property bool isRunning: AppData.serverProcess.isRunning
+    implicitHeight: Math.max(fileRect.implicitHeight, statusRect.implicitHeight)
 
     rows: 1
     columns: 7
@@ -31,7 +32,6 @@ GridLayout {
             nameFilters: ["Executable files (*.exe)"]
 
             onAccepted: {
-                selectedFileLabel.text = fileDialog.selectedFile
                 AppData.settings.setExecutablePath(fileDialog.selectedFile)
                 console.log("You selected: " + fileDialog.selectedFile)
             }
@@ -70,28 +70,7 @@ GridLayout {
             text: AppData.settings.executablePath
             font: Globals.font
             elide: Qt.ElideLeft
-            states: [
-                State {
-                    name: "rightSide"
-                    when: selectedFileLabel.paintedWidth > fileRect.width
-
-                    AnchorChanges {
-                        target: selectedFileLabel
-                        anchors.right: parent.right
-                        anchors.horizontalCenter: undefined
-                    }
-                },
-                State {
-                    name: "middle"
-                    when: selectedFileLabel.paintedWidth < fileRect.width
-
-                    AnchorChanges {
-                        target: selectedFileLabel
-                        anchors.right: undefined
-                        anchors.horizontalCenter: parent.horizontalCenter
-                    }
-                }
-            ]
+            horizontalAlignment: Text.AlignHCenter
         }
         MouseArea {
             id: mouseArea

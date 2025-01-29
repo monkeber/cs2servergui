@@ -16,4 +16,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 	Qt6::Test
 	Qt6::Widgets
 	rconpp
+	cpr::cpr
+	nlohmann_json::nlohmann_json
+	rapidcsv::rapidcsv
 )

@@ -19,6 +19,7 @@ QtObject {
     property int inputFieldsHeight: size(35)
     property int menuBarHeight: size(30)
     readonly property int elementsLeftMargin: size(5)
+    readonly property int mapHistoryRowSpacing: size(5)
 
     property string relativeFontDirectory: "fonts"
     /* Edit this comment to add your custom font */

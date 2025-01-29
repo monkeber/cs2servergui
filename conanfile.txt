@@ -1,0 +1,18 @@
+[requires]
+cpr/1.11.1
+nlohmann_json/3.11.3
+rapidcsv/8.84
+libcurl/8.11.1
+
+[generators]
+CMakeDeps
+CMakeToolchain
+
+[layout]
+cmake_layout
+
+[options]
+# Use schannel value for Windows build, because otherwise libcurl will return an error
+# while trying to send requests over HTTPS:
+# SSL certificate problem: unable to get local issuer certificate
+libcurl/*:with_ssl=schannel

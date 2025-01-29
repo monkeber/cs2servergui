@@ -2,6 +2,7 @@
 
 AppData::AppData()
 	: m_log{}
+	, m_mapHistory{}
 	, m_serverProcess{}
 	, m_rconclient{}
 	, m_settings{}
@@ -26,6 +27,11 @@ AppData* AppData::create(QQmlEngine*, QJSEngine* engine)
 Log* AppData::log()
 {
 	return &m_log;
+}
+
+MapHistory* AppData::mapHistory()
+{
+	return &m_mapHistory;
 }
 
 RCONClient* AppData::rconclient()

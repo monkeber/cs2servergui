@@ -21,6 +21,7 @@ qt_add_qml_module(${PROJECT_NAME}
 		LogWindow.qml
 		Main.qml
 		MainMenu.qml
+		MapHistoryPage.qml
 		PowerPanel.qml
 		QuickCommand.qml
 		ServerParametersPage.qml
@@ -30,6 +31,14 @@ qt_add_qml_module(${PROJECT_NAME}
 )
 
 qt_add_resources(${PROJECT_NAME} "configuration" PREFIX "/" FILES qtquickcontrols2.conf)
+
+set_source_files_properties(${CMAKE_SOURCE_DIR}/resources/no_preview.png PROPERTIES QT_RESOURCE_ALIAS "no_preview.png")
+qt_add_resources(${PROJECT_NAME} "images"
+	PREFIX
+		"/images"
+	FILES
+		${CMAKE_SOURCE_DIR}/resources/no_preview.png
+)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
 	Qt6::Core

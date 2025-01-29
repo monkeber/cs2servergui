@@ -99,7 +99,7 @@ MenuBar {
 
     delegate: MenuBarItem {
         font: Globals.font
-        height: parent.height
+        height: bar.height
     }
 
     background: Rectangle {

@@ -9,48 +9,23 @@ ApplicationWindow {
     width: Screen.width / 2
     height: Screen.height / 3
 
-    ListModel {
-        id: listModel
-    }
-    ListView {
+    ScrollView {
         id: view
-
         anchors.fill: parent
-        leftMargin: Globals.elementsLeftMargin
 
-        flickableDirection: Flickable.HorizontalAndVerticalFlick
-        boundsBehavior: Flickable.OvershootBounds
-        // We need to set content width to the maximum width of listview elements in order to have working horizontal scroll.
-        contentWidth: view.contentItem.childrenRect.width + ScrollBar.vertical.width
+        TextArea {
+            id: area
 
-        model: listModel
-        delegate: TextInput {
-            selectByMouse: true
             readOnly: true
-
-            text: content
-            font: Globals.font
-            color: Theme.foreground
-        }
-
-        ScrollBar.vertical: ScrollBar {
-            active: true
-            visible: true
-        }
-
-        ScrollBar.horizontal: ScrollBar {
-            active: true
-            visible: true
+            background: null
+            wrapMode: TextEdit.WordWrap
         }
     }
 
     Connections {
         target: AppData.log
         onNewLogMessageCaptured: msg => {
-                                     listModel.append({
-                                                          "content": msg
-                                                      })
-                                     view.positionViewAtEnd()
+                                     area.append(msg)
                                  }
     }
 }

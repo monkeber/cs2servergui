@@ -17,7 +17,7 @@ int main(int argc, char* argv[])
 	QQmlApplicationEngine engine;
 
 	using namespace Qt::StringLiterals;
-	const QUrl url(u"qrc:/qt/qml/ui/Main.qml"_s);
+	const QUrl url{ u"qrc:/qt/qml/ui/Main.qml"_s };
 	QObject::connect(
 		&engine,
 		&QQmlApplicationEngine::objectCreated,

@@ -21,7 +21,9 @@ public:
 	MapHistoryModel();
 
 public slots:
+	//! Adds a row into the model data.
 	void AddEntry(const MapHistoryEntry& entry);
+	//! Clears all the rows from the model.
 	void ClearModel();
 
 public:

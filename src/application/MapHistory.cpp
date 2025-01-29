@@ -83,15 +83,13 @@ void MapHistory::Add(const std::string& mapId)
 
 std::filesystem::path MapHistory::DownloadPreview(const std::string& mapId, const std::string& url)
 {
-	using namespace std::literals::string_literals;
-
 	std::filesystem::path filepath{ "previews" };
 	if (!std::filesystem::exists(filepath) || !std::filesystem::is_directory(filepath))
 	{
 		std::filesystem::create_directory(filepath);
 	}
 
-	filepath.append("preview_"s + mapId + ".jpeg");
+	filepath.append("preview_" + mapId + ".jpeg");
 	std::ofstream of{ filepath, std::ios::out | std::ios::binary };
 	cpr::Download(of, cpr::Url{ url });
 

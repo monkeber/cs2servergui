@@ -21,6 +21,10 @@ signals:
 	void entryAdded(const MapHistoryEntry& entry);
 	void resetHistory();
 
+public slots:
+	//! Removes map entries from the map history file.
+	void RemoveMapEntries(const int rowIndex, const int count);
+
 public:
 	//! Adds a new entry into the history. Handles saving of the info, downloading the preview, etc.
 	static void Add(const std::string& mapId);

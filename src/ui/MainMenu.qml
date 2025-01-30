@@ -4,10 +4,13 @@ import QtQuick.Layouts
 
 ColumnLayout {
     id: main
+    // Set spacing to 0 so the last item-spacer in this layout will not create an annoying empty space at the bottom.
+    spacing: 0
     TabBar {
         id: bar
         Layout.fillWidth: true
         Layout.alignment: Qt.AlignTop
+        Layout.bottomMargin: Globals.elementsLeftMargin
         TabButton {
             text: qsTr("Console")
             font: Globals.font
@@ -45,5 +48,6 @@ ColumnLayout {
     // A spacer to push other elements to top.
     Item {
         Layout.fillHeight: true
+        Layout.minimumHeight: 0
     }
 }

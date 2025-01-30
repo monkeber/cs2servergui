@@ -13,12 +13,29 @@ namespace details
 
 const char* MapHistoryFilePath{ "map_history.csv" };
 
+//! In case of the successfull opening returns the document object and 'true' value, otherwise
+//! returns default initialized object and 'false'.
+std::pair<rapidcsv::Document, bool> OpenFile()
+{
+	const std::filesystem::path historyFilePath{ details::MapHistoryFilePath };
+	if (!std::filesystem::exists(historyFilePath)
+		|| !std::filesystem::is_regular_file(historyFilePath))
+	{
+		return { rapidcsv::Document{}, false };
+	}
+
+	return {
+		rapidcsv::Document{ historyFilePath.string(), rapidcsv::LabelParams{ 0 } },
+		true,
+	};
+}
+
 namespace columns
 {
 
 const char* MapWorkshopId{ "Map Workshop ID" };
-const char* DownloadedAt{ "Map Name" };
-const char* MapName{ "Downloaded At" };
+const char* DownloadedAt{ "Downloaded At" };
+const char* MapName{ "Map Name" };
 const char* PreviewPath{ "Preview Path" };
 
 }	 // namespace columns
@@ -33,7 +50,26 @@ MapHistory::MapHistory(QObject* parent)
 
 	QObject::connect(this, &MapHistory::entryAdded, &m_model, &MapHistoryModel::AddEntry);
 	QObject::connect(this, &MapHistory::resetHistory, &m_model, &MapHistoryModel::ClearModel);
+	QObject::connect(
+		&m_model, &MapHistoryModel::removeMapEntries, this, &MapHistory::RemoveMapEntries);
 	ReloadFile();
+}
+
+void MapHistory::RemoveMapEntries(const int rowIndex, const int count)
+{
+	auto&& [doc, isOpen] = details::OpenFile();
+
+	if (!isOpen)
+	{
+		return;
+	}
+
+	for (int i = 0; i < count; ++i)
+	{
+		doc.RemoveRow(rowIndex);
+	}
+
+	doc.Save();
 }
 
 void MapHistory::Add(const std::string& mapId)
@@ -145,14 +181,13 @@ void MapHistory::ReloadFile()
 {
 	emit resetHistory();
 
-	const std::filesystem::path historyFilePath{ details::MapHistoryFilePath };
-	if (!std::filesystem::exists(historyFilePath)
-		|| !std::filesystem::is_regular_file(historyFilePath))
+	auto&& [doc, isOpen] = details::OpenFile();
+
+	if (!isOpen)
 	{
 		return;
 	}
 
-	rapidcsv::Document doc{ historyFilePath.string(), rapidcsv::LabelParams{ 0 } };
 	const auto getValue = [&doc](const std::string& columnName, const std::size_t rowNum) {
 		try
 		{
@@ -177,7 +212,7 @@ void MapHistory::ReloadFile()
 		return QString{};
 	};
 
-	for (int i = doc.GetRowCount() - 1; i >= 0; --i)
+	for (int i = 0; i < doc.GetRowCount(); ++i)
 	{
 		MapHistoryEntry entry;
 		entry.m_workshopID = getValue(details::columns::MapWorkshopId, i);

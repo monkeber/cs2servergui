@@ -69,7 +69,16 @@ ColumnLayout {
         model: AppData.mapHistory.model
 
         delegate: Loader {
-            sourceComponent: column === 3 ? imageDelegate : textDelegate
+            sourceComponent: {
+                switch (column) {
+                case 0:
+                    return mapIdDelegate
+                case 3:
+                    return imageDelegate
+                default:
+                    return textDelegate
+                }
+            }
 
             Component {
                 id: textDelegate
@@ -113,6 +122,52 @@ ColumnLayout {
                         source: display.length
                                 === 0 ? "qrc:///images/no_preview.png" : new URL(display)
                         fillMode: Image.PreserveAspectFit
+                    }
+                    Rectangle {
+                        anchors.bottom: parent.bottom
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+
+                        height: 1
+
+                        color: Theme.divider
+                    }
+                }
+            }
+            Component {
+                id: mapIdDelegate
+
+                Item {
+                    implicitWidth: view.columnWidth
+                    implicitHeight: view.rowHeight
+                    Button {
+                        id: delButton
+                        anchors.left: parent.left
+                        anchors.verticalCenter: parent.verticalCenter
+
+                        icon.source: "qrc:///images/delete_icon.svg"
+
+                        Material.background: Theme.alert
+
+                        onClicked: {
+                            view.model.removeRow(row)
+                        }
+                    }
+                    TextInput {
+                        anchors.top: parent.top
+                        anchors.right: parent.right
+                        anchors.bottom: parent.bottom
+                        anchors.left: delButton.right
+
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                        wrapMode: Text.WordWrap
+                        selectByMouse: true
+                        readOnly: true
+
+                        text: display
+                        font: Globals.font
+                        color: Theme.foreground
                     }
                     Rectangle {
                         anchors.bottom: parent.bottom

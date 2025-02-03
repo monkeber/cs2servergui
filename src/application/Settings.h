@@ -45,8 +45,8 @@ public slots:
 	void setExecutablePath(QString fileUrl);
 
 private:
-	void fromJson(const QJsonDocument json);
-	QJsonDocument toJson() const;
+	void fromJson(const nl::json js);
+	nl::json toJson() const;
 
 private:
 	QString m_executablePath;

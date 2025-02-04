@@ -1,18 +1,48 @@
 #include "Settings.h"
 
 #include <QDir>
-#include <QFile>
-#include <QJsonArray>
-#include <QJsonDocument>
-#include <QJsonObject>
 #include <QtLogging>
+
+#include <fstream>
 
 namespace
 {
 namespace details
 {
 
-const QString ConfigFilePath{ "config.json" };
+const char* ConfigFilePath{ "config.json" };
+
+//! Returns data and a boolean, boolean has true value if everything is OK and false if the file
+//! does not exist or any error has occured while retrieving the data.
+std::pair<nl::json, bool> OpenAndReadFile()
+{
+	const std::filesystem::path filepath{ ConfigFilePath };
+	if (!std::filesystem::exists(filepath) || !std::filesystem::is_regular_file(filepath))
+	{
+		return { nl::json::object(), false };
+	}
+
+	std::ifstream configFile{ filepath };
+	std::stringstream dataStream;
+	dataStream << configFile.rdbuf();
+
+	const std::string data{ dataStream.str() };
+	if (!nl::json::accept(dataStream))
+	{
+		qWarning("Cannot parse config data, skipping");
+		return { nl::json::object(), false };
+	}
+
+	return { nl::json::parse(data), true };
+}
+
+//! Writes the provided data to a file.
+void WriteFile(const nl::json& data)
+{
+	const std::filesystem::path filepath{ ConfigFilePath };
+	std::ofstream configFile{ filepath };
+	configFile << data.dump(1);
+}
 
 }	 // namespace details
 }	 // namespace
@@ -20,27 +50,19 @@ const QString ConfigFilePath{ "config.json" };
 Settings::Settings(QObject* parent)
 	: QObject{ parent }
 {
-	QFile jsonFile{ details::ConfigFilePath };
-	if (!jsonFile.exists())
-	{
-		return;
-	}
+	const auto [data, isOK] = details::OpenAndReadFile();
 
-	jsonFile.open(QFile::ReadOnly);
-	fromJson(std::move(QJsonDocument::fromJson(jsonFile.readAll())));
-	jsonFile.close();
+	if (isOK)
+	{
+		fromJson(data);
+	}
 }
 
 Settings::~Settings()
 {
 	try
 	{
-		const QJsonDocument doc = toJson();
-
-		QFile jsonFile{ details::ConfigFilePath };
-		jsonFile.open(QFile::WriteOnly);
-		jsonFile.write(doc.toJson());
-		jsonFile.close();
+		details::WriteFile(toJson());
 	}
 	catch (const std::exception& e)
 	{
@@ -100,54 +122,78 @@ void Settings::setExecutablePath(QString fileUrl)
 	emit executablePathChanged(m_executablePath);
 }
 
-void Settings::fromJson(const QJsonDocument json)
+void Settings::fromJson(const nl::json js)
 {
-	if (!json.isObject())
+	try
 	{
-		qWarning("Config data is ill-formed, skipping");
-		return;
+		if (!js.is_object())
+		{
+			qWarning("Config data is ill-formed, skipping");
+			return;
+		}
+
+		if (js.contains("server"))
+		{
+			// Settings related to server configuration.
+			const nl::json server = js.at("server");
+			m_executablePath = server.value("executablePath", "").c_str();
+			m_rconPass = server.value("rconPass", "").c_str();
+			m_rconPort = server.value("rconPort", 0);
+			m_serverIP = server.value("serverIP", "").c_str();
+			m_startParameters = server.value("startParameters", "").c_str();
+			for (const auto& str : server.value<std::vector<std::string>>("quickCommands", {}))
+			{
+				m_quickCommands.push_back(str.c_str());
+			}
+		}
+		else
+		{
+			qWarning("Config data is ill-formed, missing 'server' field");
+		}
+
+		if (js.contains("application"))
+		{
+			// Settings related to config of the app itself - scale, theme, etc.
+			const nl::json app = js.at("application");
+			m_scaleFactor = app.value<double>("scalingFactor", 1.0);
+			m_theme = app.value("theme", "").c_str();
+		}
+		else
+		{
+			qWarning("Config data is ill-formed, missing 'application' field");
+		}
 	}
-
-	const QJsonObject obj{ json.object() };
-
-	// Settings related to server configuration.
-	const QJsonObject server{ obj.value("server").toObject() };
-	m_executablePath = server.value("executablePath").toString("");
-	m_rconPass = server.value("rconPass").toString("");
-	m_rconPort = server.value("rconPort").toInt();
-	m_serverIP = server.value("serverIP").toString("");
-	m_startParameters = server.value("startParameters").toString("");
-	m_quickCommands = server.value("quickCommands").toVariant().toStringList();
-
-	// Settings related to config of the app itself - scale, theme, etc.
-	const QJsonObject app{ obj.value("application").toObject() };
-	m_scaleFactor = app.value("scalingFactor").toDouble(1.0);
-	m_theme = app.value("theme").toString("");
+	catch (const std::exception& e)
+	{
+		qWarning("Config data is ill-formed, exception: %s", e.what());
+	}
+	catch (...)
+	{
+		qWarning("Config data is ill-formed, unknown exception");
+	}
 }
 
-QJsonDocument Settings::toJson() const
+nl::json Settings::toJson() const
 {
-	QJsonObject server;
-	server.insert("executablePath", m_executablePath);
-	server.insert("rconPass", m_rconPass);
-	server.insert("rconPort", m_rconPort);
-	server.insert("serverIP", m_serverIP);
-	server.insert("startParameters", m_startParameters);
-	if (!m_quickCommands.empty())
+	nl::json server;
+	server["executablePath"] = m_executablePath.toStdString();
+	server["rconPass"] = m_rconPass.toStdString();
+	server["rconPort"] = m_rconPort;
+	server["serverIP"] = m_serverIP.toStdString();
+	server["startParameters"] = m_startParameters.toStdString();
+
+	for (const auto& cmd : m_quickCommands)
 	{
-		server.insert("quickCommands", QJsonArray::fromStringList(m_quickCommands));
+		server["quickCommands"].push_back(cmd.toStdString());
 	}
 
-	QJsonObject app;
-	app.insert("scalingFactor", m_scaleFactor);
-	app.insert("theme", m_theme);
+	nl::json app;
+	app["scalingFactor"] = m_scaleFactor;
+	app["theme"] = m_theme.toStdString();
 
-	QJsonObject obj;
-	obj.insert("server", server);
-	obj.insert("application", app);
+	nl::json obj;
+	obj["server"] = server;
+	obj["application"] = app;
 
-	QJsonDocument doc;
-	doc.setObject(obj);
-
-	return doc;
+	return obj;
 }

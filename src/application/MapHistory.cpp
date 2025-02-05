@@ -11,25 +11,6 @@ namespace
 namespace details
 {
 
-const char* MapHistoryFilePath{ "map_history.csv" };
-
-//! In case of the successfull opening returns the document object and 'true' value, otherwise
-//! returns default initialized object and 'false'.
-std::pair<rapidcsv::Document, bool> OpenFile()
-{
-	const std::filesystem::path historyFilePath{ details::MapHistoryFilePath };
-	if (!std::filesystem::exists(historyFilePath)
-		|| !std::filesystem::is_regular_file(historyFilePath))
-	{
-		return { rapidcsv::Document{}, false };
-	}
-
-	return {
-		rapidcsv::Document{ historyFilePath.string(), rapidcsv::LabelParams{ 0 } },
-		true,
-	};
-}
-
 namespace columns
 {
 
@@ -39,6 +20,62 @@ const char* MapName{ "Map Name" };
 const char* PreviewPath{ "Preview Path" };
 
 }	 // namespace columns
+
+//! Returns the path for map history file.
+const std::filesystem::path& GetFilePath()
+{
+	static const std::filesystem::path filepath{ "map_history.csv" };
+	return filepath;
+}
+
+//! Returns whether the file exists and is a regular file.
+bool FileExists()
+{
+	return std::filesystem::exists(GetFilePath())
+		&& std::filesystem::is_regular_file(GetFilePath());
+}
+
+//! Returns whether the file is empty.
+bool IsFileEmpty()
+{
+	return std::filesystem::is_empty(GetFilePath());
+}
+
+//! Tries to open and return a file for writing or reading, if the file does not exist - will create
+//! a new one, if it's empty - will set the columns, if the file exists and not empty - returns the
+//! file. If the file is ill formed will return an empty Document object and false.
+std::pair<rapidcsv::Document, bool> OpenForReadWrite()
+{
+	if (!FileExists())
+	{
+		std::ofstream file{ GetFilePath() };
+		file.close();
+	}
+
+	if (IsFileEmpty())
+	{
+		rapidcsv::Document doc{ GetFilePath().string(), rapidcsv::LabelParams{ 0 } };
+		doc.SetColumnName(0, columns::MapWorkshopId);
+		doc.SetColumnName(1, columns::MapName);
+		doc.SetColumnName(2, columns::DownloadedAt);
+		doc.SetColumnName(3, columns::PreviewPath);
+
+		return { doc, true };
+	}
+
+	rapidcsv::Document doc{ GetFilePath().string(), rapidcsv::LabelParams{ 0 } };
+	if (doc.GetColumnCount() != 4)
+	{
+		qWarning("Map history file is ill-formed, cannot open: %s", GetFilePath().string().c_str());
+
+		return { rapidcsv::Document{}, false };
+	}
+
+	return {
+		rapidcsv::Document{ GetFilePath().string(), rapidcsv::LabelParams{ 0 } },
+		true,
+	};
+}
 
 }	 // namespace details
 }	 // namespace
@@ -57,7 +94,7 @@ MapHistory::MapHistory(QObject* parent)
 
 void MapHistory::RemoveMapEntries(const int rowIndex, const int count)
 {
-	auto&& [doc, isOpen] = details::OpenFile();
+	auto&& [doc, isOpen] = details::OpenForReadWrite();
 
 	if (!isOpen)
 	{
@@ -157,33 +194,34 @@ nl::json MapHistory::GetMapInfo(const std::string& mapId)
 void MapHistory::SaveMapEntry(
 	const std::string& mapId, const std::string& mapName, const std::string& previewPath)
 {
-	const std::filesystem::path historyFilePath{ details::MapHistoryFilePath };
-	if (!std::filesystem::exists(historyFilePath)
-		|| !std::filesystem::is_regular_file(historyFilePath))
+	auto&& [doc, isOpen] = details::OpenForReadWrite();
+	if (!isOpen)
 	{
-		std::ofstream of{ historyFilePath, std::ios::out };
-		of << details::columns::MapWorkshopId << ',' << details::columns::MapName << ','
-		   << details::columns::DownloadedAt << ',' << details::columns::PreviewPath << '\n';
-		of.close();
+		return;
 	}
 
-	std::ofstream of{ historyFilePath, std::ios::app };
 	const std::chrono::zoned_time currentTime{ std::chrono::current_zone(),
 		std::chrono::system_clock::now() };
 
-	of << mapId << "," << mapName << "," << currentTime.get_local_time() << "," << previewPath
-	   << "\n";
+	doc.InsertRow<std::string>(doc.GetRowCount(),
+		{
+			mapId,
+			mapName,
+			std::format("{:%d-%m-%Y %H:%M:%OS}", currentTime.get_local_time()),
+			previewPath,
+		});
 
-	of.close();
+	doc.Save();
 }
 
 void MapHistory::ReloadFile()
 {
 	emit resetHistory();
 
-	auto&& [doc, isOpen] = details::OpenFile();
+	auto&& [doc, isOpen] = details::OpenForReadWrite();
 
-	if (!isOpen)
+	// If there were any errors during opening or the file does not have any entries yet.
+	if (!isOpen || doc.GetRowCount() == 0)
 	{
 		return;
 	}

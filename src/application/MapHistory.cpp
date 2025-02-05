@@ -41,29 +41,9 @@ bool IsFileEmpty()
 	return std::filesystem::is_empty(GetFilePath());
 }
 
-//! In case of the successfull opening returns the document object and 'true' value, otherwise
-//! returns default initialized object and 'false'.
-std::pair<rapidcsv::Document, bool> OpenIfExists()
-{
-	if (!FileExists() || IsFileEmpty())
-	{
-		return { rapidcsv::Document{}, false };
-	}
-
-	rapidcsv::Document doc{ GetFilePath().string(), rapidcsv::LabelParams{ 0 } };
-	if (doc.GetColumnCount() != 4)
-	{
-		qWarning("Map history file is ill-formed, cannot open: %s", GetFilePath().string().c_str());
-	}
-
-	return {
-		rapidcsv::Document{ GetFilePath().string(), rapidcsv::LabelParams{ 0 } },
-		true,
-	};
-}
-
-//! Tries to open and return a file for write, if the file does not exist - will create a new one,
-//! if it's empty - will set the columns, if the file exists and not empty - returns the file.
+//! Tries to open and return a file for writing or reading, if the file does not exist - will create
+//! a new one, if it's empty - will set the columns, if the file exists and not empty - returns the
+//! file. If the file is ill formed will return an empty Document object and false.
 std::pair<rapidcsv::Document, bool> OpenForReadWrite()
 {
 	if (!FileExists())
@@ -87,6 +67,8 @@ std::pair<rapidcsv::Document, bool> OpenForReadWrite()
 	if (doc.GetColumnCount() != 4)
 	{
 		qWarning("Map history file is ill-formed, cannot open: %s", GetFilePath().string().c_str());
+
+		return { rapidcsv::Document{}, false };
 	}
 
 	return {
@@ -236,9 +218,10 @@ void MapHistory::ReloadFile()
 {
 	emit resetHistory();
 
-	auto&& [doc, isOpen] = details::OpenIfExists();
+	auto&& [doc, isOpen] = details::OpenForReadWrite();
 
-	if (!isOpen)
+	// If there were any errors during opening or the file does not have any entries yet.
+	if (!isOpen || doc.GetRowCount() == 0)
 	{
 		return;
 	}

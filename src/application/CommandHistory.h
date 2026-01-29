@@ -1,6 +1,6 @@
 #pragma once
 
-#include "qqmlintegration.h"
+#include "QtQmlIntegration/qqmlintegration.h"
 #include <QObject>
 
 class CommandHistory : public QObject

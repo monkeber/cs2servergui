@@ -1,9 +1,3 @@
-# Language
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-# App build
-
 set(QT_QML_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/qt/qml)
 
 add_subdirectory(application)
@@ -21,4 +15,5 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 	applicationlib
 	applicationlibplugin
 	uilibplugin
+	libb2::libb2
 )

@@ -1,14 +1,17 @@
-cmake_minimum_required(VERSION 3.21.1)
+cmake_minimum_required(VERSION 4.0.0)
 
 # Set this variable automatically.
 set(CMAKE_PROJECT_TOP_LEVEL_INCLUDES "cmake/conan_provider.cmake;${CMAKE_PROJECT_TOP_LEVEL_INCLUDES}")
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 project(cs2guiserver)
 
 set(CMAKE_AUTOMOC ON)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DQT_NO_INT128")
 
-find_package(Qt6 6.2 REQUIRED COMPONENTS Core Gui Qml Quick)
+find_package(libb2 REQUIRED)
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Qml Quick)
 find_package(cpr REQUIRED)
 find_package(nlohmann_json REQUIRED)
 find_package(rapidcsv REQUIRED)

@@ -1,4 +1,5 @@
 #include <QGuiApplication>
+#include <QtPlugin>
 #include <QQmlApplicationEngine>
 #include <QScopedPointer>
 

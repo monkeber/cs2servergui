@@ -1,0 +1,40 @@
+{
+  "version": 8,
+  "configurePresets": [
+    {
+      "name": "base",
+      "description": "Sets build directory and generator",
+      "hidden": true,
+      "binaryDir": "${sourceDir}/build",
+      "generator": "Ninja",
+      "cacheVariables": {
+        "CMAKE_EXPORT_COMPILE_COMMANDS": true,
+        "CMAKE_PROJECT_TOP_LEVEL_INCLUDES": "cmake/conan_provider.cmake",
+        "CONAN_HOST_PROFILE": "default;${sourceDir}/conan/custom_profile"
+      }
+    },
+    {
+      "name": "debug",
+      "displayName": "Debug Build",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      },
+      "inherits": [ "base" ]
+    },
+    {
+      "name": "release",
+      "displayName": "Release Build",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      },
+      "inherits": [ "base" ]
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "debug",
+      "configurePreset": "debug",
+      "targets": [ "cs2guiserver" ]
+    }
+  ]
+}

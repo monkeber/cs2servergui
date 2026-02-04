@@ -2,6 +2,7 @@
 .vs/
 build/
 deploy/
+install/
 
 *.user*
 *.qtds*

@@ -5,11 +5,12 @@
       "name": "base",
       "description": "Sets build directory and generator",
       "hidden": true,
-      "binaryDir": "${sourceDir}/build",
+      "binaryDir": "${sourceDir}/build/${presetName}",
       "generator": "Ninja",
       "cacheVariables": {
         "CMAKE_EXPORT_COMPILE_COMMANDS": true,
-        "CMAKE_PROJECT_TOP_LEVEL_INCLUDES": "cmake/conan_provider.cmake"
+        "CMAKE_PROJECT_TOP_LEVEL_INCLUDES": "cmake/conan_provider.cmake",
+        "CMAKE_INSTALL_PREFIX": "${sourceDir}/install"
       }
     },
     {
@@ -33,6 +34,11 @@
     {
       "name": "debug",
       "configurePreset": "debug",
+      "targets": [ "cs2guiserver" ]
+    },
+    {
+      "name": "release",
+      "configurePreset": "release",
       "targets": [ "cs2guiserver" ]
     }
   ]

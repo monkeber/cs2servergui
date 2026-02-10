@@ -6,6 +6,7 @@ install/
 
 *.user*
 *.qtds*
+*.env
 
 CMakeSettings.json
 CMakeUserPresets.json

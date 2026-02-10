@@ -16,3 +16,9 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 	applicationlibplugin
 	uilibplugin
 )
+
+qt_import_plugins(${PROJECT_NAME}
+	INCLUDE
+		Qt6::QWaylandIntegrationPlugin
+		Qt6::QXcbIntegrationPlugin
+)

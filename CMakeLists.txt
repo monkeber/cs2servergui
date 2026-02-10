@@ -8,15 +8,35 @@ project(cs2guiserver VERSION 3.0.0 LANGUAGES CXX)
 
 set(CMAKE_AUTOMOC ON)
 
+# A way to provide a path to statically built Qt installation without changing
+# presets or passing additional variables, mostly intended for development.
+if (NOT Qt6_ROOT)
+	set(ENV_FILE "${CMAKE_SOURCE_DIR}/.env")
+	if (EXISTS ${ENV_FILE})
+		file(STRINGS ${ENV_FILE} ENV_VARS)
+		foreach(VAR ${ENV_VARS})
+			# Split the line into KEY and VALUE.
+			if (VAR MATCHES "([^=]+)=(.*)")
+				set(ENV{${CMAKE_MATCH_1}} ${CMAKE_MATCH_2})
+			endif ()
+		endforeach()
+		message(STATUS ".env file loaded.")
+	else ()
+		message(STATUS ".env file not found at ${ENV_FILE}.")
+	endif ()
+endif ()
+
+find_package(ICU REQUIRED)
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Qml Quick)
 find_package(cpr REQUIRED)
 find_package(nlohmann_json REQUIRED)
 find_package(rapidcsv REQUIRED)
 
 qt_policy(SET QTP0001 NEW)
-
 qt_standard_project_setup()
 
+set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
+set(BUILD_SHARED_LIBS FALSE)
 add_subdirectory(third_party/rconpp)
 add_subdirectory(src)
 
@@ -29,24 +49,22 @@ endif ()
 #
 # Installation steps.
 #
-
+# set(CMAKE_INSTALL_RPATH "\$ORIGIN/../lib:\$ORIGIN/")
 install(TARGETS ${PROJECT_NAME}
 	DESTINATION .
 	RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
 
-qt_generate_deploy_qml_app_script(
-	TARGET ${PROJECT_NAME}
-	OUTPUT_SCRIPT deploy_script
-	NO_TRANSLATIONS
-	NO_COMPILER_RUNTIME
-	NO_UNSUPPORTED_PLATFORM_ERROR
-	# Excluding these plugins because install failed for them not being able to modify RPATH.
-	EXCLUDE_PLUGIN_TYPES imageformats platformthemes
-)
+# find_library(
+#     SYSTEM_LIB_LOCATION
+#     stdc++
+# )
 
-# Call the deployment script on "cmake --install".
-install(SCRIPT ${deploy_script})
+# install(
+#     PROGRAMS ${SYSTEM_LIB_LOCATION}
+#     DESTINATION ${CMAKE_INSTALL_LIBDIR} # Installs to ${CMAKE_INSTALL_PREFIX}/lib
+#     # You can specify other destinations as needed, e.g., "bin" for DLLs on Windows
+# )
 
 #
 # Packaging for the distribution.

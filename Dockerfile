@@ -1,4 +1,4 @@
-FROM ubuntu:24.04
+FROM ubuntu:24.04 AS base
 
 # Avoid interactive prompts during build
 ENV DEBIAN_FRONTEND=noninteractive
@@ -15,7 +15,11 @@ RUN apt-get update && apt-get install -y \
     wayland-protocols \
     libxkbcommon-dev \
     locales \
-    locales-all
+    locales-all \
+    fontconfig \
+    libfontconfig-dev \
+    libfreetype6 \
+    libfreetype-dev
 
 ENV LANG=en_US.UTF-8
 ENV LANGUAGE=en_US:en
@@ -32,6 +36,8 @@ RUN apt-get update && apt-get install -y cmake
 RUN pipx install conan
 ENV PATH="/root/.local/bin:${PATH}"
 
+FROM base AS qt_builder
+
 RUN mkdir /qtroot && \
     cd /qtroot && \
     git clone --branch v6.10.2 https://code.qt.io/qt/qt5.git qt && \
@@ -41,14 +47,15 @@ RUN mkdir /qtroot && \
 RUN mkdir -p /qtroot/install && \
     mkdir -p /qtroot/build && \
     cd /qtroot/build && \
-    ../qt/configure -submodules qtwayland,qtdeclarative,qtbase,qtsvg -skip qtimageformats -static -prefix /qtroot/install
+    ../qt/configure -submodules qtwayland,qtdeclarative,qtbase,qtsvg -skip qtimageformats -static -feature-freetype -fontconfig -prefix /qtroot/install
 
 RUN cd /qtroot/build && \
     cmake --build . --parallel && \
     cmake --install .
 
-RUN rm -rf /qtroot/build
-RUN rm -rf /qtroot/qt
+FROM base AS builder
+
+COPY --from=qt_builder /qtroot/install /qtroot/install
 
 # Set working directory
 WORKDIR /build

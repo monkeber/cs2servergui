@@ -18,7 +18,6 @@ class CS2ServerGUI(ConanFile):
         self.requires("rapidcsv/8.84")
         self.requires("libcurl/8.17.0")
         self.requires("sqlitecpp/3.3.3")
-        self.requires("icu/78.2")
 
     def layout(self):
         cmake_layout(self)

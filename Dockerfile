@@ -21,20 +21,25 @@ RUN apt-get update && apt-get install -y \
     libfreetype6 \
     libfreetype-dev
 
+# Fix locale related warnings while building QT.
 ENV LANG=en_US.UTF-8
 ENV LANGUAGE=en_US:en
 ENV LC_ALL=en_US.UTF-8
 
+# Install latest CMake.
 RUN apt-get remove cmake
-
 RUN apt-get update && apt-get install wget
 RUN wget https://apt.kitware.com/kitware-archive.sh -O kitware-archive.sh
 RUN chmod +x ./kitware-archive.sh && ./kitware-archive.sh
 RUN apt-get update && apt-get install -y cmake
 
-# RUN pipx ensurepath
+# Install conan and make sure it's available.
 RUN pipx install conan
 ENV PATH="/root/.local/bin:${PATH}"
+
+#
+# Layer for only building qt.
+#
 
 FROM base AS qt_builder
 
@@ -53,12 +58,19 @@ RUN cd /qtroot/build && \
     cmake --build . --parallel && \
     cmake --install .
 
+#
+# Copy built artifacts to another layer to save space in the final image.
+#
+
 FROM base AS builder
 
 COPY --from=qt_builder /qtroot/install /qtroot/install
 
-# Set working directory
 WORKDIR /build
+
+#
+# Build the application.
+#
 
 CMD ["sh", "-c", "\
     cmake --version && \

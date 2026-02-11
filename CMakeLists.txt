@@ -1,6 +1,5 @@
 cmake_minimum_required(VERSION 4.0.0)
 
-# Set this variable automatically.
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -26,7 +25,6 @@ if (NOT Qt6_ROOT)
 	endif ()
 endif ()
 
-find_package(ICU REQUIRED)
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Qml Quick)
 find_package(cpr REQUIRED)
 find_package(nlohmann_json REQUIRED)
@@ -35,9 +33,10 @@ find_package(rapidcsv REQUIRED)
 qt_policy(SET QTP0001 NEW)
 qt_standard_project_setup()
 
+# This policy allows overriding options defined in the library without modifying its code.
 set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
 set(BUILD_SHARED_LIBS FALSE)
-add_subdirectory(third_party/rconpp)
+add_subdirectory(third_party/rconpp EXCLUDE_FROM_ALL)
 add_subdirectory(src)
 
 # Tests
@@ -49,22 +48,11 @@ endif ()
 #
 # Installation steps.
 #
-# set(CMAKE_INSTALL_RPATH "\$ORIGIN/../lib:\$ORIGIN/")
+
 install(TARGETS ${PROJECT_NAME}
 	DESTINATION .
 	RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
-
-# find_library(
-#     SYSTEM_LIB_LOCATION
-#     stdc++
-# )
-
-# install(
-#     PROGRAMS ${SYSTEM_LIB_LOCATION}
-#     DESTINATION ${CMAKE_INSTALL_LIBDIR} # Installs to ${CMAKE_INSTALL_PREFIX}/lib
-#     # You can specify other destinations as needed, e.g., "bin" for DLLs on Windows
-# )
 
 #
 # Packaging for the distribution.

@@ -47,21 +47,47 @@ If build fails with conan profile related issue, try:
 conan profile detect --force
 ```
 
-### Build Process Windows
-
-Open the project in Qt Creator and hit build.
-
 Versions of dependencies used, probably will work on newer versions as well:
 
-- QtCreator 13.0.0
+- QtCreator 13.0.0 (Windows)
 - Qt 6.10.2
 - [rconpp](https://github.com/Jaskowicz1/rconpp) at [d77993b](https://github.com/Jaskowicz1/rconpp/commit/d77993b1e8993701dbf6b2974b41045a915c7b42)
 - Conan 2 and dependencies retrieved using it, see conanfile.txt for more details
 - CMake 4.0.0
 
+### Build Process Windows
+
+Open the project in Qt Creator and hit build.
+
 ### Build Process Linux
 
-Use these commands:
+For building on linux I am using static build of QT to ease the deployment process. Quick info on how to build QT for static linking, for more up to date commands see the Dockerfile:
+1. Check out QT repo in any directory of your choosing:
+    ```
+    git clone --branch v6.10.2 https://code.qt.io/qt/qt5.git qt
+    cd qt
+    ./init-repository -submodules qtwayland,qtdeclarative,qtbase,qtsvg
+    ```
+2. Configure:
+    ```
+    mkdir -p /qtroot/install
+    mkdir -p /qtroot/build
+    cd /qtroot/build
+    ../qt/configure -submodules qtwayland,qtdeclarative,qtbase,qtsvg -skip qtimageformats -static -feature-freetype -fontconfig -prefix /qtroot/install
+    ```
+3. Build:
+    ```
+    cd /qtroot/build
+    cmake --build . --parallel
+    cmake --install .
+    ```
+
+After that create `.env` file in the project root directory to set `Qt6_ROOT` CMake variable, example of file contents (the variable can also be passed for the following build step to CMake, but it's more convenient to use a file):
+```
+Qt6_ROOT=/mnt/btrwdblack/Programs/Qt/Sources/install
+```
+
+For building the application you can use these commands:
 
 ```bash
 cmake --preset release
@@ -92,13 +118,15 @@ For convenience there is also a combined script:
 
 ### Linux
 
-After building:
-```bash
-cd build/release
-cpack -G "TGZ"
+I use Docker to build the app on an older system (Ubuntu 24 for now) in order for it to link to library versions that are present on other systems so it's not usable only on arch.
+```
+docker build -t app-builder .
+docker run --rm -v $(pwd):/build -v $(pwd)/install:/install app-builder
 ```
 
-It should create an archive in the build dir with the name such as `cs2guiserver-3.0.0-Linux.tar.gz` that you can use wherever you want.
+After that you can just copy the binary from `install/bin` folder and distribute it.
+
+Note: `build` and `install` folder may be created by the docker container so in order to delete them you probably need `sudo`, hopefully I will fix it in the future.
 
 ### Supported Platforms
 

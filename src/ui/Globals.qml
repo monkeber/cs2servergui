@@ -5,10 +5,6 @@ import application 1.0
 
 QtObject {
     // Values for computing necessary sizes.
-    readonly property int refDisplayWidth: 2560
-    readonly property int refDisplayHeight: 1440
-    readonly property real refPixelDensity: 4.286910744197176
-
     property real sizeRatio: 1
     property real sizeRatioFont: 1
 
@@ -33,15 +29,4 @@ QtObject {
                                                   "family": Qt.application.font.family,
                                                   "pixelSize": Qt.application.font.pixelSize * 1.6 * sizeRatioFont * AppData.settings.scaleFactor
                                               })
-
-    Component.onCompleted: {
-        let height = Screen.height
-        let width = Screen.width
-        let dpi = Screen.pixelDensity
-
-        sizeRatio = Math.min(height / refDisplayHeight, width / refDisplayWidth)
-        sizeRatioFont = Math.min(
-            height * refPixelDensity / (dpi * refDisplayHeight),
-            width * refPixelDensity / (dpi * refDisplayWidth))
-    }
 }

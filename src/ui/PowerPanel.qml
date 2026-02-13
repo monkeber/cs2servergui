@@ -29,7 +29,6 @@ GridLayout {
             id: fileDialog
             title: qsTr("Please select an executable file")
             options: FileDialog.ReadOnly
-            nameFilters: ["Executable files (*.exe)"]
 
             onAccepted: {
                 AppData.settings.setExecutablePath(fileDialog.selectedFile)

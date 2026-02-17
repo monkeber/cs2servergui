@@ -15,6 +15,7 @@ ProcessHandler::ProcessHandler(QObject* parent)
 	, m_isRunning{ false }
 	, m_generalHistory{ this }
 	, m_scriptHistory{ this }
+	, m_process{ std::make_unique<ProcessImpl>() }
 {
 }
 
@@ -60,7 +61,7 @@ void ProcessHandler::hostWorkshopMap(const QString& map)
 	constexpr qsizetype sizeLimit{ 1000 };
 	if (map.size() > sizeLimit)
 	{
-		qWarning("Received map link or id exceeds size limit, size: %d, limit: %d",
+		qWarning("Received map link or id exceeds size limit, size: %lld, limit: %lld",
 			map.size(),
 			sizeLimit);
 	}

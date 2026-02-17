@@ -1,12 +1,13 @@
 #pragma once
 
-#include <any>
+#include <memory>
 
 #include <QObject>
 #include <QQmlEngine>
 
 #include <CommandHistory.h>
 
+class ProcessImpl;
 class ProcessHandler : public QObject
 {
 	Q_OBJECT
@@ -18,6 +19,7 @@ signals:
 
 public:
 	ProcessHandler(QObject* parent = nullptr);
+	~ProcessHandler();
 
 public slots:
 	CommandHistory* getGeneralHistory();
@@ -39,8 +41,8 @@ public slots:
 
 private:
 	bool m_isRunning;
-	std::any m_processInfo;
-	std::any m_startupInfo;
 	CommandHistory m_generalHistory;
 	CommandHistory m_scriptHistory;
+
+	std::unique_ptr<ProcessImpl> m_process;
 };

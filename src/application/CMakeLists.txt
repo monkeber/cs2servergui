@@ -14,11 +14,18 @@ set(${PROJECT_NAME}_SRC
 	MapHistoryModel.h
 	ProcessHandler.cpp
 	ProcessHandler.h
+	ProcessImpl.h
 	RCONClient.cpp
 	RCONClient.h
 	Settings.cpp
 	Settings.h
 )
+
+if (WIN32)
+	list(APPEND ${PROJECT_NAME}_SRC ProcessImpl_Windows.cpp)
+elseif (LINUX)
+	list(APPEND ${PROJECT_NAME}_SRC ProcessImpl_Linux.cpp)
+endif ()
 
 qt_add_library(${PROJECT_NAME} STATIC)
 

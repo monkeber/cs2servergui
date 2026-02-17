@@ -89,7 +89,7 @@ MapHistory::MapHistory(QObject* parent)
 	QObject::connect(this, &MapHistory::resetHistory, &m_model, &MapHistoryModel::ClearModel);
 	QObject::connect(
 		&m_model, &MapHistoryModel::removeMapEntries, this, &MapHistory::RemoveMapEntries);
-	ReloadFile();
+	// ReloadFile();
 }
 
 void MapHistory::RemoveMapEntries(const int rowIndex, const int count)

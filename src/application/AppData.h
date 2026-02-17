@@ -6,6 +6,8 @@
 #include "RCONClient.h"
 #include "Settings.h"
 
+#include <QObject>
+
 class AppData : public QObject
 {
 	Q_OBJECT

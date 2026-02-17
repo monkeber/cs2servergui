@@ -14,11 +14,18 @@ set(${PROJECT_NAME}_SRC
 	MapHistoryModel.h
 	ProcessHandler.cpp
 	ProcessHandler.h
+	ProcessImpl.h
 	RCONClient.cpp
 	RCONClient.h
 	Settings.cpp
 	Settings.h
 )
+
+if (WIN32)
+	list(APPEND ${PROJECT_NAME}_SRC ProcessImpl_Windows.cpp)
+elseif (LINUX)
+	list(APPEND ${PROJECT_NAME}_SRC ProcessImpl_Linux.cpp)
+endif ()
 
 qt_add_library(${PROJECT_NAME} STATIC)
 
@@ -38,6 +45,11 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
 	cpr::cpr
 	nlohmann_json::nlohmann_json
 	rapidcsv::rapidcsv
+)
+
+target_compile_options(${PROJECT_NAME} PRIVATE
+	 $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:GNU>>:-Wall -Wextra -Wpedantic>
+	 $<$<CXX_COMPILER_ID:MSVC>:/W4>
 )
 
 target_include_directories(${PROJECT_NAME}

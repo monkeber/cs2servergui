@@ -29,7 +29,7 @@ void RCONClient::Reset()
 		AppData::Instance().settings()->getRconPass().toStdString());
 
 	m_client->on_log = [](const std::string_view& log) {
-		qWarning(std::string{ log }.c_str());
+		qWarning("%s", std::string{ log }.c_str());
 	};
 
 	// Avoid hanging the main app thread.

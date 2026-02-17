@@ -1,9 +1,14 @@
+.cache/
 .vs/
 build/
 deploy/
+install/
 
 *.user*
 *.qtds*
+*.env
 
+compile_commands.json
 CMakeSettings.json
 CMakeUserPresets.json
+graph.html

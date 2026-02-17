@@ -183,7 +183,7 @@ nl::json MapHistory::GetMapInfo(const std::string& mapId)
 
 	if (r.status_code != 200)
 	{
-		qWarning("Request to Steam API returned not OK response, code: %d, body: &s",
+		qWarning("Request to Steam API returned not OK response, code: %ld, body: %s",
 			r.status_code,
 			r.text.c_str());
 	}
@@ -234,7 +234,7 @@ void MapHistory::ReloadFile()
 		catch (const std::exception& e)
 		{
 			qWarning(
-				"Can't retrieve value from map history file, column name: %s, row number: %d, "
+				"Can't retrieve value from map history file, column name: %s, row number: %ld, "
 				"error: %s",
 				columnName.c_str(),
 				rowNum,
@@ -242,7 +242,7 @@ void MapHistory::ReloadFile()
 		}
 		catch (...)
 		{
-			qWarning("Can't retrieve value from map history file, column name: %s, row number: %d",
+			qWarning("Can't retrieve value from map history file, column name: %s, row number: %ld",
 				columnName.c_str(),
 				rowNum);
 		}
@@ -250,7 +250,7 @@ void MapHistory::ReloadFile()
 		return QString{};
 	};
 
-	for (int i = 0; i < doc.GetRowCount(); ++i)
+	for (std::size_t i = 0; i < doc.GetRowCount(); ++i)
 	{
 		MapHistoryEntry entry;
 		entry.m_workshopID = getValue(details::columns::MapWorkshopId, i);

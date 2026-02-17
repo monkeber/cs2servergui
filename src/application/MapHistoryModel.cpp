@@ -48,7 +48,7 @@ bool MapHistoryModel::removeRows(int row, int count, const QModelIndex& parent)
 	return true;
 }
 
-int MapHistoryModel::rowCount(const QModelIndex& index) const
+int MapHistoryModel::rowCount(const QModelIndex&) const
 {
 	return m_history.size();
 }

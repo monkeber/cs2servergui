@@ -66,7 +66,7 @@ Settings::~Settings()
 	}
 	catch (const std::exception& e)
 	{
-		qWarning("Exception while saving the config:", e.what());
+		qWarning("Exception while saving the config: %s", e.what());
 	}
 	catch (...)
 	{

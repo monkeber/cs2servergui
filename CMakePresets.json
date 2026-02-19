@@ -17,7 +17,8 @@
       "name": "debug",
       "displayName": "Debug Build",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug"
+        "CMAKE_BUILD_TYPE": "Debug",
+        "BUILD_TESTS": "ON"
       },
       "inherits": [ "base" ]
     },
@@ -34,7 +35,7 @@
     {
       "name": "debug",
       "configurePreset": "debug",
-      "targets": [ "cs2guiserver" ]
+      "targets": [ "cs2guiserver", "tests" ]
     },
     {
       "name": "release",

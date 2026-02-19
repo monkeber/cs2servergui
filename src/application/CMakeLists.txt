@@ -6,6 +6,8 @@ set(${PROJECT_NAME}_SRC
 	AppData.h
 	CommandHistory.cpp
 	CommandHistory.h
+	Database.cpp
+	Database.h
 	Log.cpp
 	Log.h
 	MapHistory.cpp
@@ -45,6 +47,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
 	cpr::cpr
 	nlohmann_json::nlohmann_json
 	rapidcsv::rapidcsv
+	SQLiteCpp
 )
 
 target_compile_options(${PROJECT_NAME} PRIVATE

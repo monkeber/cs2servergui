@@ -44,8 +44,8 @@ void ProcessHandler::execCommand(const QString& cmd, const bool recordInGeneralH
 		const auto argList{ cmd.trimmed().split(" ", Qt::SkipEmptyParts) };
 		if (argList.size() > 1)
 		{
-			std::thread worker{ MapHistory::Add, argList.at(1).toStdString() };
-			worker.detach();
+			// std::thread worker{ MapHistory::Add, argList.at(1).toStdString() };
+			// worker.detach();
 		}
 	}
 }

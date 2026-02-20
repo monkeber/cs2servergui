@@ -3,7 +3,7 @@
 #include <QObject>
 #include <QQmlEngine>
 
-#include "Database.h"
+#include "MapHistoryDatabase.h"
 #include "MapHistoryModel.h"
 
 #include <string>
@@ -49,5 +49,5 @@ private:
 	MapHistoryModel m_model;
 	QVariant m_modelRef;
 	//! Handler of the underlying database where map history is stored.
-	Database m_db;
+	MapHistoryDatabase m_db;
 };

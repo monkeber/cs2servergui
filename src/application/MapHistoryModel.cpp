@@ -71,13 +71,15 @@ QVariant MapHistoryModel::data(const QModelIndex& index, int role) const
 		switch (index.column())
 		{
 		case 0:
-			return entry.m_workshopID;
+			return QString::fromStdString(entry.m_workshopID);
 		case 1:
-			return entry.m_downloadedAt;
+			return QString::fromStdString(entry.m_playedAt);
 		case 2:
-			return entry.m_mapName;
-		case 3:
-			return entry.m_previewPath;
+			return QString::fromStdString(entry.m_mapName);
+		case 3: {
+			const std::filesystem::path path{ entry.m_previewPath };
+			return QString{ "file:///%1" }.arg(std::filesystem::canonical(path).string().c_str());
+		}
 		default:
 			return QString{ "Column index is not handled" };
 		}

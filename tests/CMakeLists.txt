@@ -2,11 +2,9 @@ project(tests LANGUAGES CXX)
 
 find_package(GTest REQUIRED)
 
-include(CTest)
-
 qt_add_executable(${PROJECT_NAME}
 	main.cpp
-	DatabaseTest.cpp
+	MapHistoryDatabaseTest.cpp
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE

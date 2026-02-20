@@ -3,14 +3,16 @@
 #include <qqml.h>
 #include <QAbstractTableModel>
 
-struct MapHistoryEntry
-{
-public:
-	QString m_workshopID;
-	QString m_mapName;
-	QString m_downloadedAt;
-	QString m_previewPath;
-};
+#include "MapHistoryDatabase.h"
+
+// struct MapHistoryEntry
+// {
+// public:
+// 	QString m_workshopID;
+// 	QString m_mapName;
+// 	QString m_downloadedAt;
+// 	QString m_previewPath;
+// };
 
 class MapHistoryModel : public QAbstractTableModel
 {

@@ -6,12 +6,12 @@ set(${PROJECT_NAME}_SRC
 	AppData.h
 	CommandHistory.cpp
 	CommandHistory.h
-	Database.cpp
-	Database.h
 	Log.cpp
 	Log.h
 	MapHistory.cpp
 	MapHistory.h
+	MapHistoryDatabase.cpp
+	MapHistoryDatabase.h
 	MapHistoryModel.cpp
 	MapHistoryModel.h
 	ProcessHandler.cpp

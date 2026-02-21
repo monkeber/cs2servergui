@@ -31,7 +31,7 @@ Item {
         }
     }
 
-    property int currentTheme: Theme.Type.Light
+    property int currentTheme: Theme.Type.Dark
     property int themeId: Material.Light
     property color background: Material.background
     property color foreground: Material.foreground

@@ -23,7 +23,7 @@ int MapHistoryModel::columnCount(const QModelIndex& index) const
 {
 	// The number of members in MapHistoryEntry struct.
 	Q_UNUSED(index);
-	return 4;
+	return 6;
 }
 
 bool MapHistoryModel::removeRows(int row, int count, const QModelIndex& parent)
@@ -80,6 +80,10 @@ QVariant MapHistoryModel::data(const QModelIndex& index, int role) const
 			const std::filesystem::path path{ entry.m_previewPath };
 			return QString{ "file:///%1" }.arg(std::filesystem::canonical(path).string().c_str());
 		}
+		case 4:
+			return entry.m_rating;
+		case 5:
+			return entry.m_isBookmarked;
 		default:
 			return QString{ "Column index is not handled" };
 		}
@@ -108,6 +112,10 @@ QVariant MapHistoryModel::headerData(int section, Qt::Orientation orientation, i
 		return "Map Name";
 	case 3:
 		return "Preview";
+	case 4:
+		return "Rating";
+	case 5:
+		return "Bookmarked";
 	default:
 		return QString{ "Column index is not handled" };
 	}

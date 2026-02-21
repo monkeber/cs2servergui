@@ -1,5 +1,7 @@
 #include "MapHistoryDatabase.h"
 
+#include <QtLogging>
+
 namespace
 {
 namespace details
@@ -9,15 +11,15 @@ void ExtractColumn(SQLite::Statement& query, const std::string_view name, auto& 
 {
 	if (!query.isColumnNull(name.data()))
 	{
-		if constexpr (std::is_same_v<decltype(field), std::string>)
+		if constexpr (std::is_same_v<decltype(field), std::string&>)
 		{
 			field = query.getColumn(name.data()).getString();
 		}
-		else if constexpr (std::is_same_v<decltype(field), bool>)
+		else if constexpr (std::is_same_v<decltype(field), bool&>)
 		{
 			field = static_cast<bool>(query.getColumn(name.data()).getInt());
 		}
-		else if constexpr (std::is_integral_v<decltype(field)>)
+		else if constexpr (std::is_integral_v<std::remove_reference_t<decltype(field)>>)
 		{
 			field = query.getColumn(name.data()).getUInt();
 		}

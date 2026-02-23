@@ -33,6 +33,18 @@ public:
 		int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
 	QHash<int, QByteArray> roleNames() const override;
 
+public:
+	enum class Columns
+	{
+		MapWorkshopId = 0,
+		PlayedAt,
+		MapName,
+		Rating,
+		Bookmarked,
+		Preview
+	};
+	Q_ENUM(Columns)
+
 private:
 	//! Translates the row number in model into entry index in the data list. It is moved into
 	//! standalone method so we can, for example, use reverse order for displaying while data will

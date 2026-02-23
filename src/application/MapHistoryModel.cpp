@@ -68,22 +68,22 @@ QVariant MapHistoryModel::data(const QModelIndex& index, int role) const
 		// We will show the rows in reverse order so the new maps will appear on top for
 		// convenience.
 		const auto entry = m_history.at(GetDataIndex(index.row()));
-		switch (index.column())
+		switch (static_cast<Columns>(index.column()))
 		{
-		case 0:
+		case Columns::MapWorkshopId:
 			return QString::fromStdString(entry.m_workshopID);
-		case 1:
+		case Columns::PlayedAt:
 			return QString::fromStdString(entry.m_playedAt);
-		case 2:
+		case Columns::MapName:
 			return QString::fromStdString(entry.m_mapName);
-		case 3: {
+		case Columns::Rating:
+			return entry.m_rating;
+		case Columns::Bookmarked:
+			return entry.m_isBookmarked;
+		case Columns::Preview: {
 			const std::filesystem::path path{ entry.m_previewPath };
 			return QString{ "file:///%1" }.arg(std::filesystem::canonical(path).string().c_str());
 		}
-		case 4:
-			return entry.m_rating;
-		case 5:
-			return entry.m_isBookmarked;
 		default:
 			return QString{ "Column index is not handled" };
 		}
@@ -102,20 +102,20 @@ QVariant MapHistoryModel::headerData(int section, Qt::Orientation orientation, i
 		return "Undefined";
 	}
 
-	switch (section)
+	switch (static_cast<Columns>(section))
 	{
-	case 0:
+	case Columns::MapWorkshopId:
 		return "Workshop ID";
-	case 1:
-		return "Downloaded At";
-	case 2:
+	case Columns::PlayedAt:
+		return "Played At";
+	case Columns::MapName:
 		return "Map Name";
-	case 3:
-		return "Preview";
-	case 4:
+	case Columns::Rating:
 		return "Rating";
-	case 5:
-		return "Bookmarked";
+	case Columns::Bookmarked:
+		return "";
+	case Columns::Preview:
+		return "Preview";
 	default:
 		return QString{ "Column index is not handled" };
 	}

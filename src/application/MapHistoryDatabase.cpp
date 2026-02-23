@@ -114,6 +114,47 @@ std::vector<MapHistoryEntry> MapHistoryDatabase::Select() const
 	return result;
 }
 
+void MapHistoryDatabase::Update(const std::string& workshopId, const MapHistoryPatch& newData) const
+{
+	if (workshopId.empty())
+	{
+		throw std::runtime_error{ "Cannot update DB record due to missing workshop ID" };
+	}
+
+	std::vector<std::string> updates;
+
+	if (newData.m_isBookmarked.has_value())
+	{
+		updates.push_back(std::format("is_bookmarked = {}", newData.m_isBookmarked.value()));
+	}
+	if (newData.m_rating.has_value())
+	{
+		updates.push_back(std::format("rating = {}", newData.m_rating.value()));
+	}
+
+	if (updates.empty())
+	{
+		return;
+	}
+
+	std::string updateClause;
+	for (const auto& upd : updates)
+	{
+		if (updateClause.empty())
+		{
+			updateClause = upd;
+		}
+		else
+		{
+			updateClause += std::format(", {}", upd);
+		}
+	}
+
+	SQLite::Transaction transaction{ *m_db };
+	m_db->exec(std::format("UPDATE maps SET {} WHERE workshop_id = {}", updateClause, workshopId));
+	transaction.commit();
+}
+
 void MapHistoryDatabase::InitSchema()
 {
 	SQLite::Transaction transaction{ *m_db };

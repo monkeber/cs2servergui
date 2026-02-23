@@ -186,6 +186,9 @@ ColumnLayout {
                         anchors.left: parent.left
                         anchors.right: parent.right
                         model: ["0", "1 ⭐", "2 ⭐⭐", "3 ⭐⭐⭐", "4 ⭐⭐⭐⭐", "5 ⭐⭐⭐⭐⭐"]
+                        currentIndex: display
+
+                        onActivated: AppData.mapHistory.model.UpdateRating(row, currentIndex);
                     }
                 }
             }

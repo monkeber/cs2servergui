@@ -19,6 +19,11 @@ void MapHistoryModel::ClearModel()
 	endResetModel();
 }
 
+void MapHistoryModel::UpdateRating(const int row, const std::uint8_t rating) const
+{
+	emit UpdateRatingSignal(m_history[row].m_workshopID, rating);
+}
+
 int MapHistoryModel::columnCount(const QModelIndex& index) const
 {
 	// The number of members in MapHistoryEntry struct.
@@ -62,37 +67,33 @@ QVariant MapHistoryModel::data(const QModelIndex& index, int role) const
 		return QVariant();
 	}
 
-	switch (role)
+	if (role != Qt::DisplayRole)
 	{
-	case Qt::DisplayRole: {
-		// We will show the rows in reverse order so the new maps will appear on top for
-		// convenience.
-		const auto entry = m_history.at(GetDataIndex(index.row()));
-		switch (static_cast<Columns>(index.column()))
-		{
-		case Columns::MapWorkshopId:
-			return QString::fromStdString(entry.m_workshopID);
-		case Columns::PlayedAt:
-			return QString::fromStdString(entry.m_playedAt);
-		case Columns::MapName:
-			return QString::fromStdString(entry.m_mapName);
-		case Columns::Rating:
-			return entry.m_rating;
-		case Columns::Bookmarked:
-			return entry.m_isBookmarked;
-		case Columns::Preview: {
-			const std::filesystem::path path{ entry.m_previewPath };
-			return QString{ "file:///%1" }.arg(std::filesystem::canonical(path).string().c_str());
-		}
-		default:
-			return QString{ "Column index is not handled" };
-		}
-	}
-	default:
-		break;
+		return QVariant();
 	}
 
-	return QVariant();
+	// We will show the rows in reverse order so the new maps will appear on top for
+	// convenience.
+	const auto entry = m_history.at(GetDataIndex(index.row()));
+	switch (static_cast<Columns>(index.column()))
+	{
+	case Columns::MapWorkshopId:
+		return QString::fromStdString(entry.m_workshopID);
+	case Columns::PlayedAt:
+		return QString::fromStdString(entry.m_playedAt);
+	case Columns::MapName:
+		return QString::fromStdString(entry.m_mapName);
+	case Columns::Rating:
+		return entry.m_rating;
+	case Columns::Bookmarked:
+		return entry.m_isBookmarked;
+	case Columns::Preview: {
+		const std::filesystem::path path{ entry.m_previewPath };
+		return QString{ "file:///%1" }.arg(std::filesystem::canonical(path).string().c_str());
+	}
+	default:
+		return QString{ "Column index is not handled" };
+	}
 }
 
 QVariant MapHistoryModel::headerData(int section, Qt::Orientation orientation, int) const

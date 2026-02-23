@@ -4,13 +4,18 @@
 
 struct MapHistoryEntry
 {
-public:
 	std::string m_workshopID;
 	std::string m_mapName;
 	std::string m_playedAt;
 	std::string m_previewPath;
 	bool m_isBookmarked{ false };
 	std::uint8_t m_rating{ 0 };
+};
+
+struct MapHistoryPatch
+{
+	std::optional<bool> m_isBookmarked;
+	std::optional<std::uint8_t> m_rating;
 };
 
 class MapHistoryDatabase
@@ -31,6 +36,9 @@ public:
 	bool Exists(const std::string& mapId) const;
 	//! Returns all the stored records of the played maps.
 	std::vector<MapHistoryEntry> Select() const;
+	//! Updates is_bookmarked or rating field of the entry, workshop id serves as the identification
+	//! of the map.
+	void Update(const std::string& workshopId, const MapHistoryPatch& newData) const;
 
 private:
 	void InitSchema();

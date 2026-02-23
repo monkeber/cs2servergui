@@ -16,6 +16,7 @@ public:
 signals:
 	//! Remove 'count' map entries starting at rowIndex.
 	void removeMapEntries(const int rowIndex, const int count);
+	void UpdateRatingSignal(const std::string& workshopId, const std::uint8_t rating) const;
 
 public slots:
 	//! Adds a row into the model data.
@@ -24,6 +25,8 @@ public slots:
 	void ClearModel();
 
 public:
+	Q_INVOKABLE void UpdateRating(const int row, const std::uint8_t rating) const;
+
 	int columnCount(const QModelIndex& = QModelIndex()) const override;
 	bool removeRows(int row, int count, const QModelIndex& parent = QModelIndex()) override;
 	int rowCount(const QModelIndex& = QModelIndex()) const override;
@@ -56,6 +59,6 @@ private:
 private:
 	//! Specifies whether we should display the model data in reversed order.
 	bool m_displayOrderIsReversed;
-	//! The list of hisotry records.
+	//! The list of history records.
 	QList<MapHistoryEntry> m_history;
 };

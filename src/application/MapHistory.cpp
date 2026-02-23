@@ -89,6 +89,8 @@ MapHistory::MapHistory(QObject* parent)
 	QObject::connect(this, &MapHistory::resetHistory, &m_model, &MapHistoryModel::ClearModel);
 	QObject::connect(
 		&m_model, &MapHistoryModel::removeMapEntries, this, &MapHistory::RemoveMapEntries);
+	QObject::connect(
+		&m_model, &MapHistoryModel::UpdateRatingSignal, this, &MapHistory::UpdateMapRating);
 
 	ReloadFile();
 }
@@ -108,6 +110,14 @@ void MapHistory::RemoveMapEntries(const int rowIndex, const int count)
 	}
 
 	doc.Save();
+}
+
+void MapHistory::UpdateMapRating(const std::string& workshopId, const std::uint8_t rating)
+{
+	MapHistoryPatch patch;
+	patch.m_rating = rating;
+	m_db.Update(workshopId, patch);
+	ReloadFile();
 }
 
 void MapHistory::Add(const std::string& mapId)
@@ -231,55 +241,4 @@ void MapHistory::ReloadFile()
 	{
 		emit entryAdded(entry);
 	}
-
-	// auto&& [doc, isOpen] = details::OpenForReadWrite();
-
-	// // If there were any errors during opening or the file does not have any entries yet.
-	// if (!isOpen || doc.GetRowCount() == 0)
-	// {
-	// 	return;
-	// }
-
-	// const auto getValue = [&doc](const std::string& columnName, const std::size_t rowNum) {
-	// 	try
-	// 	{
-	// 		return QString::fromStdString(doc.GetCell<std::string>(columnName, rowNum));
-	// 	}
-	// 	catch (const std::exception& e)
-	// 	{
-	// 		qWarning(
-	// 			"Can't retrieve value from map history file, column name: %s, row number: %ld, "
-	// 			"error: %s",
-	// 			columnName.c_str(),
-	// 			rowNum,
-	// 			e.what());
-	// 	}
-	// 	catch (...)
-	// 	{
-	// 		qWarning("Can't retrieve value from map history file, column name: %s, row number: %ld",
-	// 			columnName.c_str(),
-	// 			rowNum);
-	// 	}
-
-	// 	return QString{};
-	// };
-
-	// for (std::size_t i = 0; i < doc.GetRowCount(); ++i)
-	// {
-	// 	MapHistoryEntry entry;
-	// 	entry.m_workshopID = getValue(details::columns::MapWorkshopId, i);
-	// 	entry.m_mapName = getValue(details::columns::MapName, i);
-	// 	entry.m_downloadedAt = getValue(details::columns::DownloadedAt, i);
-
-	// 	const std::filesystem::path path{
-	// 		getValue(details::columns::PreviewPath, i).toStdString()
-	// 	};
-	// 	if (std::filesystem::exists(path))
-	// 	{
-	// 		entry.m_previewPath =
-	// 			QString{ "file:///%1" }.arg(std::filesystem::canonical(path).string().c_str());
-	// 	}
-
-	// 	emit entryAdded(entry);
-	// }
 }

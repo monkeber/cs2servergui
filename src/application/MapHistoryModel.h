@@ -16,6 +16,7 @@ public:
 signals:
 	//! Remove 'count' map entries starting at rowIndex.
 	void removeMapEntries(const int rowIndex, const int count);
+	void UpdateBookmarkedSignal(const std::string& workshopId, const bool isBookmarked) const;
 	void UpdateRatingSignal(const std::string& workshopId, const std::uint8_t rating) const;
 
 public slots:
@@ -25,7 +26,8 @@ public slots:
 	void ClearModel();
 
 public:
-	Q_INVOKABLE void UpdateRating(const int row, const std::uint8_t rating) const;
+	Q_INVOKABLE void UpdateBookmarked(const int row, const bool rating) const;
+	Q_INVOKABLE void UpdateRating(const int row, const std::uint8_t isBookmarked) const;
 
 	int columnCount(const QModelIndex& = QModelIndex()) const override;
 	bool removeRows(int row, int count, const QModelIndex& parent = QModelIndex()) override;

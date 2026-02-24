@@ -19,6 +19,11 @@ void MapHistoryModel::ClearModel()
 	endResetModel();
 }
 
+void MapHistoryModel::UpdateBookmarked(const int row, const bool isBookmarked) const
+{
+	emit UpdateBookmarkedSignal(m_history[row].m_workshopID, isBookmarked);
+}
+
 void MapHistoryModel::UpdateRating(const int row, const std::uint8_t rating) const
 {
 	emit UpdateRatingSignal(m_history[row].m_workshopID, rating);

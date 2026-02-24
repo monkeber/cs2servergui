@@ -91,6 +91,8 @@ MapHistory::MapHistory(QObject* parent)
 		&m_model, &MapHistoryModel::removeMapEntries, this, &MapHistory::RemoveMapEntries);
 	QObject::connect(
 		&m_model, &MapHistoryModel::UpdateRatingSignal, this, &MapHistory::UpdateMapRating);
+	QObject::connect(
+		&m_model, &MapHistoryModel::UpdateBookmarkedSignal, this, &MapHistory::UpdateMapBookmarked);
 
 	ReloadFile();
 }
@@ -110,6 +112,14 @@ void MapHistory::RemoveMapEntries(const int rowIndex, const int count)
 	}
 
 	doc.Save();
+}
+
+void MapHistory::UpdateMapBookmarked(const std::string& workshopId, const bool isBookmarked)
+{
+	MapHistoryPatch patch;
+	patch.m_isBookmarked = isBookmarked;
+	m_db.Update(workshopId, patch);
+	ReloadFile();
 }
 
 void MapHistory::UpdateMapRating(const std::string& workshopId, const std::uint8_t rating)

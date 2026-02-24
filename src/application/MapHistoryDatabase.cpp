@@ -95,7 +95,7 @@ bool MapHistoryDatabase::Exists(const std::string& mapId) const
 std::vector<MapHistoryEntry> MapHistoryDatabase::Select() const
 {
 	SQLite::Transaction transaction{ *m_db };
-	SQLite::Statement query{ *m_db, "SELECT * FROM map_history_data;" };
+	SQLite::Statement query{ *m_db, "SELECT * FROM map_history_data ORDER BY played_at DESC;" };
 
 	std::vector<MapHistoryEntry> result;
 	while (query.executeStep())

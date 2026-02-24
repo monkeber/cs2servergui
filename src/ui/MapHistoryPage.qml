@@ -50,7 +50,7 @@ ColumnLayout {
             // Column width should account for margins, otherwise margins don't work.
             // Divide view width into parts and make most of the columns take 2 parts, while 2 columns will take only 1 part.
             const bookmarkWidth = 50;
-            const partWidth = (view.width - leftMargin - rightMargin - bookmarkWidth) / (view.model.columnCount() - 1)
+            const partWidth = (view.width - leftMargin - rightMargin - bookmarkWidth) / (view.model.columnCount() - 1);
             switch (column) {
                 case MapHistoryModel.Columns.Bookmarked:
                     return bookmarkWidth;
@@ -79,6 +79,9 @@ ColumnLayout {
         model: AppData.mapHistory.model
 
         delegate: Loader {
+            id: rootLoader
+            property var displayData: display
+
             sourceComponent: {
                 switch (column) {
                 case MapHistoryModel.Columns.MapWorkshopId:
@@ -107,7 +110,7 @@ ColumnLayout {
                         selectByMouse: true
                         readOnly: true
 
-                        text: display
+                        text: rootLoader.displayData
                         font: Globals.font
                         color: Theme.foreground
                     }
@@ -122,8 +125,8 @@ ColumnLayout {
                         anchors.topMargin: Globals.mapHistoryRowSpacing
                         anchors.bottomMargin: anchors.topMargin
 
-                        source: display.length
-                                === 0 ? "qrc:///images/no_preview.png" : new URL(display)
+                        source: rootLoader.displayData.length
+                                === 0 ? "qrc:///images/no_preview.png" : new URL(rootLoader.displayData)
                         fillMode: Image.PreserveAspectFit
                     }
                 }
@@ -158,7 +161,7 @@ ColumnLayout {
                         selectByMouse: true
                         readOnly: true
 
-                        text: display
+                        text: rootLoader.displayData
                         font: Globals.font
                         color: Theme.foreground
                     }
@@ -166,15 +169,24 @@ ColumnLayout {
             }
             Component {
                 id: bookmarkDelegate
+
                 Item {
                     implicitHeight: view.rowHeight
-                    Image {
-                        anchors.fill: parent
-                        anchors.topMargin: Globals.mapHistoryRowSpacing
-                        anchors.bottomMargin: anchors.topMargin
+                    CheckBox {
+                        checked: rootLoader.displayData
+                        checkable: true
 
-                        source: display ? "qrc:///images/bookmark_checked.svg" : "qrc:///images/bookmark_unchecked.svg"
-                        fillMode: Image.PreserveAspectFit
+                        // Set the size explicitly, otherwise Qt detects a binding loop if we fill parent anchors.
+                        height: parent.height
+                        width: parent.width
+
+                        indicator: Image {
+                            anchors.fill: parent
+                            source: parent.checked ? "qrc:///images/bookmark_checked.svg" : "qrc:///images/bookmark_unchecked.svg"
+                            fillMode: Image.PreserveAspectFit
+                        }
+
+                        onToggled: AppData.mapHistory.model.UpdateBookmarked(row, checked);
                     }
                 }
             }
@@ -186,7 +198,7 @@ ColumnLayout {
                         anchors.left: parent.left
                         anchors.right: parent.right
                         model: ["0", "1 ⭐", "2 ⭐⭐", "3 ⭐⭐⭐", "4 ⭐⭐⭐⭐", "5 ⭐⭐⭐⭐⭐"]
-                        currentIndex: display
+                        currentIndex: rootLoader.displayData
 
                         onActivated: AppData.mapHistory.model.UpdateRating(row, currentIndex);
                     }

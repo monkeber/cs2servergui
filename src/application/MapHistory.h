@@ -25,6 +25,8 @@ signals:
 public slots:
 	//! Removes map entries from the map history file.
 	void RemoveMapEntries(const int rowIndex, const int count);
+	//! Updates the bookmarked status of the specified map ID.
+	void UpdateMapBookmarked(const std::string& workshopId, const bool isBookmarked);
 	//! Updates the rating of the specified map ID.
 	void UpdateMapRating(const std::string& workshopId, const std::uint8_t rating);
 

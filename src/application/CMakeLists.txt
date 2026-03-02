@@ -10,6 +10,8 @@ set(${PROJECT_NAME}_SRC
 	Log.h
 	MapHistory.cpp
 	MapHistory.h
+	MapHistoryDatabase.cpp
+	MapHistoryDatabase.h
 	MapHistoryModel.cpp
 	MapHistoryModel.h
 	ProcessHandler.cpp
@@ -44,7 +46,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
 	rconpp
 	cpr::cpr
 	nlohmann_json::nlohmann_json
-	rapidcsv::rapidcsv
+	SQLiteCpp
 )
 
 target_compile_options(${PROJECT_NAME} PRIVATE

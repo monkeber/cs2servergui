@@ -45,9 +45,19 @@ ColumnLayout {
         id: view
 
         readonly property int rowHeight: Screen.height * AppData.settings.scaleFactor / 10
-        // Column width should account for margins, otherwise margins don't work.
-        readonly property int columnWidth: (view.width - leftMargin - rightMargin)
-                                           / view.model.columnCount()
+
+        columnWidthProvider: function (column) {
+            // Column width should account for margins, otherwise margins don't work.
+            // Divide view width into parts and make most of the columns take 2 parts, while 2 columns will take only 1 part.
+            const bookmarkWidth = 50;
+            const partWidth = (view.width - leftMargin - rightMargin - bookmarkWidth) / (view.model.columnCount() - 1);
+            switch (column) {
+                case MapHistoryModel.Columns.Bookmarked:
+                    return bookmarkWidth;
+                default:
+                    return partWidth;
+            }
+        }
 
         Layout.fillHeight: true
         Layout.fillWidth: true
@@ -60,6 +70,7 @@ ColumnLayout {
         interactive: true
         flickableDirection: Flickable.VerticalFlick
         boundsBehavior: Flickable.OvershootBounds
+        reuseItems: false
 
         ScrollBar.vertical: ScrollBar {
             id: scrollBar
@@ -69,11 +80,18 @@ ColumnLayout {
         model: AppData.mapHistory.model
 
         delegate: Loader {
+            id: rootLoader
+            property var displayData: display
+
             sourceComponent: {
                 switch (column) {
-                case 0:
+                case MapHistoryModel.Columns.MapWorkshopId:
                     return mapIdDelegate
-                case 3:
+                case MapHistoryModel.Columns.Rating:
+                    return ratingDelegate
+                case MapHistoryModel.Columns.Bookmarked:
+                    return bookmarkDelegate
+                case MapHistoryModel.Columns.Preview:
                     return imageDelegate
                 default:
                     return textDelegate
@@ -83,7 +101,6 @@ ColumnLayout {
             Component {
                 id: textDelegate
                 Item {
-                    implicitWidth: view.columnWidth
                     implicitHeight: view.rowHeight
                     TextInput {
                         anchors.fill: parent
@@ -94,43 +111,24 @@ ColumnLayout {
                         selectByMouse: true
                         readOnly: true
 
-                        text: display
+                        text: rootLoader.displayData
                         font: Globals.font
                         color: Theme.foreground
-                    }
-                    Rectangle {
-                        anchors.bottom: parent.bottom
-                        anchors.left: parent.left
-                        anchors.right: parent.right
-
-                        height: 1
-
-                        color: Theme.divider
                     }
                 }
             }
             Component {
                 id: imageDelegate
                 Item {
-                    implicitWidth: view.columnWidth
                     implicitHeight: view.rowHeight
                     Image {
                         anchors.fill: parent
                         anchors.topMargin: Globals.mapHistoryRowSpacing
                         anchors.bottomMargin: anchors.topMargin
 
-                        source: display.length
-                                === 0 ? "qrc:///images/no_preview.png" : new URL(display)
+                        source: rootLoader.displayData.length
+                                === 0 ? "qrc:///images/no_preview.png" : new URL(rootLoader.displayData)
                         fillMode: Image.PreserveAspectFit
-                    }
-                    Rectangle {
-                        anchors.bottom: parent.bottom
-                        anchors.left: parent.left
-                        anchors.right: parent.right
-
-                        height: 1
-
-                        color: Theme.divider
                     }
                 }
             }
@@ -138,7 +136,6 @@ ColumnLayout {
                 id: mapIdDelegate
 
                 Item {
-                    implicitWidth: view.columnWidth
                     implicitHeight: view.rowHeight
                     Button {
                         id: delButton
@@ -149,9 +146,7 @@ ColumnLayout {
 
                         Material.background: Theme.alert
 
-                        onClicked: {
-                            view.model.removeRow(row)
-                        }
+                        onClicked: view.model.removeRow(row)
                     }
                     TextInput {
                         anchors.top: parent.top
@@ -165,20 +160,57 @@ ColumnLayout {
                         selectByMouse: true
                         readOnly: true
 
-                        text: display
+                        text: rootLoader.displayData
                         font: Globals.font
                         color: Theme.foreground
                     }
-                    Rectangle {
-                        anchors.bottom: parent.bottom
-                        anchors.left: parent.left
-                        anchors.right: parent.right
+                }
+            }
+            Component {
+                id: bookmarkDelegate
 
-                        height: 1
+                Item {
+                    implicitHeight: view.rowHeight
+                    CheckBox {
+                        checked: rootLoader.displayData
+                        checkable: true
 
-                        color: Theme.divider
+                        // Set the size explicitly, otherwise Qt detects a binding loop if we fill parent anchors.
+                        height: parent.height
+                        width: parent.width
+
+                        indicator: Image {
+                            anchors.fill: parent
+                            source: parent.checked ? "qrc:///images/bookmark_checked.svg" : "qrc:///images/bookmark_unchecked.svg"
+                            fillMode: Image.PreserveAspectFit
+                        }
+
+                        onToggled: AppData.mapHistory.model.UpdateBookmarked(row, checked);
                     }
                 }
+            }
+            Component {
+                id: ratingDelegate
+                Item {
+                    ComboBox {
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        model: ["0", "1 ⭐", "2 ⭐⭐", "3 ⭐⭐⭐", "4 ⭐⭐⭐⭐", "5 ⭐⭐⭐⭐⭐"]
+                        currentIndex: rootLoader.displayData
+
+                        onActivated: AppData.mapHistory.model.UpdateRating(row, currentIndex);
+                    }
+                }
+            }
+            Rectangle {
+                anchors.bottom: parent.bottom
+                anchors.left: parent.left
+                anchors.right: parent.right
+
+                height: 1
+
+                color: Theme.divider
             }
         }
     }

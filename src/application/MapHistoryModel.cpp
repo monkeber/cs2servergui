@@ -1,14 +1,13 @@
 #include "MapHistoryModel.h"
 
 MapHistoryModel::MapHistoryModel()
-	: m_displayOrderIsReversed{ true }
 {
 }
 
-void MapHistoryModel::AddEntry(const MapHistoryEntry& entry)
+void MapHistoryModel::AddEntries(const std::vector<MapHistoryEntry>& entries)
 {
-	beginInsertRows(QModelIndex{}, m_history.size(), m_history.size());
-	m_history.append(entry);
+	beginInsertRows(QModelIndex{}, 0, entries.size());
+	m_history = QList<MapHistoryEntry>{ entries.begin(), entries.end() };
 	endInsertRows();
 }
 
@@ -19,32 +18,31 @@ void MapHistoryModel::ClearModel()
 	endResetModel();
 }
 
+void MapHistoryModel::UpdateBookmarked(const int row, const bool isBookmarked) const
+{
+	emit UpdateBookmarkedSignal(m_history[row].m_workshopID, isBookmarked);
+}
+
+void MapHistoryModel::UpdateRating(const int row, const std::uint8_t rating) const
+{
+	emit UpdateRatingSignal(m_history[row].m_workshopID, rating);
+}
+
 int MapHistoryModel::columnCount(const QModelIndex& index) const
 {
 	// The number of members in MapHistoryEntry struct.
 	Q_UNUSED(index);
-	return 4;
+	return 6;
 }
 
 bool MapHistoryModel::removeRows(int row, int count, const QModelIndex& parent)
 {
+	// We assume the count is always 1.
+	const MapHistoryEntry entry{ m_history[row] };
 	beginRemoveRows(parent, row, row + count - 1);
-	if (IsDisplayOrderReversed())
-	{
-		// +1 because erase() deletes the first element in the specified range and does not delete
-		// the last, while in this case we want the opposite.
-		const int endIndex{ GetDataIndex(row) + 1 };
-		const int beginIndex{ GetDataIndex(row) - count + 1 };
-
-		m_history.erase(m_history.cbegin() + beginIndex, m_history.cbegin() + endIndex);
-		emit removeMapEntries(beginIndex, count);
-	}
-	else
-	{
-		m_history.erase(m_history.cbegin() + row, m_history.cbegin() + count);
-		emit removeMapEntries(row, count);
-	}
+	m_history.erase(m_history.cbegin() + row, m_history.cbegin() + row + count);
 	endRemoveRows();
+	emit RemoveMapEntry(entry.m_workshopID, entry.m_playedAt);
 	return true;
 }
 
@@ -62,31 +60,33 @@ QVariant MapHistoryModel::data(const QModelIndex& index, int role) const
 		return QVariant();
 	}
 
-	switch (role)
+	if (role != Qt::DisplayRole)
 	{
-	case Qt::DisplayRole: {
-		// We will show the rows in reverse order so the new maps will appear on top for
-		// convenience.
-		const auto entry = m_history.at(GetDataIndex(index.row()));
-		switch (index.column())
-		{
-		case 0:
-			return entry.m_workshopID;
-		case 1:
-			return entry.m_downloadedAt;
-		case 2:
-			return entry.m_mapName;
-		case 3:
-			return entry.m_previewPath;
-		default:
-			return QString{ "Column index is not handled" };
-		}
-	}
-	default:
-		break;
+		return QVariant();
 	}
 
-	return QVariant();
+	// We will show the rows in reverse order so the new maps will appear on top for
+	// convenience.
+	const auto entry = m_history.at(index.row());
+	switch (static_cast<Columns>(index.column()))
+	{
+	case Columns::MapWorkshopId:
+		return QString::fromStdString(entry.m_workshopID);
+	case Columns::PlayedAt:
+		return QString::fromStdString(entry.m_playedAt);
+	case Columns::MapName:
+		return QString::fromStdString(entry.m_mapName);
+	case Columns::Rating:
+		return entry.m_rating;
+	case Columns::Bookmarked:
+		return entry.m_isBookmarked;
+	case Columns::Preview: {
+		const std::filesystem::path path{ entry.m_previewPath };
+		return QString{ "file:///%1" }.arg(std::filesystem::canonical(path).string().c_str());
+	}
+	default:
+		return QString{ "Column index is not handled" };
+	}
 }
 
 QVariant MapHistoryModel::headerData(int section, Qt::Orientation orientation, int) const
@@ -96,15 +96,19 @@ QVariant MapHistoryModel::headerData(int section, Qt::Orientation orientation, i
 		return "Undefined";
 	}
 
-	switch (section)
+	switch (static_cast<Columns>(section))
 	{
-	case 0:
+	case Columns::MapWorkshopId:
 		return "Workshop ID";
-	case 1:
-		return "Downloaded At";
-	case 2:
+	case Columns::PlayedAt:
+		return "Played At";
+	case Columns::MapName:
 		return "Map Name";
-	case 3:
+	case Columns::Rating:
+		return "Rating";
+	case Columns::Bookmarked:
+		return "";
+	case Columns::Preview:
 		return "Preview";
 	default:
 		return QString{ "Column index is not handled" };
@@ -116,19 +120,4 @@ QHash<int, QByteArray> MapHistoryModel::roleNames() const
 	return {
 		{ Qt::DisplayRole, "display" },
 	};
-}
-
-int MapHistoryModel::GetDataIndex(const int rowNumber) const
-{
-	if (IsDisplayOrderReversed())
-	{
-		return m_history.size() - rowNumber - 1;
-	}
-
-	return rowNumber;
-}
-
-bool MapHistoryModel::IsDisplayOrderReversed() const
-{
-	return m_displayOrderIsReversed;
 }

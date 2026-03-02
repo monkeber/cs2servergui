@@ -32,12 +32,16 @@ qt_add_qml_module(${PROJECT_NAME}
 
 qt_add_resources(${PROJECT_NAME} "configuration" PREFIX "/" FILES qtquickcontrols2.conf)
 
+set_source_files_properties(${CMAKE_SOURCE_DIR}/resources/bookmark_checked.svg PROPERTIES QT_RESOURCE_ALIAS "bookmark_checked.svg")
+set_source_files_properties(${CMAKE_SOURCE_DIR}/resources/bookmark_unchecked.svg PROPERTIES QT_RESOURCE_ALIAS "bookmark_unchecked.svg")
 set_source_files_properties(${CMAKE_SOURCE_DIR}/resources/delete_icon.svg PROPERTIES QT_RESOURCE_ALIAS "delete_icon.svg")
 set_source_files_properties(${CMAKE_SOURCE_DIR}/resources/no_preview.png PROPERTIES QT_RESOURCE_ALIAS "no_preview.png")
 qt_add_resources(${PROJECT_NAME} "images"
 	PREFIX
 		"/images"
 	FILES
+		${CMAKE_SOURCE_DIR}/resources/bookmark_checked.svg
+		${CMAKE_SOURCE_DIR}/resources/bookmark_unchecked.svg
 		${CMAKE_SOURCE_DIR}/resources/delete_icon.svg
 		${CMAKE_SOURCE_DIR}/resources/no_preview.png
 )

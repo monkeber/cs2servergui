@@ -3,14 +3,7 @@
 #include <qqml.h>
 #include <QAbstractTableModel>
 
-struct MapHistoryEntry
-{
-public:
-	QString m_workshopID;
-	QString m_mapName;
-	QString m_downloadedAt;
-	QString m_previewPath;
-};
+#include "MapHistoryDatabase.h"
 
 class MapHistoryModel : public QAbstractTableModel
 {
@@ -23,14 +16,20 @@ public:
 signals:
 	//! Remove 'count' map entries starting at rowIndex.
 	void removeMapEntries(const int rowIndex, const int count);
+	void RemoveMapEntry(const std::string& workshopId, const std::string& playedAt);
+	void UpdateBookmarkedSignal(const std::string& workshopId, const bool isBookmarked) const;
+	void UpdateRatingSignal(const std::string& workshopId, const std::uint8_t rating) const;
 
 public slots:
-	//! Adds a row into the model data.
-	void AddEntry(const MapHistoryEntry& entry);
+	//! Adds rows into the model data.
+	void AddEntries(const std::vector<MapHistoryEntry>& entries);
 	//! Clears all the rows from the model.
 	void ClearModel();
 
 public:
+	Q_INVOKABLE void UpdateBookmarked(const int row, const bool rating) const;
+	Q_INVOKABLE void UpdateRating(const int row, const std::uint8_t isBookmarked) const;
+
 	int columnCount(const QModelIndex& = QModelIndex()) const override;
 	bool removeRows(int row, int count, const QModelIndex& parent = QModelIndex()) override;
 	int rowCount(const QModelIndex& = QModelIndex()) const override;
@@ -40,17 +39,19 @@ public:
 		int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
 	QHash<int, QByteArray> roleNames() const override;
 
-private:
-	//! Translates the row number in model into entry index in the data list. It is moved into
-	//! standalone method so we can, for example, use reverse order for displaying while data will
-	//! be stored in the chronological ascending order.
-	int GetDataIndex(const int rowNumber) const;
-	//! Returns where the display order is reversed.
-	bool IsDisplayOrderReversed() const;
+public:
+	enum class Columns
+	{
+		MapWorkshopId = 0,
+		PlayedAt,
+		MapName,
+		Rating,
+		Bookmarked,
+		Preview
+	};
+	Q_ENUM(Columns)
 
 private:
-	//! Specifies whether we should display the model data in reversed order.
-	bool m_displayOrderIsReversed;
-	//! The list of hisotry records.
+	//! The list of history records.
 	QList<MapHistoryEntry> m_history;
 };

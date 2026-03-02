@@ -46,7 +46,6 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
 	rconpp
 	cpr::cpr
 	nlohmann_json::nlohmann_json
-	rapidcsv::rapidcsv
 	SQLiteCpp
 )
 

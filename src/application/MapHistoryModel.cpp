@@ -1,14 +1,13 @@
 #include "MapHistoryModel.h"
 
 MapHistoryModel::MapHistoryModel()
-	: m_displayOrderIsReversed{ true }
 {
 }
 
-void MapHistoryModel::AddEntry(const MapHistoryEntry& entry)
+void MapHistoryModel::AddEntries(const std::vector<MapHistoryEntry>& entries)
 {
-	beginInsertRows(QModelIndex{}, m_history.size(), m_history.size());
-	m_history.append(entry);
+	beginInsertRows(QModelIndex{}, 0, entries.size());
+	m_history = QList<MapHistoryEntry>{ entries.begin(), entries.end() };
 	endInsertRows();
 }
 
@@ -38,23 +37,12 @@ int MapHistoryModel::columnCount(const QModelIndex& index) const
 
 bool MapHistoryModel::removeRows(int row, int count, const QModelIndex& parent)
 {
+	// We assume the count is always 1.
+	const MapHistoryEntry entry{ m_history[row] };
 	beginRemoveRows(parent, row, row + count - 1);
-	if (IsDisplayOrderReversed())
-	{
-		// +1 because erase() deletes the first element in the specified range and does not delete
-		// the last, while in this case we want the opposite.
-		const int endIndex{ GetDataIndex(row) + 1 };
-		const int beginIndex{ GetDataIndex(row) - count + 1 };
-
-		m_history.erase(m_history.cbegin() + beginIndex, m_history.cbegin() + endIndex);
-		emit removeMapEntries(beginIndex, count);
-	}
-	else
-	{
-		m_history.erase(m_history.cbegin() + row, m_history.cbegin() + count);
-		emit removeMapEntries(row, count);
-	}
+	m_history.erase(m_history.cbegin() + row, m_history.cbegin() + row + count);
 	endRemoveRows();
+	emit RemoveMapEntry(entry.m_workshopID, entry.m_playedAt);
 	return true;
 }
 
@@ -79,7 +67,7 @@ QVariant MapHistoryModel::data(const QModelIndex& index, int role) const
 
 	// We will show the rows in reverse order so the new maps will appear on top for
 	// convenience.
-	const auto entry = m_history.at(GetDataIndex(index.row()));
+	const auto entry = m_history.at(index.row());
 	switch (static_cast<Columns>(index.column()))
 	{
 	case Columns::MapWorkshopId:
@@ -132,19 +120,4 @@ QHash<int, QByteArray> MapHistoryModel::roleNames() const
 	return {
 		{ Qt::DisplayRole, "display" },
 	};
-}
-
-int MapHistoryModel::GetDataIndex(const int rowNumber) const
-{
-	if (IsDisplayOrderReversed())
-	{
-		return m_history.size() - rowNumber - 1;
-	}
-
-	return rowNumber;
-}
-
-bool MapHistoryModel::IsDisplayOrderReversed() const
-{
-	return m_displayOrderIsReversed;
 }

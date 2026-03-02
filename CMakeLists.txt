@@ -28,7 +28,6 @@ endif ()
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Qml Quick)
 find_package(cpr REQUIRED)
 find_package(nlohmann_json REQUIRED)
-find_package(rapidcsv REQUIRED)
 find_package(SQLiteCpp REQUIRED)
 
 qt_policy(SET QTP0001 NEW)

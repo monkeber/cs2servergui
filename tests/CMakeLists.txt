@@ -15,7 +15,6 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 	rconpp
 	cpr::cpr
 	nlohmann_json::nlohmann_json
-	rapidcsv::rapidcsv
 	SQLiteCpp
 	applicationlib
 	gtest::gtest

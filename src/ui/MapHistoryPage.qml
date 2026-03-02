@@ -70,6 +70,7 @@ ColumnLayout {
         interactive: true
         flickableDirection: Flickable.VerticalFlick
         boundsBehavior: Flickable.OvershootBounds
+        reuseItems: false
 
         ScrollBar.vertical: ScrollBar {
             id: scrollBar
@@ -145,9 +146,7 @@ ColumnLayout {
 
                         Material.background: Theme.alert
 
-                        onClicked: {
-                            view.model.removeRow(row)
-                        }
+                        onClicked: view.model.removeRow(row)
                     }
                     TextInput {
                         anchors.top: parent.top

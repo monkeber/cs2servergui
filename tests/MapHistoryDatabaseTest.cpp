@@ -7,9 +7,15 @@ TEST(MapHistoryDatabaseTest, InsertOfANewMap)
 	MapHistoryDatabase db{ ":memory:" };
 	ASSERT_NO_THROW(db.AddNewMap("123", "dedust", "previews/somepath.png"));
 	ASSERT_NO_THROW(db.AddNewMap("1234", "deinferno", "previews/someanotherpath.png"));
-	ASSERT_NO_THROW(db.AddJournalEntry("1234"));
-	ASSERT_NO_THROW(db.AddJournalEntry("1234"));
+
+	// Because we have a unique constraint for the pairs.
+	std::this_thread::sleep_for(std::chrono::milliseconds{ 15 });
+
 	ASSERT_NO_THROW(db.AddJournalEntry("123"));
+	ASSERT_NO_THROW(db.AddJournalEntry("1234"));
+
+	std::this_thread::sleep_for(std::chrono::milliseconds{ 15 });
+	ASSERT_NO_THROW(db.AddJournalEntry("1234"));
 	ASSERT_NO_THROW(db.AddJournalEntry("123"));
 }
 
@@ -74,4 +80,30 @@ TEST(MapHistoryDatabaseTest, UpdateWithIncorrectValues)
 	patch.m_isBookmarked = true;
 	patch.m_rating = 10;
 	ASSERT_THROW(db.Update("123", patch), SQLite::Exception);
+}
+
+TEST(MapHistoryDatabaseTest, SelectOne)
+{
+	MapHistoryDatabase db{ ":memory:" };
+	ASSERT_NO_THROW(db.AddNewMap("123", "dedust", "previews/somepath.png"));
+	std::vector<MapHistoryEntry> entries;
+	ASSERT_NO_THROW(entries = db.Select());
+
+	ASSERT_NO_THROW(db.SelectOne("123", entries.front().m_playedAt));
+}
+
+TEST(MapHistoryDatabaseTest, Delete)
+{
+	MapHistoryDatabase db{ ":memory:" };
+	ASSERT_NO_THROW(db.AddNewMap("123", "dedust", "previews/somepath.png"));
+	ASSERT_NO_THROW(db.AddNewMap("1234", "notdedust", "previews/anothersomepath.png"));
+	std::vector<MapHistoryEntry> entries;
+	ASSERT_NO_THROW(entries = db.Select());
+	ASSERT_EQ(entries.size(), 2);
+
+	ASSERT_NO_THROW(db.Delete("123", entries.front().m_playedAt));
+
+	ASSERT_NO_THROW(entries = db.Select());
+	ASSERT_EQ(entries.size(), 1);
+	ASSERT_EQ(entries.front().m_workshopID, "1234");
 }

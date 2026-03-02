@@ -1,94 +1,18 @@
 #include "MapHistory.h"
-#include "AppData.h"
 
 #include <QtLogging>
 
 #include <cpr/cpr.h>
-#include <rapidcsv.h>
-
-namespace
-{
-namespace details
-{
-
-namespace columns
-{
-
-const char* MapWorkshopId{ "Map Workshop ID" };
-const char* DownloadedAt{ "Downloaded At" };
-const char* MapName{ "Map Name" };
-const char* PreviewPath{ "Preview Path" };
-
-}	 // namespace columns
-
-//! Returns the path for map history file.
-const std::filesystem::path& GetFilePath()
-{
-	static const std::filesystem::path filepath{ "map_history.csv" };
-	return filepath;
-}
-
-//! Returns whether the file exists and is a regular file.
-bool FileExists()
-{
-	return std::filesystem::exists(GetFilePath())
-		&& std::filesystem::is_regular_file(GetFilePath());
-}
-
-//! Returns whether the file is empty.
-bool IsFileEmpty()
-{
-	return std::filesystem::is_empty(GetFilePath());
-}
-
-//! Tries to open and return a file for writing or reading, if the file does not exist - will create
-//! a new one, if it's empty - will set the columns, if the file exists and not empty - returns the
-//! file. If the file is ill formed will return an empty Document object and false.
-std::pair<rapidcsv::Document, bool> OpenForReadWrite()
-{
-	if (!FileExists())
-	{
-		std::ofstream file{ GetFilePath() };
-		file.close();
-	}
-
-	if (IsFileEmpty())
-	{
-		rapidcsv::Document doc{ GetFilePath().string(), rapidcsv::LabelParams{ 0 } };
-		doc.SetColumnName(0, columns::MapWorkshopId);
-		doc.SetColumnName(1, columns::MapName);
-		doc.SetColumnName(2, columns::DownloadedAt);
-		doc.SetColumnName(3, columns::PreviewPath);
-
-		return { doc, true };
-	}
-
-	rapidcsv::Document doc{ GetFilePath().string(), rapidcsv::LabelParams{ 0 } };
-	if (doc.GetColumnCount() != 4)
-	{
-		qWarning("Map history file is ill-formed, cannot open: %s", GetFilePath().string().c_str());
-
-		return { rapidcsv::Document{}, false };
-	}
-
-	return {
-		rapidcsv::Document{ GetFilePath().string(), rapidcsv::LabelParams{ 0 } },
-		true,
-	};
-}
-
-}	 // namespace details
-}	 // namespace
 
 MapHistory::MapHistory(QObject* parent)
 	: QObject{ parent }
 {
 	m_modelRef = QVariant::fromValue(&m_model);
 
-	QObject::connect(this, &MapHistory::entryAdded, &m_model, &MapHistoryModel::AddEntry);
-	QObject::connect(this, &MapHistory::resetHistory, &m_model, &MapHistoryModel::ClearModel);
+	QObject::connect(this, &MapHistory::EntriesAdded, &m_model, &MapHistoryModel::AddEntries);
+	QObject::connect(this, &MapHistory::ResetHistory, &m_model, &MapHistoryModel::ClearModel);
 	QObject::connect(
-		&m_model, &MapHistoryModel::removeMapEntries, this, &MapHistory::RemoveMapEntries);
+		&m_model, &MapHistoryModel::RemoveMapEntry, this, &MapHistory::RemoveMapEntries);
 	QObject::connect(
 		&m_model, &MapHistoryModel::UpdateRatingSignal, this, &MapHistory::UpdateMapRating);
 	QObject::connect(
@@ -97,21 +21,14 @@ MapHistory::MapHistory(QObject* parent)
 	ReloadFile();
 }
 
-void MapHistory::RemoveMapEntries(const int rowIndex, const int count)
+void MapHistory::RemoveMapEntries(const std::string& workshopId, const std::string& playedAt)
 {
-	auto&& [doc, isOpen] = details::OpenForReadWrite();
-
-	if (!isOpen)
+	const auto entry{ m_db.SelectOne(workshopId, playedAt) };
+	m_db.Delete(workshopId, playedAt);
+	if (!m_db.Exists(workshopId))
 	{
-		return;
+		std::filesystem::remove(std::filesystem::path{ entry.m_previewPath });
 	}
-
-	for (int i = 0; i < count; ++i)
-	{
-		doc.RemoveRow(rowIndex);
-	}
-
-	doc.Save();
 }
 
 void MapHistory::UpdateMapBookmarked(const std::string& workshopId, const bool isBookmarked)
@@ -143,7 +60,7 @@ void MapHistory::Add(const std::string& mapId)
 		m_db.AddNewMap(mapId, mapName, filePath.relative_path().generic_string());
 	}
 
-	AppData::Instance().mapHistory()->ReloadFile();
+	ReloadFile();
 }
 
 std::filesystem::path MapHistory::DownloadPreview(const std::string& mapId, const std::string& url)
@@ -220,35 +137,8 @@ std::pair<std::string, std::string> MapHistory::GetMapNameAndPreviewUrl(const st
 	return { mapName, previewUrl };
 }
 
-void MapHistory::SaveMapEntry(
-	const std::string& mapId, const std::string& mapName, const std::string& previewPath)
-{
-	auto&& [doc, isOpen] = details::OpenForReadWrite();
-	if (!isOpen)
-	{
-		return;
-	}
-
-	const std::chrono::zoned_time currentTime{ std::chrono::current_zone(),
-		std::chrono::system_clock::now() };
-
-	doc.InsertRow<std::string>(doc.GetRowCount(),
-		{
-			mapId,
-			mapName,
-			std::format("{:%d-%m-%Y %H:%M:%OS}", currentTime.get_local_time()),
-			previewPath,
-		});
-
-	doc.Save();
-}
-
 void MapHistory::ReloadFile()
 {
-	emit resetHistory();
-
-	for (const auto& entry : m_db.Select())
-	{
-		emit entryAdded(entry);
-	}
+	emit ResetHistory();
+	emit EntriesAdded(m_db.Select());
 }

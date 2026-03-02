@@ -26,6 +26,19 @@ void ExtractColumn(SQLite::Statement& query, const std::string_view name, auto& 
 	}
 }
 
+MapHistoryEntry ExtractData(SQLite::Statement& query)
+{
+	MapHistoryEntry entry;
+	details::ExtractColumn(query, "workshop_id", entry.m_workshopID);
+	details::ExtractColumn(query, "played_at", entry.m_playedAt);
+	details::ExtractColumn(query, "name", entry.m_mapName);
+	details::ExtractColumn(query, "preview_path", entry.m_previewPath);
+	details::ExtractColumn(query, "rating", entry.m_rating);
+	details::ExtractColumn(query, "is_bookmarked", entry.m_isBookmarked);
+
+	return entry;
+}
+
 }	 // namespace details
 }	 // namespace
 
@@ -82,6 +95,15 @@ void MapHistoryDatabase::AddNewMap(
 	transaction.commit();
 }
 
+void MapHistoryDatabase::Delete(const std::string& mapId, const std::string& playedAt) const
+{
+	SQLite::Transaction transaction{ *m_db };
+
+	m_db->exec(std::format(
+		"DELETE FROM session_history WHERE workshop_id = {} AND played_at = '{}';", mapId, playedAt));
+	transaction.commit();
+}
+
 bool MapHistoryDatabase::Exists(const std::string& mapId) const
 {
 	SQLite::Transaction transaction{ *m_db };
@@ -100,18 +122,28 @@ std::vector<MapHistoryEntry> MapHistoryDatabase::Select() const
 	std::vector<MapHistoryEntry> result;
 	while (query.executeStep())
 	{
-		MapHistoryEntry entry;
-		details::ExtractColumn(query, "workshop_id", entry.m_workshopID);
-		details::ExtractColumn(query, "played_at", entry.m_playedAt);
-		details::ExtractColumn(query, "name", entry.m_mapName);
-		details::ExtractColumn(query, "preview_path", entry.m_previewPath);
-		details::ExtractColumn(query, "rating", entry.m_rating);
-		details::ExtractColumn(query, "is_bookmarked", entry.m_isBookmarked);
-
-		result.push_back(entry);
+		result.push_back(details::ExtractData(query));
 	}
 
 	return result;
+}
+
+MapHistoryEntry MapHistoryDatabase::SelectOne(
+	const std::string& mapId, const std::string& playedAt) const
+{
+	SQLite::Transaction transaction{ *m_db };
+	SQLite::Statement query{ *m_db,
+		std::format("SELECT * FROM map_history_data WHERE workshop_id = {} AND played_at = '{}';",
+			mapId,
+			playedAt) };
+
+	if (query.executeStep())
+	{
+		return details::ExtractData(query);
+	}
+
+	throw std::runtime_error{ std::format(
+		"No entry with specified workshop id and played timestamp: {} {}", mapId, playedAt) };
 }
 
 void MapHistoryDatabase::Update(const std::string& workshopId, const MapHistoryPatch& newData) const
@@ -177,7 +209,8 @@ void MapHistoryDatabase::InitSchema()
 	-- I couldn't mark the pair as unique because sqlite does not have enough time precision (milliseconds) for testing.
 	CREATE TABLE session_history(
 		workshop_id INTEGER NOT NULL REFERENCES maps(workshop_id),
-		played_at NUMERIC NOT NULL DEFAULT current_timestamp
+		played_at DATETIME NOT NULL DEFAULT(datetime('subsec')),
+		UNIQUE(workshop_id,played_at)
 	);
 
 	CREATE VIEW map_history_data AS
@@ -186,7 +219,7 @@ void MapHistoryDatabase::InitSchema()
 		ORDER BY played_at DESC
 	;
 
-	-- Delete the map record if no the last recorded session has been deleted.
+	-- Delete the map record if the last recorded session has been deleted.
 	CREATE TRIGGER delete_map_info
 	AFTER DELETE ON session_history
 	WHEN NOT EXISTS (SELECT 1 FROM session_history WHERE workshop_id = OLD.workshop_id)

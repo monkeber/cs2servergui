@@ -16,12 +16,13 @@ public:
 signals:
 	//! Remove 'count' map entries starting at rowIndex.
 	void removeMapEntries(const int rowIndex, const int count);
+	void RemoveMapEntry(const std::string& workshopId, const std::string& playedAt);
 	void UpdateBookmarkedSignal(const std::string& workshopId, const bool isBookmarked) const;
 	void UpdateRatingSignal(const std::string& workshopId, const std::uint8_t rating) const;
 
 public slots:
-	//! Adds a row into the model data.
-	void AddEntry(const MapHistoryEntry& entry);
+	//! Adds rows into the model data.
+	void AddEntries(const std::vector<MapHistoryEntry>& entries);
 	//! Clears all the rows from the model.
 	void ClearModel();
 
@@ -51,16 +52,6 @@ public:
 	Q_ENUM(Columns)
 
 private:
-	//! Translates the row number in model into entry index in the data list. It is moved into
-	//! standalone method so we can, for example, use reverse order for displaying while data will
-	//! be stored in the chronological ascending order.
-	int GetDataIndex(const int rowNumber) const;
-	//! Returns where the display order is reversed.
-	bool IsDisplayOrderReversed() const;
-
-private:
-	//! Specifies whether we should display the model data in reversed order.
-	bool m_displayOrderIsReversed;
 	//! The list of history records.
 	QList<MapHistoryEntry> m_history;
 };

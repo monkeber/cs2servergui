@@ -96,7 +96,7 @@ std::pair<std::string, std::string> MapHistory::GetMapNameAndPreviewUrl(const st
 			r.status_code,
 			r.text.c_str());
 
-		throw std::runtime_error{ "EReceived non 200 response from Steam API" };
+		throw std::runtime_error{ "Received non 200 response from Steam API" };
 	}
 
 	const nl::json resp = nl::json::parse(r.text);

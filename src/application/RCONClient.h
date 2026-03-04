@@ -18,5 +18,6 @@ public slots:
 	void Reset();
 
 private:
+	//! Handler for rcon client.
 	std::shared_ptr<rconpp::rcon_client> m_client;
 };

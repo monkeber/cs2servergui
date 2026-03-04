@@ -84,12 +84,21 @@ ScrollView {
         }
 
         Button {
+            Layout.alignment: Qt.AlignRight
+            text: qsTr("Reset RCON connection")
+            font: Globals.font
+            Material.background: Theme.neutral
+
+            onClicked: AppData.serverProcess.resetRconConnection();
+        }
+
+        Button {
             Layout.alignment: Qt.AlignLeft
             text: qsTr("Add quick command")
             font: Globals.font
-            onClicked: column.createQuickCommand()
-
             Material.background: Theme.primary
+
+            onClicked: column.createQuickCommand()
         }
 
         ListModel {

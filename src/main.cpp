@@ -5,9 +5,11 @@
 
 #include "app_environment.h"
 #include "Log.h"
+#include "Utilities.h"
 
 int main(int argc, char* argv[])
 {
+	ConfigureSignals();
 	set_qt_environment();
 
 	InitLogging();

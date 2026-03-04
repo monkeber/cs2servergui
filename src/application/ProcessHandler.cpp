@@ -58,6 +58,14 @@ void ProcessHandler::execScriptName(const QString& scriptName)
 	m_scriptHistory.add(scriptName);
 }
 
+void ProcessHandler::resetRconConnection()
+{
+	// A common error is the game server is not responding after it gets restarted, so in case
+	// of an error we simply reset the rcon handler. Alas there is no good solution to do it
+	// automatically with this version of the library.
+	AppData::Instance().rconclient()->Reset();
+}
+
 void ProcessHandler::hostWorkshopMap(const QString& map)
 {
 	constexpr qsizetype sizeLimit{ 1000 };

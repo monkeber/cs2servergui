@@ -36,6 +36,7 @@ Item {
     property color background: Material.background
     property color foreground: Material.foreground
     property color primary: "#A5D6A7"
+    property color neutral: '#4A9DAE'
     property color accent: "#4caf50"
     property color divider: "#BDBDBD"
     property color alert: "#E57373"
@@ -50,6 +51,7 @@ Item {
                 background: "#ededed"
                 foreground: "#212121"
                 primary: "#A5D6A7"
+                neutral: '#77CBDA'
                 divider: "#BDBDBD"
             }
         },
@@ -62,6 +64,7 @@ Item {
                 background: "#212121"
                 foreground: "#FFFFFF"
                 primary: "#388E3C"
+                neutral: '#4A9DAE'
                 divider: "#474747"
             }
         }

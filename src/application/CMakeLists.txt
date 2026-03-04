@@ -21,12 +21,13 @@ set(${PROJECT_NAME}_SRC
 	RCONClient.h
 	Settings.cpp
 	Settings.h
+	Utilities.h
 )
 
 if (WIN32)
-	list(APPEND ${PROJECT_NAME}_SRC ProcessImpl_Windows.cpp)
+	list(APPEND ${PROJECT_NAME}_SRC ProcessImpl_Windows.cpp Utilities_Windows.cpp)
 elseif (LINUX)
-	list(APPEND ${PROJECT_NAME}_SRC ProcessImpl_Linux.cpp)
+	list(APPEND ${PROJECT_NAME}_SRC ProcessImpl_Linux.cpp Utilities_Linux.cpp)
 endif ()
 
 qt_add_library(${PROJECT_NAME} STATIC)

@@ -34,6 +34,8 @@ public slots:
 	//! or a URL of the map, in case of URL - it will be parsed and map id extracted from url
 	//! parameters.
 	void hostWorkshopMap(const QString& map);
+	//! Resets the rcon connection on when called.
+	void resetRconConnection();
 	//! Starts the executable which is specified in app settings.
 	void start();
 	//! Stop the executable.

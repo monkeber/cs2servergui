@@ -97,6 +97,7 @@ ScrollView {
                     Layout.row: index
 
                     Layout.fillWidth: true
+                    Layout.preferredHeight: Globals.inputFieldsHeight
 
                     font: Globals.font
 

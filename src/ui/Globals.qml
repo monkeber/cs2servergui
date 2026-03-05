@@ -1,6 +1,6 @@
 pragma Singleton
 
-import QtQuick 6.2
+import QtQuick 6
 import application 1.0
 
 QtObject {
@@ -18,7 +18,7 @@ QtObject {
     readonly property int mapHistoryRowSpacing: size(5)
 
     property string relativeFontDirectory: "fonts"
-    /* Edit this comment to add your custom font */
+
     readonly property font font: Qt.font({
                                              "family": Qt.application.font.family,
                                              "pixelSize": Qt.application.font.pixelSize

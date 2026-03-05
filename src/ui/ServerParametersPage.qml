@@ -1,52 +1,86 @@
-import QtQuick 6.2
+import QtQuick 6
+import QtQuick.Controls
 import QtQuick.Layouts
 import application 1.0
 
-ColumnLayout {
-    id: column
-    implicitHeight: startParams.implicitHeight + ipParams.implicitHeight
-                    + rconPassParams.implicitHeight + rconPortParams.implicitHeight
+GridLayout {
+    id: root
+    columns: 2
 
-    InputField {
-        id: startParams
-        text: qsTr("Server Start Parameters")
-        Layout.fillWidth: true
-        Layout.preferredHeight: Globals.inputFieldsHeight
+    Repeater {
+        model: [ qsTr("Server Start Parameters"), qsTr("Server IP"), qsTr("RCON Password"), qsTr("RCON Port") ]
 
-        input.onEditingFinished: AppData.settings.startParameters = input.text
-        input.text: AppData.settings.startParameters
-    }
-    InputField {
-        id: ipParams
-        text: qsTr("Server IP")
-        Layout.fillWidth: true
-        Layout.preferredHeight: Globals.inputFieldsHeight
+        delegate: Label {
+            required property string modelData
+            required property int index
 
-        input.onEditingFinished: AppData.settings.serverIP = input.text
-        input.text: AppData.settings.serverIP
-    }
-    InputField {
-        id: rconPassParams
-        text: qsTr("RCON Password")
-        Layout.fillWidth: true
-        Layout.preferredHeight: Globals.inputFieldsHeight
+            font: Globals.font
+            text: modelData + ":"
 
-        input.onEditingFinished: AppData.settings.rconPass = input.text
-        input.text: AppData.settings.rconPass
-    }
-    InputField {
-        id: rconPortParams
-        text: qsTr("RCON Port")
-        Layout.fillWidth: true
-        Layout.preferredHeight: Globals.inputFieldsHeight
-
-        input.onEditingFinished: {
-            AppData.settings.rconPort = parseInt(input.text)
+            Layout.column: 0
+            Layout.row: index
         }
-        input.text: AppData.settings.rconPort
-        input.inputMethodHints: Qt.ImhDigitsOnly
-        input.validator: IntValidator {
-            bottom: 0
+    }
+
+    IntValidator {
+        id: portValidator
+        bottom: 0
+        top: 65535
+    }
+
+    property var inputModel: [
+        {
+            finishedEditing: function(input) {
+                AppData.settings.startParameters = input.text;
+            },
+            placeholder: AppData.settings.startParameters,
+            inputHints: Qt.ImhNone,
+            validator: null
+        },
+        {
+            finishedEditing: function(input) {
+                AppData.settings.serverIP = input.text;
+            },
+            placeholder: AppData.settings.serverIP,
+            inputHints: Qt.ImhNone,
+            validator: null
+        },
+        {
+            finishedEditing: function(input) {
+                AppData.settings.rconPass = input.text;
+            },
+            placeholder: AppData.settings.rconPass,
+            inputHints: Qt.ImhNone,
+            validator: null
+        },
+        {
+            finishedEditing: function(input) {
+                AppData.settings.rconPort = parseInt(input.text);
+            },
+            placeholder: AppData.settings.rconPort,
+            inputHints: Qt.ImhDigitsOnly,
+            validator: portValidator
+        }
+    ]
+
+    Repeater {
+        model: root.inputModel
+
+        delegate: TextField {
+            required property int index
+
+            Layout.column: 1
+            Layout.row: index
+
+            Layout.fillWidth: true
+            Layout.preferredHeight: Globals.inputFieldsHeight
+
+            font: Globals.font
+
+            onEditingFinished: root.inputModel[index].finishedEditing(this);
+            text: root.inputModel[index].placeholder;
+            inputMethodHints: root.inputModel[index].inputHints;
+            validator: root.inputModel[index].validator;
         }
     }
 }

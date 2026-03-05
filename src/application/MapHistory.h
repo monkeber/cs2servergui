@@ -45,6 +45,9 @@ private:
 	//! stores the data.
 	void ReloadFile();
 
+private slots:
+	void ReloadFileWithFilters(const bool sortByRating, const bool removeDuplicated, const bool showOnlyBookmarks);
+
 private:
 	MapHistoryModel m_model;
 	QVariant m_modelRef;

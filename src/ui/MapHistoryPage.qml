@@ -11,6 +11,71 @@ ColumnLayout {
 
         color: Theme.divider
     }
+
+    //
+    // Filters rows.
+    //
+    RowLayout {
+        Layout.leftMargin: Globals.elementsLeftMargin
+        Layout.rightMargin: Globals.elementsLeftMargin
+
+        ButtonGroup {
+            id: buttonGroup
+            exclusive: false
+
+            onClicked: {
+                AppData.mapHistory.model.UpdateFilters(
+                    buttons.find(button => button.objectName == "sortByRating").checked,
+                    buttons.find(button => button.objectName == "removeDuplicates").checked,
+                    buttons.find(button => button.objectName == "showOnlyBookmarks").checked
+                );
+            }
+        }
+
+        Button {
+            icon.source: "qrc:///images/filter.svg"
+            icon.color: highlighted ? "white" : Theme.accent
+
+            highlighted: buttonGroup.checkState !== Qt.Unchecked
+            Material.background: highlighted ? Theme.accent : Qt.lighter(Theme.divider, 1.3)
+        }
+
+        ListModel {
+            id: buttonsModel
+            ListElement { text: qsTr("Sort by rating"); name: "sortByRating" }
+            ListElement { text: qsTr("Remove duplicates"); name: "removeDuplicates" }
+            ListElement { text: qsTr("Show only bookmarked"); name: "showOnlyBookmarks" }
+        }
+
+        Repeater {
+            model: buttonsModel
+
+            delegate: Button {
+                Layout.fillWidth: true
+
+                checkable: true
+                text: model.text
+                font: Globals.font
+                objectName: model.name
+
+                highlighted: checked
+                Material.background: checked ? Theme.accent : Qt.lighter(Theme.divider, 1.3)
+                ButtonGroup.group: buttonGroup
+            }
+        }
+    }
+
+    Rectangle {
+        Layout.fillWidth: true
+
+        height: 1
+
+        color: Theme.divider
+    }
+
+    //
+    // Table header.
+    //
     HorizontalHeaderView {
         id: horizontalHeader
 
@@ -34,6 +99,7 @@ ColumnLayout {
             }
         }
     }
+
     Rectangle {
         Layout.fillWidth: true
 
@@ -41,6 +107,10 @@ ColumnLayout {
 
         color: Theme.divider
     }
+
+    //
+    // Table.
+    //
     TableView {
         id: view
 

@@ -11,12 +11,15 @@ MapHistory::MapHistory(QObject* parent)
 
 	QObject::connect(this, &MapHistory::EntriesAdded, &m_model, &MapHistoryModel::AddEntries);
 	QObject::connect(this, &MapHistory::ResetHistory, &m_model, &MapHistoryModel::ClearModel);
+
 	QObject::connect(
 		&m_model, &MapHistoryModel::RemoveMapEntry, this, &MapHistory::RemoveMapEntries);
 	QObject::connect(
-		&m_model, &MapHistoryModel::UpdateRatingSignal, this, &MapHistory::UpdateMapRating);
-	QObject::connect(
 		&m_model, &MapHistoryModel::UpdateBookmarkedSignal, this, &MapHistory::UpdateMapBookmarked);
+	QObject::connect(
+		&m_model, &MapHistoryModel::UpdateFilters, this, &MapHistory::ReloadFileWithFilters);
+	QObject::connect(
+		&m_model, &MapHistoryModel::UpdateRatingSignal, this, &MapHistory::UpdateMapRating);
 
 	ReloadFile();
 }
@@ -139,6 +142,12 @@ std::pair<std::string, std::string> MapHistory::GetMapNameAndPreviewUrl(const st
 
 void MapHistory::ReloadFile()
 {
+	ReloadFileWithFilters(false, false, false);
+}
+
+void MapHistory::ReloadFileWithFilters(
+	const bool sortByRating, const bool removeDuplicated, const bool showOnlyBookmarks)
+{
 	emit ResetHistory();
-	emit EntriesAdded(m_db.Select());
+	emit EntriesAdded(m_db.Select(sortByRating, removeDuplicated, showOnlyBookmarks));
 }

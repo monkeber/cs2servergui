@@ -1,4 +1,4 @@
-import QtQuick 6.2
+import QtQuick 6
 import QtQuick.Controls
 import QtQuick.Dialogs
 import QtQuick.Layouts

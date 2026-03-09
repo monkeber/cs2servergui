@@ -38,6 +38,11 @@ ColumnLayout {
 
             highlighted: buttonGroup.checkState !== Qt.Unchecked
             Material.background: highlighted ? Theme.accent : Qt.lighter(Theme.divider, 1.3)
+
+            onClicked: {
+                buttonGroup.checkState = Qt.Unchecked;
+                AppData.mapHistory.model.UpdateFilters(false, false, false);
+            }
         }
 
         ListModel {

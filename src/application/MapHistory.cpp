@@ -144,7 +144,7 @@ void MapHistory::ReloadFile()
 {
 	emit ResetHistory();
 	emit EntriesAdded(m_db.Select(m_historyFilters.m_sortByRating,
-		m_historyFilters.m_removeDuplicates,
+		m_historyFilters.m_removeDuplicated,
 		m_historyFilters.m_showOnlyBookmarks));
 }
 
@@ -152,7 +152,7 @@ void MapHistory::ReloadFileWithFilters(
 	const bool sortByRating, const bool removeDuplicated, const bool showOnlyBookmarks)
 {
 	m_historyFilters.m_sortByRating = sortByRating;
-	m_historyFilters.m_removeDuplicates = removeDuplicated;
+	m_historyFilters.m_removeDuplicated = removeDuplicated;
 	m_historyFilters.m_showOnlyBookmarks = showOnlyBookmarks;
 	ReloadFile();
 }

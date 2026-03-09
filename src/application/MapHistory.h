@@ -52,7 +52,7 @@ private:
 	struct HistoryFilters
 	{
 		bool m_sortByRating{ false };
-		bool m_removeDuplicates{ false };
+		bool m_removeDuplicated{ false };
 		bool m_showOnlyBookmarks{ false };
 	};
 	HistoryFilters m_historyFilters;

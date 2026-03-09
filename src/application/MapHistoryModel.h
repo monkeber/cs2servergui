@@ -14,10 +14,10 @@ public:
 	MapHistoryModel();
 
 signals:
-	//! Remove 'count' map entries starting at rowIndex.
-	void removeMapEntries(const int rowIndex, const int count);
 	void RemoveMapEntry(const std::string& workshopId, const std::string& playedAt);
 	void UpdateBookmarkedSignal(const std::string& workshopId, const bool isBookmarked) const;
+	void UpdateFilters(
+		const bool sortByRating, const bool removeDuplicated, const bool showOnlyBookmarks) const;
 	void UpdateRatingSignal(const std::string& workshopId, const std::uint8_t rating) const;
 
 public slots:

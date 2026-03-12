@@ -28,7 +28,6 @@ ColumnLayout {
     ConsolePage {
         Layout.fillWidth: true
         Layout.fillHeight: true
-        Layout.leftMargin: Globals.elementsLeftMargin
         visible: bar.currentIndex === 0
     }
     ServerParametersPage {

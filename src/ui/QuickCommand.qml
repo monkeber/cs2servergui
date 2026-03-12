@@ -7,8 +7,6 @@ RowLayout {
     id: main
 
     property alias text: input.text
-    required property int index
-    required property string initialText
 
     signal deleteRequested
 
@@ -34,7 +32,6 @@ RowLayout {
         Layout.fillHeight: true
 
         font: Globals.font
-        text: main.initialText
 
         onAccepted: {
             if (input.text.length > 0) {

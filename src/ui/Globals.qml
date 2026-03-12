@@ -14,7 +14,7 @@ QtObject {
 
     property int inputFieldsHeight: size(35)
     property int menuBarHeight: size(30)
-    readonly property int elementsLeftMargin: size(5)
+    readonly property int elementsLeftMargin: size(7)
     readonly property int mapHistoryRowSpacing: size(5)
 
     property string relativeFontDirectory: "fonts"

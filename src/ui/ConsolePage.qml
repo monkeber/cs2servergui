@@ -102,8 +102,11 @@ ColumnLayout {
 
     Button {
         Layout.alignment: Qt.AlignRight
+        Layout.rightMargin: Globals.elementsLeftMargin
+
         text: qsTr("Reset RCON connection")
         font: Globals.font
+
         Material.background: Theme.neutral
 
         onClicked: AppData.serverProcess.resetRconConnection();
@@ -144,8 +147,11 @@ ColumnLayout {
 
     Button {
         Layout.alignment: Qt.AlignLeft
+        Layout.leftMargin: Globals.elementsLeftMargin
+
         text: qsTr("Add quick command")
         font: Globals.font
+
         Material.background: Theme.primary
 
         onClicked: column.createQuickCommand()
@@ -156,9 +162,10 @@ ColumnLayout {
 
         Layout.fillHeight: true
         Layout.fillWidth: true
+        Layout.leftMargin: Globals.elementsLeftMargin
 
         clip: true
-        spacing: 5
+        spacing: layoutGrid.rowSpacing
 
         WheelHandler {
             acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
@@ -185,7 +192,7 @@ ColumnLayout {
             required property int index
 
             onDeleteRequested: model.remove(index)
-            width: listView.contentWidth
+            width: listView.contentWidth - Globals.elementsLeftMargin
             height: Globals.inputFieldsHeight
 
             text: initialText

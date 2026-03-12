@@ -15,6 +15,7 @@ ColumnLayout {
     //
     // Filters rows.
     //
+
     RowLayout {
         Layout.leftMargin: Globals.elementsLeftMargin
         Layout.rightMargin: Globals.elementsLeftMargin
@@ -81,6 +82,7 @@ ColumnLayout {
     //
     // Table header.
     //
+
     HorizontalHeaderView {
         id: horizontalHeader
 
@@ -116,10 +118,45 @@ ColumnLayout {
     //
     // Table.
     //
+
     TableView {
         id: view
 
         readonly property int rowHeight: Screen.height * AppData.settings.scaleFactor / 10
+
+        Layout.fillHeight: true
+        Layout.fillWidth: true
+        Layout.leftMargin: Globals.elementsLeftMargin
+
+        // Provide implicit height so the table view can be positioned by a layout.
+        implicitHeight: rowHeight * rows
+        contentWidth: view.width
+        clip: true
+        // I've encountered weird glitches when data from one column has been passed to other
+        // columns, the easiest fix was to just disable reuse.
+        reuseItems: false
+
+        columnWidthProvider: function (column) {
+            // Column width should account for margins, otherwise margins don't work.
+            // Divide view width into parts and make most of the columns take 2 parts, while 2 columns will take only 1 part.
+            const bookmarkWidth = 50;
+            const contentRightMargin = scrollBar.visible ? scrollBar.width : Globals.elementsLeftMargin;
+            const partWidth = (view.contentWidth - bookmarkWidth - contentRightMargin) / (view.model.columnCount() - 1);
+            switch (column) {
+                case MapHistoryModel.Columns.Bookmarked:
+                    return bookmarkWidth;
+                default:
+                    return partWidth;
+            }
+        }
+
+        ScrollBar.vertical: ScrollBar {
+            id: scrollBar
+            policy: view.visibleArea.heightRatio < 1.0 ? ScrollBar.AlwaysOn : ScrollBar.AlwaysOff
+
+            // Call later so that we don't force layout when layouting is in progress.
+            onVisibleChanged: Qt.callLater(view.forceLayout)
+        }
 
         WheelHandler {
             acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
@@ -131,37 +168,6 @@ ColumnLayout {
                 ))
                 event.accepted = true
             }
-        }
-
-        columnWidthProvider: function (column) {
-            // Column width should account for margins, otherwise margins don't work.
-            // Divide view width into parts and make most of the columns take 2 parts, while 2 columns will take only 1 part.
-            const bookmarkWidth = 50;
-            const partWidth = (view.width - leftMargin - rightMargin - bookmarkWidth) / (view.model.columnCount() - 1);
-            switch (column) {
-                case MapHistoryModel.Columns.Bookmarked:
-                    return bookmarkWidth;
-                default:
-                    return partWidth;
-            }
-        }
-
-        Layout.fillHeight: true
-        Layout.fillWidth: true
-
-        // Provide implicit height so the table view can be positioned by a layout.
-        implicitHeight: rowHeight * rows
-        leftMargin: Globals.elementsLeftMargin
-        rightMargin: scrollBar.width
-        clip: true
-        interactive: true
-        flickableDirection: Flickable.VerticalFlick
-        boundsBehavior: Flickable.OvershootBounds
-        reuseItems: false
-
-        ScrollBar.vertical: ScrollBar {
-            id: scrollBar
-            policy: ScrollBar.AlwaysOn
         }
 
         model: AppData.mapHistory.model

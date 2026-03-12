@@ -121,6 +121,18 @@ ColumnLayout {
 
         readonly property int rowHeight: Screen.height * AppData.settings.scaleFactor / 10
 
+        WheelHandler {
+            acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
+            onWheel: event => {
+                var notches = event.angleDelta.y / 120
+                view.contentY = Math.max(0, Math.min(
+                    view.contentY - notches * Globals.inputFieldsHeight,
+                    view.contentHeight - view.height
+                ))
+                event.accepted = true
+            }
+        }
+
         columnWidthProvider: function (column) {
             // Column width should account for margins, otherwise margins don't work.
             // Divide view width into parts and make most of the columns take 2 parts, while 2 columns will take only 1 part.

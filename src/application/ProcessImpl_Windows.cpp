@@ -31,7 +31,7 @@ bool ProcessImpl::start(const std::filesystem::path& executablePath, const std::
 	const int size{ MultiByteToWideChar(CP_UTF8, 0, startParams.c_str(), -1, nullptr, 0) };
 	if (size <= 0)
 	{
-		qWarning("Faiuled to convert start params into wstring");
+		qWarning("Failed to convert start params into wstring");
 		return false;
 	}
 	std::wstring startParamsWide(size - 1, L'\0');

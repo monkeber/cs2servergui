@@ -49,7 +49,7 @@ conan profile detect --force
 
 Versions of dependencies used, probably will work on newer versions as well:
 
-- QtCreator 13.0.0 (Windows)
+- QtCreator (Windows) or VSCode
 - Qt 6.10.2
 - [rconpp](https://github.com/Jaskowicz1/rconpp) at [d77993b](https://github.com/Jaskowicz1/rconpp/commit/d77993b1e8993701dbf6b2974b41045a915c7b42)
 - Conan 2 and dependencies retrieved using it, see conanfile.txt for more details
@@ -57,7 +57,20 @@ Versions of dependencies used, probably will work on newer versions as well:
 
 ### Build Process Windows
 
-Open the project in Qt Creator and hit build.
+You can use either VSCode or QTCreator to build the application, but both of them might require some small setup. In both cases I think you need to also set up env variables e.g.:
+
+```
+QTDIR=W:\Programs\Qt\6.10.2\msvc2022_64
+And add path to bin folder to PATH (e.g. W:\Programs\Qt\6.10.2\msvc2022_64\bin)
+```
+
+#### 1. VSCode
+
+Open Native x64 development tools that are provided by the MSVC compiler, start VSCode, you should be able to build now.
+
+#### 2. QT Creator
+
+Open the project in Qt Creator, make sure that in Projects pane one of the detected or configured Kits is selected (not the cmake presets one) and hit build. The kit from cmake presets does not work currently.
 
 ### Build Process Linux
 

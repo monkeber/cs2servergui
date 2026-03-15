@@ -8,7 +8,7 @@ class CS2ServerGUI(ConanFile):
 
     # We use a cmake-driven approach (so that cmake is calling the conan and not vice versa,
     # so we only need CMakeDeps, see discussion: https://github.com/conan-io/conan/issues/17361)
-    generators = "CMakeDeps"
+    generators = "CMakeDeps", "CMakeConfigDeps"
     settings = "os", "compiler", "build_type", "arch"
     build_policy = "missing"
 

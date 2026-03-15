@@ -25,7 +25,7 @@ if (NOT Qt6_ROOT)
 	endif ()
 endif ()
 
-find_package(Qt6 REQUIRED COMPONENTS Core Gui Qml Quick)
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Qml Quick BYPASS_PROVIDER)
 find_package(cpr REQUIRED)
 find_package(nlohmann_json REQUIRED)
 find_package(SQLiteCpp REQUIRED)
@@ -35,7 +35,10 @@ qt_standard_project_setup()
 
 # This policy allows overriding options defined in the library without modifying its code.
 set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
-set(BUILD_SHARED_LIBS FALSE)
+
+if (LINUX)
+	set(BUILD_SHARED_LIBS FALSE)
+endif ()
 add_subdirectory(third_party/rconpp EXCLUDE_FROM_ALL)
 add_subdirectory(src)
 

@@ -28,16 +28,26 @@ bool ProcessImpl::start(const std::filesystem::path& executablePath, const std::
 	ZeroMemory(std::any_cast<PROCESS_INFORMATION>(&m_processInfo),
 		sizeof(std::any_cast<PROCESS_INFORMATION>(m_processInfo)));
 
-	std::string command{ "\"" + executablePath.string() + "\" " + startParams };
-	if (!CreateProcess(NULL,						 // No module name (use command line)
-			command.data(),							 // Command line
-			NULL,									 // Process handle not inheritable
-			NULL,									 // Thread handle not inheritable
-			FALSE,									 // Set handle inheritance to FALSE
-			0,										 // No creation flags
-			NULL,									 // Use parent's environment block
-			executablePath.parent_path().c_str(),	 // Use the parent directory of a chosen
-													 // executable as a starting directory
+	const int size{ MultiByteToWideChar(CP_UTF8, 0, startParams.c_str(), -1, nullptr, 0) };
+	if (size <= 0)
+	{
+		qWarning("Failed to convert start params into wstring");
+		return false;
+	}
+	std::wstring startParamsWide(size - 1, L'\0');
+	MultiByteToWideChar(CP_UTF8, 0, startParams.c_str(), -1, startParamsWide.data(), size);
+
+	const std::wstring parentPath{ executablePath.parent_path().wstring() };
+	std::wstring command{ L"\"" + executablePath.wstring() + L"\" " + startParamsWide };
+	if (!CreateProcess(NULL,	   // No module name (use command line)
+			command.data(),		   // Command line
+			NULL,				   // Process handle not inheritable
+			NULL,				   // Thread handle not inheritable
+			FALSE,				   // Set handle inheritance to FALSE
+			0,					   // No creation flags
+			NULL,				   // Use parent's environment block
+			parentPath.c_str(),	   // Use the parent directory of a chosen
+								   // executable as a starting directory
 			std::any_cast<STARTUPINFO>(&m_startupInfo),
 			std::any_cast<PROCESS_INFORMATION>(&m_processInfo)))
 	{

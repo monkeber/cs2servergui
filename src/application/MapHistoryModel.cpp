@@ -82,6 +82,10 @@ QVariant MapHistoryModel::data(const QModelIndex& index, int role) const
 		return entry.m_isBookmarked;
 	case Columns::Preview: {
 		const std::filesystem::path path{ entry.m_previewPath };
+		if (!std::filesystem::exists(path))
+		{
+			return QString{};
+		}
 		return QString{ "file:///%1" }.arg(std::filesystem::canonical(path).string().c_str());
 	}
 	default:

@@ -49,6 +49,8 @@ RUN mkdir /qtroot && \
     cd qt && \
     ./init-repository -submodules qtwayland,qtdeclarative,qtbase,qtsvg
 
+RUN cd /qtroot/qt && git --no-pager log -1 > /qt_version.txt
+
 RUN mkdir -p /qtroot/install && \
     mkdir -p /qtroot/build && \
     cd /qtroot/build && \
@@ -65,6 +67,7 @@ RUN cd /qtroot/build && \
 FROM base AS builder
 
 COPY --from=qt_builder /qtroot/install /qtroot/install
+COPY --from=qt_builder /qt_version.txt /qt_version.txt
 
 WORKDIR /build
 
@@ -72,11 +75,20 @@ WORKDIR /build
 # Build the application.
 #
 
+ARG USER_ID=1000
+ARG GROUP_ID=1000
+ENV USER_ID=${USER_ID}
+ENV GROUP_ID=${GROUP_ID}
+
 CMD ["sh", "-c", "\
+    echo \"QT version:\" && \
+    cat /qt_version.txt && \
     cmake --version && \
     conan --version && \
     cmake --preset release -DQt6_ROOT=/qtroot/install && \
     cmake --build --preset release && \
     cd build/release && \
-    cmake --install . \
+    cmake --install . && \
+    chown -R ${USER_ID}:${GROUP_ID} /build && \
+    chown -R ${USER_ID}:${GROUP_ID} /install \
 "]

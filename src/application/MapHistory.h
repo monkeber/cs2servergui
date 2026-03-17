@@ -33,6 +33,9 @@ public slots:
 public:
 	//! Adds a new entry into the history. Handles saving of the info, downloading the preview, etc.
 	void Add(const std::string& mapId);
+	//! Checks if there are missing previews (i.e. the map is in the DB but preview does not exist)
+	//! and tries to redownload them. It does so in the detached thread, so the function doesn't block.
+	Q_INVOKABLE void FixPreviews();
 
 private:
 	//! Downloads an image preview of the map and saves to a file in a folder in the current working
@@ -46,7 +49,8 @@ private:
 	void ReloadFile();
 
 private slots:
-	void ReloadFileWithFilters(const bool sortByRating, const bool removeDuplicated, const bool showOnlyBookmarks);
+	void ReloadFileWithFilters(
+		const bool sortByRating, const bool removeDuplicated, const bool showOnlyBookmarks);
 
 private:
 	struct HistoryFilters

@@ -75,6 +75,11 @@ MenuBar {
         font: Globals.font
 
         Action {
+            text: qsTr("Fix missing previews")
+            onTriggered: AppData.mapHistory.FixPreviews()
+        }
+
+        Action {
             text: qsTr("Show Logs")
             onTriggered: logWindow.setVisible(!logWindow.visible)
         }

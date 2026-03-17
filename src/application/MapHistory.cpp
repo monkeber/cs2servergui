@@ -66,6 +66,44 @@ void MapHistory::Add(const std::string& mapId)
 	ReloadFile();
 }
 
+void MapHistory::FixPreviews()
+{
+	const auto lambda = [this]() {
+		try
+		{
+			std::vector<MapHistoryEntry> maps{ m_db.Select(false, true, false) };
+
+			const auto doesExist = [](const MapHistoryEntry& entry) {
+				return std::filesystem::exists(entry.m_previewPath);
+			};
+			std::erase_if(maps, doesExist);
+
+			if (maps.empty())
+			{
+				return;
+			}
+
+			for (const auto& entry : maps)
+			{
+				const auto [_, previewUrl] = GetMapNameAndPreviewUrl(entry.m_workshopID);
+				DownloadPreview(entry.m_workshopID, previewUrl);
+			}
+			ReloadFile();
+		}
+		catch (const std::exception& e)
+		{
+			qWarning("Error encountered while trying to fix the missing previews: %s", e.what());
+		}
+		catch (...)
+		{
+			qWarning("Unknown error encountered while trying to fix the missing previews");
+		}
+	};
+
+	std::thread worker{ lambda };
+	worker.detach();
+}
+
 std::filesystem::path MapHistory::DownloadPreview(const std::string& mapId, const std::string& url)
 {
 	std::filesystem::path filepath{ "previews" };

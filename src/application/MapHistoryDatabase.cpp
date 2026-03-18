@@ -118,8 +118,7 @@ bool MapHistoryDatabase::Exists(const std::string& mapId) const
 	return static_cast<bool>(m_db->execAndGet(query).getInt());
 }
 
-std::vector<MapHistoryEntry> MapHistoryDatabase::Select(
-	const bool sortByRating, const bool removeDuplicated, const bool showOnlyBookmarks) const
+std::vector<MapHistoryEntry> MapHistoryDatabase::Select(const MapHistoryFilters& filters) const
 {
 	// To remove duplicates and leave only the most recent record.
 	const static std::string duplicatesJoin{
@@ -130,9 +129,9 @@ std::vector<MapHistoryEntry> MapHistoryDatabase::Select(
 
 	const std::string queryStr{ std::format(
 		"SELECT * FROM map_history_data originalTab {} {} ORDER BY {} played_at DESC;",
-		removeDuplicated ? duplicatesJoin : "",
-		showOnlyBookmarks ? "WHERE is_bookmarked = TRUE" : "",
-		sortByRating ? "rating DESC," : "") };
+		filters.m_removeDuplicated ? duplicatesJoin : "",
+		filters.m_showOnlyBookmarks ? "WHERE is_bookmarked = TRUE" : "",
+		filters.m_sortByRating ? "rating DESC," : "") };
 
 	SQLite::Transaction transaction{ *m_db };
 	SQLite::Statement query{ *m_db, queryStr };

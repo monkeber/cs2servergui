@@ -53,14 +53,7 @@ private slots:
 		const bool sortByRating, const bool removeDuplicated, const bool showOnlyBookmarks);
 
 private:
-	struct HistoryFilters
-	{
-		bool m_sortByRating{ false };
-		bool m_removeDuplicated{ false };
-		bool m_showOnlyBookmarks{ false };
-	};
-	HistoryFilters m_historyFilters;
-
+	MapHistoryFilters m_historyFilters;
 	MapHistoryModel m_model;
 	QVariant m_modelRef;
 	//! Handler of the underlying database where map history is stored.

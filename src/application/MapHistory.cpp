@@ -71,7 +71,9 @@ void MapHistory::FixPreviews()
 	const auto lambda = [this]() {
 		try
 		{
-			std::vector<MapHistoryEntry> maps{ m_db.Select(false, true, false) };
+			MapHistoryFilters filters;
+			filters.m_removeDuplicated = true;
+			std::vector<MapHistoryEntry> maps{ m_db.Select(filters) };
 
 			const auto doesExist = [](const MapHistoryEntry& entry) {
 				return std::filesystem::exists(entry.m_previewPath);
@@ -181,9 +183,7 @@ std::pair<std::string, std::string> MapHistory::GetMapNameAndPreviewUrl(const st
 void MapHistory::ReloadFile()
 {
 	emit ResetHistory();
-	emit EntriesAdded(m_db.Select(m_historyFilters.m_sortByRating,
-		m_historyFilters.m_removeDuplicated,
-		m_historyFilters.m_showOnlyBookmarks));
+	emit EntriesAdded(m_db.Select(m_historyFilters));
 }
 
 void MapHistory::ReloadFileWithFilters(

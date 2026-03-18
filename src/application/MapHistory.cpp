@@ -4,6 +4,8 @@
 
 #include <cpr/cpr.h>
 
+#include <exception>
+
 MapHistory::MapHistory(QObject* parent)
 	: QObject{ parent }
 {
@@ -58,9 +60,25 @@ void MapHistory::Add(const std::string& mapId)
 	}
 	else
 	{
-		const auto [mapName, previewUrl] = GetMapNameAndPreviewUrl(mapId);
-		const auto filePath{ DownloadPreview(mapId, previewUrl) };
-		m_db.AddNewMap(mapId, mapName, filePath.relative_path().generic_string());
+		try
+		{
+			const auto [mapName, previewUrl] = GetMapNameAndPreviewUrl(mapId);
+			const auto filePath{ DownloadPreview(mapId, previewUrl) };
+			m_db.AddNewMap(mapId, mapName, filePath.relative_path().generic_string());
+		}
+		catch (const std::exception& e)
+		{
+			qWarning("Encountered an error when adding a new map with ID %s: %s",
+				mapId.c_str(),
+				e.what());
+			return;
+		}
+		catch (...)
+		{
+			qWarning(
+				"Encountered an unknown error when adding a new map with ID %s", mapId.c_str());
+			return;
+		}
 	}
 
 	ReloadFile();
@@ -87,8 +105,22 @@ void MapHistory::FixPreviews()
 
 			for (const auto& entry : maps)
 			{
-				const auto [_, previewUrl] = GetMapNameAndPreviewUrl(entry.m_workshopID);
-				DownloadPreview(entry.m_workshopID, previewUrl);
+				try
+				{
+					const auto [_, previewUrl] = GetMapNameAndPreviewUrl(entry.m_workshopID);
+					DownloadPreview(entry.m_workshopID, previewUrl);
+				}
+				catch (const std::exception& e)
+				{
+					qWarning("Encountered an error when fixing preview for workshop ID %s: %s",
+						entry.m_workshopID.c_str(),
+						e.what());
+				}
+				catch (...)
+				{
+					qWarning("Encountered an unknown error when fixing preview for workshop ID %s",
+						entry.m_workshopID.c_str());
+				}
 			}
 			ReloadFile();
 		}
@@ -147,9 +179,12 @@ std::pair<std::string, std::string> MapHistory::GetMapNameAndPreviewUrl(const st
 	const nl::json::json_pointer infoPath{ "/response/publishedfiledetails/0" };
 	if (!resp.contains(infoPath))
 	{
-		qWarning("Was not able to access the path '%s' in the response from Steam API, map ID: %s",
+		qWarning(
+			"Was not able to access the path '%s' in the response from Steam API, map ID: %s, "
+			"response: %s",
 			infoPath.to_string().c_str(),
-			mapId.c_str());
+			mapId.c_str(),
+			resp.dump().c_str());
 
 		throw std::runtime_error{ "Error while parsing Steam API response" };
 	}
@@ -158,9 +193,12 @@ std::pair<std::string, std::string> MapHistory::GetMapNameAndPreviewUrl(const st
 	const std::string previewUrlField{ "preview_url" };
 	if (!info.contains(previewUrlField))
 	{
-		qWarning("Was not able to find the '%s' in the response from Steam API, map ID: %s",
+		qWarning(
+			"Was not able to find the '%s' in the response from Steam API, map ID: %s, response: "
+			"%s",
 			previewUrlField.c_str(),
-			mapId.c_str());
+			mapId.c_str(),
+			resp.dump().c_str());
 
 		throw std::runtime_error{ "Error while parsing Steam API response" };
 	}
@@ -168,9 +206,12 @@ std::pair<std::string, std::string> MapHistory::GetMapNameAndPreviewUrl(const st
 	const std::string titleField{ "title" };
 	if (!info.contains(previewUrlField))
 	{
-		qWarning("Was not able to find the '%s' in the response from Steam API, map ID: %s",
+		qWarning(
+			"Was not able to find the '%s' in the response from Steam API, map ID: %s, response: "
+			"%s",
 			titleField.c_str(),
-			mapId.c_str());
+			mapId.c_str(),
+			resp.dump().c_str());
 
 		throw std::runtime_error{ "Error while parsing Steam API response" };
 	}

@@ -181,9 +181,12 @@ std::pair<std::string, std::string> MapHistory::GetMapNameAndPreviewUrl(const st
 	const nl::json::json_pointer infoPath{ "/response/publishedfiledetails/0" };
 	if (!resp.contains(infoPath))
 	{
-		qWarning("Was not able to access the path '%s' in the response from Steam API, map ID: %s",
+		qWarning(
+			"Was not able to access the path '%s' in the response from Steam API, map ID: %s, "
+			"response: %s",
 			infoPath.to_string().c_str(),
-			mapId.c_str());
+			mapId.c_str(),
+			resp.dump().c_str());
 
 		throw std::runtime_error{ "Error while parsing Steam API response" };
 	}
@@ -192,9 +195,12 @@ std::pair<std::string, std::string> MapHistory::GetMapNameAndPreviewUrl(const st
 	const std::string previewUrlField{ "preview_url" };
 	if (!info.contains(previewUrlField))
 	{
-		qWarning("Was not able to find the '%s' in the response from Steam API, map ID: %s",
+		qWarning(
+			"Was not able to find the '%s' in the response from Steam API, map ID: %s, response: "
+			"%s",
 			previewUrlField.c_str(),
-			mapId.c_str());
+			mapId.c_str(),
+			resp.dump().c_str());
 
 		throw std::runtime_error{ "Error while parsing Steam API response" };
 	}
@@ -202,9 +208,12 @@ std::pair<std::string, std::string> MapHistory::GetMapNameAndPreviewUrl(const st
 	const std::string titleField{ "title" };
 	if (!info.contains(previewUrlField))
 	{
-		qWarning("Was not able to find the '%s' in the response from Steam API, map ID: %s",
+		qWarning(
+			"Was not able to find the '%s' in the response from Steam API, map ID: %s, response: "
+			"%s",
 			titleField.c_str(),
-			mapId.c_str());
+			mapId.c_str(),
+			resp.dump().c_str());
 
 		throw std::runtime_error{ "Error while parsing Steam API response" };
 	}

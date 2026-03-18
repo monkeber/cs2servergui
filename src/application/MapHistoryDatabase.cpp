@@ -2,6 +2,8 @@
 
 #include <QtLogging>
 
+#include <format>
+
 namespace
 {
 namespace details

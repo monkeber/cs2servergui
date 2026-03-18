@@ -57,8 +57,6 @@ RUN apt-get update && apt-get install -y \
     libfreetype6 \
     libfreetype-dev
 
-RUN pkg-config --libs xcb xcb-xkb xkbcommon-x11 && echo "XCB libs OK"
-
 # Fix locale related warnings while building QT.
 ENV LANG=en_US.UTF-8
 ENV LANGUAGE=en_US:en

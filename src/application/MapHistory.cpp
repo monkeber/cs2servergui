@@ -4,6 +4,8 @@
 
 #include <cpr/cpr.h>
 
+#include <exception>
+
 MapHistory::MapHistory(QObject* parent)
 	: QObject{ parent }
 {
@@ -58,9 +60,25 @@ void MapHistory::Add(const std::string& mapId)
 	}
 	else
 	{
-		const auto [mapName, previewUrl] = GetMapNameAndPreviewUrl(mapId);
-		const auto filePath{ DownloadPreview(mapId, previewUrl) };
-		m_db.AddNewMap(mapId, mapName, filePath.relative_path().generic_string());
+		try
+		{
+			const auto [mapName, previewUrl] = GetMapNameAndPreviewUrl(mapId);
+			const auto filePath{ DownloadPreview(mapId, previewUrl) };
+			m_db.AddNewMap(mapId, mapName, filePath.relative_path().generic_string());
+		}
+		catch (const std::exception& e)
+		{
+			qWarning("Encountered an error when adding a new map with ID %s: %s",
+				mapId.c_str(),
+				e.what());
+			return;
+		}
+		catch (...)
+		{
+			qWarning(
+				"Encountered an unknown error when adding a new map with ID %s", mapId.c_str());
+			return;
+		}
 	}
 
 	ReloadFile();
@@ -87,8 +105,24 @@ void MapHistory::FixPreviews()
 
 			for (const auto& entry : maps)
 			{
-				const auto [_, previewUrl] = GetMapNameAndPreviewUrl(entry.m_workshopID);
-				DownloadPreview(entry.m_workshopID, previewUrl);
+				try
+				{
+					const auto [_, previewUrl] = GetMapNameAndPreviewUrl(entry.m_workshopID);
+					DownloadPreview(entry.m_workshopID, previewUrl);
+				}
+				catch (const std::exception& e)
+				{
+					qWarning("Encountered an error when fixing preview for workshop ID %s: %s",
+						entry.m_workshopID.c_str(),
+						e.what());
+					return;
+				}
+				catch (...)
+				{
+					qWarning("Encountered an unknown error when fixing preview for workshop ID %s",
+						entry.m_workshopID.c_str());
+					return;
+				}
 			}
 			ReloadFile();
 		}

@@ -12,6 +12,7 @@ ApplicationWindow {
     ScrollView {
         id: view
         anchors.fill: parent
+        anchors.topMargin: Globals.elementsLeftMargin
 
         TextArea {
             id: area

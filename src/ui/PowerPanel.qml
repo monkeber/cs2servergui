@@ -21,7 +21,14 @@ GridLayout {
 
         text: qsTr("Select Executable")
         font: Globals.font
-        onClicked: FileDialogHelper.openFile("Select a file", "All Files (*)")
+        onClicked: {
+            const selectedFile = FileDialogHelper.openFile();
+            if (selectedFile.length > 0)
+            {
+                AppData.settings.setExecutablePath(selectedFile);
+                console.log("You selected: " + selectedFile);
+            }
+        }
 
         Material.background: Theme.primary
     }

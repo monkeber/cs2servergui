@@ -12,6 +12,5 @@ class FileDialogHelper : public QObject
 public:
 	explicit FileDialogHelper(QObject* parent = nullptr);
 
-	Q_INVOKABLE QString openFile(
-		const QString& title = "Open File", const QString& filter = "All Files (*)");
+	Q_INVOKABLE QString openFile();
 };

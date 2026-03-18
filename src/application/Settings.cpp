@@ -1,6 +1,5 @@
 #include "Settings.h"
 
-#include <QDir>
 #include <QtLogging>
 
 #include <fstream>
@@ -116,8 +115,8 @@ QString Settings::getTheme() const
 
 void Settings::setExecutablePath(QString fileUrl)
 {
-	const QUrl url{ fileUrl };
-	m_executablePath = QDir::toNativeSeparators(url.toLocalFile());
+	const std::filesystem::path path{ fileUrl.toStdString() };
+	m_executablePath = QString::fromStdString(std::filesystem::canonical(path).string());
 
 	emit executablePathChanged(m_executablePath);
 }

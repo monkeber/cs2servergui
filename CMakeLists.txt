@@ -25,7 +25,7 @@ if (NOT Qt6_ROOT)
 	endif ()
 endif ()
 
-find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets Qml Quick BYPASS_PROVIDER)
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Qml Quick BYPASS_PROVIDER)
 find_package(cpr REQUIRED)
 find_package(nlohmann_json REQUIRED)
 find_package(SQLiteCpp REQUIRED)
@@ -40,6 +40,7 @@ if (LINUX)
 	set(BUILD_SHARED_LIBS FALSE)
 endif ()
 add_subdirectory(third_party/rconpp EXCLUDE_FROM_ALL)
+add_subdirectory(third_party/nfd EXCLUDE_FROM_ALL)
 add_subdirectory(src)
 
 # Tests

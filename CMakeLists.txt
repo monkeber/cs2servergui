@@ -25,7 +25,7 @@ if (NOT Qt6_ROOT)
 	endif ()
 endif ()
 
-find_package(Qt6 REQUIRED COMPONENTS Core Gui Qml Quick BYPASS_PROVIDER)
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets Qml Quick BYPASS_PROVIDER)
 find_package(cpr REQUIRED)
 find_package(nlohmann_json REQUIRED)
 find_package(SQLiteCpp REQUIRED)

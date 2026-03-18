@@ -1,3 +1,4 @@
+#include <QApplication>
 #include <QGuiApplication>
 #include <QtPlugin>
 #include <QQmlApplicationEngine>
@@ -16,7 +17,7 @@ int main(int argc, char* argv[])
 
 	SetOriginalHandler(qInstallMessageHandler(LogHandler::MessageOutput));
 
-	QGuiApplication app{ argc, argv };
+	QApplication app{ argc, argv };
 	QQmlApplicationEngine engine;
 
 	using namespace Qt::StringLiterals;

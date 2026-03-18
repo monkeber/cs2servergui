@@ -6,6 +6,8 @@ set(${PROJECT_NAME}_SRC
 	AppData.h
 	CommandHistory.cpp
 	CommandHistory.h
+	FileDialogHelper.cpp
+	FileDialogHelper.h
 	Log.cpp
 	Log.h
 	MapHistory.cpp
@@ -42,6 +44,7 @@ qt_add_qml_module(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME} PUBLIC
 	Qt6::Core
 	Qt6::Gui
+	Qt6::Widgets
 	Qt6::Qml
 	Qt6::Quick
 	rconpp

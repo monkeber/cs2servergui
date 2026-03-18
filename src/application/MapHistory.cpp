@@ -115,13 +115,11 @@ void MapHistory::FixPreviews()
 					qWarning("Encountered an error when fixing preview for workshop ID %s: %s",
 						entry.m_workshopID.c_str(),
 						e.what());
-					return;
 				}
 				catch (...)
 				{
 					qWarning("Encountered an unknown error when fixing preview for workshop ID %s",
 						entry.m_workshopID.c_str());
-					return;
 				}
 			}
 			ReloadFile();

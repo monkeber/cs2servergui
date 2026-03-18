@@ -36,11 +36,15 @@ qt_standard_project_setup()
 # This policy allows overriding options defined in the library without modifying its code.
 set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
 
+set(BUILD_SHARED_LIBS FALSE)
+add_subdirectory(third_party/nfd EXCLUDE_FROM_ALL)
+
 if (LINUX)
 	set(BUILD_SHARED_LIBS FALSE)
+elseif (WIN32)
+	set(BUILD_SHARED_LIBS TRUE)
 endif ()
 add_subdirectory(third_party/rconpp EXCLUDE_FROM_ALL)
-add_subdirectory(third_party/nfd EXCLUDE_FROM_ALL)
 add_subdirectory(src)
 
 # Tests

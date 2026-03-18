@@ -121,6 +121,13 @@ void Settings::setExecutablePath(QString fileUrl)
 	emit executablePathChanged(m_executablePath);
 }
 
+void Settings::setScaleFactor(qreal scale)
+{
+	m_scaleFactor = std::max(scale, 0.1);
+
+	emit scaleFactorChanged(m_scaleFactor);
+}
+
 void Settings::fromJson(const nl::json js)
 {
 	try
@@ -154,7 +161,8 @@ void Settings::fromJson(const nl::json js)
 		{
 			// Settings related to config of the app itself - scale, theme, etc.
 			const nl::json app = js.at("application");
-			m_scaleFactor = app.value<double>("scalingFactor", 1.0);
+
+			setScaleFactor(app.value<double>("scalingFactor", 1.0));
 			m_theme = app.value("theme", "").c_str();
 		}
 		else

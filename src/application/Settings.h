@@ -13,7 +13,7 @@ class Settings : public QObject
 	Q_PROPERTY(QStringList quickCommands MEMBER m_quickCommands NOTIFY quickCommandsChanged)
 	Q_PROPERTY(QString rconPass MEMBER m_rconPass NOTIFY rconPassChanged)
 	Q_PROPERTY(quint16 rconPort MEMBER m_rconPort NOTIFY rconPortChanged)
-	Q_PROPERTY(qreal scaleFactor MEMBER m_scaleFactor NOTIFY scaleFactorChanged)
+	Q_PROPERTY(qreal scaleFactor READ getScaleFactor WRITE setScaleFactor NOTIFY scaleFactorChanged)
 	Q_PROPERTY(QString serverIP MEMBER m_serverIP NOTIFY serverIPChanged)
 	Q_PROPERTY(QString startParameters MEMBER m_startParameters NOTIFY startParametersChanged)
 	Q_PROPERTY(QString theme MEMBER m_theme NOTIFY themeChanged)
@@ -43,6 +43,7 @@ public:
 
 public slots:
 	void setExecutablePath(QString fileUrl);
+	void setScaleFactor(qreal scale);
 
 private:
 	void fromJson(const nl::json js);

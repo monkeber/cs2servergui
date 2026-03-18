@@ -17,8 +17,10 @@ QString FileDialogHelper::openFile()
 		AppData::Instance().settings()->getExecutablePath().toStdString()
 	};
 
-	nfdresult_t result =
-		NFD::OpenDialog(outPath, nullptr, 0, path.empty() ? nullptr : path.parent_path().c_str());
+	// MSVC Complained about being unable to cast from path's value type into nfd's type.
+	const std::string parentPathTemp{ path.parent_path().string() };
+	const nfdresult_t result =
+		NFD::OpenDialog(outPath, nullptr, 0, path.empty() ? nullptr : parentPathTemp.c_str());
 	if (result == NFD_OKAY)
 	{
 		return QString::fromUtf8(outPath.get());

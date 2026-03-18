@@ -6,7 +6,7 @@ MapHistoryModel::MapHistoryModel()
 
 void MapHistoryModel::AddEntries(const std::vector<MapHistoryEntry>& entries)
 {
-	beginInsertRows(QModelIndex{}, 0, entries.size());
+	beginInsertRows(QModelIndex{}, 0, static_cast<int>(entries.size()));
 	m_history = QList<MapHistoryEntry>{ entries.begin(), entries.end() };
 	endInsertRows();
 }

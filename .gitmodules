@@ -1,3 +1,6 @@
 [submodule "third_party/rconpp"]
 	path = third_party/rconpp
 	url = git@github.com:Jaskowicz1/rconpp.git
+[submodule "third_party/nfd"]
+	path = third_party/nfd
+	url = https://github.com/btzy/nativefiledialog-extended.git

@@ -6,6 +6,8 @@ set(${PROJECT_NAME}_SRC
 	AppData.h
 	CommandHistory.cpp
 	CommandHistory.h
+	FileDialogHelper.cpp
+	FileDialogHelper.h
 	Log.cpp
 	Log.h
 	MapHistory.cpp
@@ -45,6 +47,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
 	Qt6::Qml
 	Qt6::Quick
 	rconpp
+	nfd
 	cpr::cpr
 	nlohmann_json::nlohmann_json
 	SQLiteCpp

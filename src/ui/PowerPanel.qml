@@ -21,20 +21,16 @@ GridLayout {
 
         text: qsTr("Select Executable")
         font: Globals.font
-        onClicked: fileDialog.open()
-
-        Material.background: Theme.primary
-
-        FileDialog {
-            id: fileDialog
-            title: qsTr("Please select an executable file")
-            options: FileDialog.ReadOnly
-
-            onAccepted: {
-                AppData.settings.setExecutablePath(fileDialog.selectedFile)
-                console.log("You selected: " + fileDialog.selectedFile)
+        onClicked: {
+            const selectedFile = FileDialogHelper.openFile();
+            if (selectedFile.length > 0)
+            {
+                AppData.settings.setExecutablePath(selectedFile);
+                console.log("You selected: " + selectedFile);
             }
         }
+
+        Material.background: Theme.primary
     }
 
     Rectangle {

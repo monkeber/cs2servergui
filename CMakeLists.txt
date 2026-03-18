@@ -40,6 +40,7 @@ if (LINUX)
 	set(BUILD_SHARED_LIBS FALSE)
 endif ()
 add_subdirectory(third_party/rconpp EXCLUDE_FROM_ALL)
+add_subdirectory(third_party/nfd EXCLUDE_FROM_ALL)
 add_subdirectory(src)
 
 # Tests

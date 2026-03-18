@@ -3,14 +3,50 @@ FROM ubuntu:24.04 AS base
 # Avoid interactive prompts during build
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install build dependencies
+# Install build dependencies. The list is might be excessive, a lot of dependencies were added
+# when I tried to fix the issue of not detecting xcb integration plugin. A good place to improve
+# in the future and reduce the dependency list.
 RUN apt-get update && apt-get install -y \
     build-essential \
     git \
     ninja-build \
     pipx \
     libgl1-mesa-dev \
-    libxcb* \
+    libxcb-cursor-dev \
+    libxcb-composite0-dev \
+    libxcb-present-dev \
+    libxcb-record0-dev \
+    libxcb-res0-dev \
+    libxcb-screensaver0-dev \
+    libxcb-damage0-dev \
+    libxcb-dpms0-dev \
+    libxcb-dri2-0-dev \
+    libxcb-dri3-dev \
+    libxcb-xinput-dev \
+    libxcb-glx0-dev \
+    libgles2-mesa-dev \
+    libegl1-mesa-dev \
+    libegl-dev \
+    libglx-dev \
+    libgl-dev \
+    libxcb-xinput-dev \
+    libxcb1-dev \
+    libxcb-glx0-dev \
+    libxcb-keysyms1-dev \
+    libxcb-image0-dev \
+    libxcb-shm0-dev \
+    libxcb-icccm4-dev \
+    libxcb-sync-dev \
+    libxcb-xfixes0-dev \
+    libxcb-shape0-dev \
+    libxcb-randr0-dev \
+    libxcb-render-util0-dev \
+    libxcb-util-dev \
+    libxcb-xinerama0-dev \
+    libxcb-xkb-dev \
+    libx11-xcb-dev \
+    libxkbcommon-dev \
+    libxkbcommon-x11-dev \
     libwayland-dev \
     wayland-protocols \
     libxkbcommon-dev \
@@ -20,6 +56,8 @@ RUN apt-get update && apt-get install -y \
     libfontconfig-dev \
     libfreetype6 \
     libfreetype-dev
+
+RUN pkg-config --libs xcb xcb-xkb xkbcommon-x11 && echo "XCB libs OK"
 
 # Fix locale related warnings while building QT.
 ENV LANG=en_US.UTF-8
@@ -55,6 +93,9 @@ RUN mkdir -p /qtroot/install && \
     mkdir -p /qtroot/build && \
     cd /qtroot/build && \
     ../qt/configure -submodules qtwayland,qtdeclarative,qtbase,qtsvg -skip qtimageformats -static -feature-freetype -fontconfig -prefix /qtroot/install
+
+# This way we can check if xcb modules is properly detected.
+# RUN cat /qtroot/build/config.summary | grep -A2 -i xcb
 
 RUN cd /qtroot/build && \
     cmake --build . --parallel && \

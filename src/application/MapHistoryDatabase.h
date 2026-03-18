@@ -12,6 +12,13 @@ struct MapHistoryEntry
 	std::uint8_t m_rating{ 0 };
 };
 
+struct MapHistoryFilters
+{
+	bool m_sortByRating{ false };
+	bool m_removeDuplicated{ false };
+	bool m_showOnlyBookmarks{ false };
+};
+
 struct MapHistoryPatch
 {
 	std::optional<bool> m_isBookmarked;
@@ -39,7 +46,7 @@ public:
 	//! Returns true if the record of a map with the provided id exists in the database.
 	bool Exists(const std::string& mapId) const;
 	//! Returns all the stored records of the played maps.
-	std::vector<MapHistoryEntry> Select(const bool sortByRating, const bool removeDuplicated, const bool showOnlyBookmarks) const;
+	std::vector<MapHistoryEntry> Select(const MapHistoryFilters& filters) const;
 	//! Returns the entry according to the provided workshop id and played at.
 	MapHistoryEntry SelectOne(const std::string& mapId, const std::string& playedAt) const;
 	//! Updates is_bookmarked or rating field of the entry, workshop id serves as the identification

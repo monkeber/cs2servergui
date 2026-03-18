@@ -2,7 +2,7 @@
 
 ![Qt](https://img.shields.io/badge/Qt-%23217346.svg?style=for-the-badge&logo=Qt&logoColor=white) ![C++](https://img.shields.io/badge/c++-%2300599C.svg?style=for-the-badge&logo=c%2B%2B&logoColor=white) ![Windows](https://custom-icon-badges.demolab.com/badge/Windows-0078D6?style=for-the-badge&logo=windows11&logoColor=white) ![Linux](https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black)
 
-This is a very simple app I've created for managing my local server to play with friends because typing commands into server cmd was not really convenient. The app is mostly intended to be used with local server on the same machine, but you also can connect to a remote server via RCON (Stopping and starting will not work).
+This is a very simple app I've created for managing my local server to play with friends because typing commands into the server cmd was not convenient. The app is mostly intended to be used with local server on the same machine, but you also can connect to any remote server via RCON (Stopping and starting will not work).
 
 Written in C++ and QML as an exercise.
 
@@ -22,19 +22,17 @@ Written in C++ and QML as an exercise.
 
 ✅ History of the entered commands
 
-✅ Scaling on different resolutions, users also change the scale from app settings
+✅ Scaling on different resolutions, users can also change the scale from app settings
 
 ✅ Light and dark themes
 
 ✅ History of the downloaded maps
 
-⬜️ Redirect server cmd output into a panel inside the application and get rid of standalone window if possible
-
 ## Build
 
 ### Prerequisits
 
-The project uses Conan 2, so make sure the Conan is installed and is invokable, e.g.:
+The project uses Conan 2 package manager, so make sure Conan is installed and is invokable, e.g.:
 ```
 $ pip install conan
 
@@ -52,12 +50,12 @@ Versions of dependencies used, probably will work on newer versions as well:
 - QtCreator (Windows) or VSCode
 - Qt 6.10.2
 - [rconpp](https://github.com/Jaskowicz1/rconpp) at [d77993b](https://github.com/Jaskowicz1/rconpp/commit/d77993b1e8993701dbf6b2974b41045a915c7b42)
-- Conan 2 and dependencies retrieved using it, see conanfile.txt for more details
-- CMake 4.0.0
+- Conan 2.26.2
+- CMake 4.2.0
 
 ### Build Process Windows
 
-You can use either VSCode or QTCreator to build the application, but both of them might require some small setup. In both cases I think you need to also set up env variables e.g.:
+You can use either VSCode or QTCreator to build the application, but both of them might require some additional setup. In both cases I think you need to also set up env variables e.g.:
 
 ```
 QTDIR=W:\Programs\Qt\6.10.2\msvc2022_64
@@ -70,7 +68,7 @@ Open Native x64 development tools that are provided by the MSVC compiler, start 
 
 #### 2. QT Creator
 
-Open the project in Qt Creator, make sure that in Projects pane one of the detected or configured Kits is selected (not the cmake presets one) and hit build. The kit from cmake presets does not work currently.
+Open the project in Qt Creator, make sure that in the `Projects` pane one of the detected or configured Kits is selected (not the cmake presets one) and hit build. The kit from cmake presets does not work currently.
 
 ### Build Process Linux
 
@@ -95,7 +93,7 @@ For building on linux I am using static build of QT to ease the deployment proce
     cmake --install .
     ```
 
-After that create `.env` file in the project root directory to set `Qt6_ROOT` CMake variable, example of file contents (the variable can also be passed for the following build step to CMake, but it's more convenient to use a file):
+After doing that, create `.env` file in the project root directory to set `Qt6_ROOT` CMake variable, example of file contents (the variable can also be passed for the build step to CMake, but it's more convenient to use the file):
 ```
 Qt6_ROOT=/mnt/btrwdblack/Programs/Qt/Sources/install
 ```

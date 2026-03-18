@@ -131,15 +131,13 @@ For convenience there is also a combined script:
 
 ### Linux
 
-I use Docker to build the app on an older system (Ubuntu 24 for now) in order for it to link to library versions that are present on other systems so it's not usable only on arch.
+I use Docker to build the app on an older system (Ubuntu 24 for now) in order for it to link to library versions that are present on other systems so it's usable not only on my Arch.
 ```
-docker build -t app-builder .
+docker build --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) -t app-builder .
 docker run --rm -v $(pwd):/build -v $(pwd)/install:/install app-builder
 ```
 
 After that you can just copy the binary from `install/bin` folder and distribute it.
-
-Note: `build` and `install` folder may be created by the docker container so in order to delete them you probably need `sudo`, hopefully I will fix it in the future.
 
 ### Supported Platforms
 

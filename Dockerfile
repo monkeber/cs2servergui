@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y \
     git \
     ninja-build \
     pipx \
-    libgtk-3-dev \
+    libdbus-1-dev \
     libgl1-mesa-dev \
     libxcb-cursor-dev \
     libxcb-composite0-dev \

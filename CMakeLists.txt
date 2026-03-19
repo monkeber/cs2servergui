@@ -33,10 +33,11 @@ find_package(SQLiteCpp REQUIRED)
 qt_policy(SET QTP0001 NEW)
 qt_standard_project_setup()
 
-# This policy allows overriding options defined in the library without modifying its code.
+# This policy allows overriding options defined in the libraries without modifying its code.
 set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
 
 set(BUILD_SHARED_LIBS FALSE)
+set(NFD_PORTAL ON)
 add_subdirectory(third_party/nfd EXCLUDE_FROM_ALL)
 
 if (LINUX)

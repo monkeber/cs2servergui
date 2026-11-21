@@ -110,6 +110,29 @@ MapInfo ToMapInfo(std::string_view mapName)
 	return map;
 }
 
+//! Real players are tagged with their Steam id, bots with `<BOT>`, so bots are skipped.
+//! Before: `"Slava<2><[U:1:123456]><CT>" killed "BOT Wesley<3><BOT><TERRORIST>" with "ak47"`
+//! After:  PlayerSeen{ 123456, "Slava" }
+void AppendPlayersSeen(std::string_view message, std::vector<MatchEvent>& events)
+{
+	// Cheap check first, most lines have no real player in them.
+	if (message.find("[U:1:") == std::string_view::npos)
+	{
+		return;
+	}
+
+	static const std::regex playerTag{ R"re("([^"]*)<\d+><\[U:1:(\d+)\]>)re" };
+	using Iterator = std::regex_iterator<std::string_view::const_iterator>;
+	for (Iterator it{ message.begin(), message.end(), playerTag }; it != Iterator{}; ++it)
+	{
+		const auto accountId{ ParseNumber<std::uint32_t>((*it)[2].str()) };
+		if (accountId && *accountId != 0)
+		{
+			events.push_back(PlayerSeen{ *accountId, (*it)[1].str() });
+		}
+	}
+}
+
 std::optional<PlayerStats> ToPlayerStats(
 	const std::vector<std::string_view>& columns, const std::vector<std::string_view>& values)
 {
@@ -187,10 +210,7 @@ std::vector<MatchEvent> Cs2MatchLogParser::Feed(std::string_view chunk)
 		lineEnd = m_pendingLine.find('\n', lineStart))
 	{
 		const std::string_view line{ m_pendingLine.data() + lineStart, lineEnd - lineStart };
-		if (auto event{ ParseLine(line) })
-		{
-			events.push_back(std::move(*event));
-		}
+		ParseLine(line, events);
 		lineStart = lineEnd + 1;
 	}
 	m_pendingLine.erase(0, lineStart);
@@ -198,7 +218,7 @@ std::vector<MatchEvent> Cs2MatchLogParser::Feed(std::string_view chunk)
 	return events;
 }
 
-std::optional<MatchEvent> Cs2MatchLogParser::ParseLine(std::string_view line)
+void Cs2MatchLogParser::ParseLine(std::string_view line, std::vector<MatchEvent>& events)
 {
 	const std::string_view message{ Trim(StripTimestamp(line)) };
 
@@ -206,7 +226,7 @@ std::optional<MatchEvent> Cs2MatchLogParser::ParseLine(std::string_view line)
 	{
 		m_isInsideJson = true;
 		m_jsonValues.clear();
-		return std::nullopt;
+		return;
 	}
 
 	if (m_isInsideJson)
@@ -214,7 +234,11 @@ std::optional<MatchEvent> Cs2MatchLogParser::ParseLine(std::string_view line)
 		if (message.ends_with("JSON_END"))
 		{
 			m_isInsideJson = false;
-			return FinishJsonBlock();
+			if (auto stats{ FinishJsonBlock() })
+			{
+				events.push_back(std::move(*stats));
+			}
+			return;
 		}
 
 		// Before: `"player_0" : "  123456,      3, ...",`
@@ -224,7 +248,7 @@ std::optional<MatchEvent> Cs2MatchLogParser::ParseLine(std::string_view line)
 		{
 			m_jsonValues.insert_or_assign(match.str(1), match.str(2));
 		}
-		return std::nullopt;
+		return;
 	}
 
 	// Before: `World triggered "Match_Start" on "de_dust2"`
@@ -232,15 +256,17 @@ std::optional<MatchEvent> Cs2MatchLogParser::ParseLine(std::string_view line)
 	if (message.starts_with(matchStart))
 	{
 		const auto mapName{ message.substr(matchStart.size()) };
-		return MatchStarted{ ToMapInfo(mapName.substr(0, mapName.find('"'))) };
+		events.push_back(MatchStarted{ ToMapInfo(mapName.substr(0, mapName.find('"'))) });
+		return;
 	}
 
 	if (message.starts_with("Game Over:"))
 	{
-		return MatchEnded{};
+		events.push_back(MatchEnded{});
+		return;
 	}
 
-	return std::nullopt;
+	AppendPlayersSeen(message, events);
 }
 
 std::optional<MatchEvent> Cs2MatchLogParser::FinishJsonBlock()

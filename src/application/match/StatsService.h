@@ -7,6 +7,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <unordered_map>
 
 //! Tracks the current match and stores the stats of real players from the log stream. A match is
 //! stored with its first round, and one that never reaches Game Over keeps no end time.
@@ -24,6 +25,7 @@ private:
 	void Handle(const MatchStarted& event);
 	void Handle(const RoundStats& event);
 	void Handle(const MatchEnded& event);
+	void Handle(const PlayerSeen& event);
 
 	bool BelongsToCurrentMatch(const RoundStats& event) const;
 
@@ -38,4 +40,6 @@ private:
 	MatchLogParser& m_parser;
 	MatchStatsStore& m_store;
 	std::optional<CurrentMatch> m_currentMatch;
+	//! Names already stored, so every log line with a player does not hit the store.
+	std::unordered_map<std::uint32_t, std::string> m_knownNames;
 };

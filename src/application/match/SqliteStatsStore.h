@@ -19,6 +19,12 @@ struct MatchRecord
 	int m_scoreT{ 0 };
 };
 
+struct PlayerMatchRecord
+{
+	std::optional<std::string> m_name;
+	PlayerStats m_stats;
+};
+
 class SqliteMatchStatsStore final : public MatchStatsStore
 {
 public:
@@ -31,9 +37,11 @@ public:
 	std::int64_t CreateMatch(const MapInfo& map) override;
 	void SaveRound(std::int64_t matchId, const RoundStats& stats) override;
 	void EndMatch(std::int64_t matchId) override;
+	void SavePlayerName(std::uint32_t accountId, const std::string& name) override;
 
 	std::vector<MatchRecord> SelectMatches() const;
-	std::vector<PlayerStats> SelectPlayerStats(std::int64_t matchId) const;
+	//! The match scoreboard, best players first.
+	std::vector<PlayerMatchRecord> SelectPlayerStats(std::int64_t matchId) const;
 
 private:
 	void InitSchema() const;

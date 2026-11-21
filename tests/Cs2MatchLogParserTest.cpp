@@ -17,6 +17,21 @@ std::string ReadFixture(const std::string& name)
 	return content.str();
 }
 
+template<typename T>
+std::vector<T> OfType(const std::vector<MatchEvent>& events)
+{
+	std::vector<T> result;
+	for (const auto& event : events)
+	{
+		if (const auto* typed{ std::get_if<T>(&event) })
+		{
+			result.push_back(*typed);
+		}
+	}
+
+	return result;
+}
+
 }	 // namespace
 
 TEST(Cs2MatchLogParserTest, ParsesSampleMatch)
@@ -24,14 +39,14 @@ TEST(Cs2MatchLogParserTest, ParsesSampleMatch)
 	Cs2MatchLogParser parser;
 	const auto events{ parser.Feed(ReadFixture("sample_match.log")) };
 
-	ASSERT_EQ(events.size(), 4);
-	ASSERT_TRUE(std::holds_alternative<MatchStarted>(events[0]));
-	ASSERT_EQ(std::get<MatchStarted>(events[0]).m_map.m_name, "de_dust2");
-	ASSERT_TRUE(std::holds_alternative<RoundStats>(events[1]));
-	ASSERT_TRUE(std::holds_alternative<RoundStats>(events[2]));
-	ASSERT_TRUE(std::holds_alternative<MatchEnded>(events[3]));
+	ASSERT_EQ(events.size(), 7);
+	ASSERT_TRUE(std::holds_alternative<MatchStarted>(events.front()));
+	ASSERT_TRUE(std::holds_alternative<MatchEnded>(events.back()));
+	ASSERT_EQ(std::get<MatchStarted>(events.front()).m_map.m_name, "de_dust2");
 
-	const auto& round{ std::get<RoundStats>(events[2]) };
+	const auto rounds{ OfType<RoundStats>(events) };
+	ASSERT_EQ(rounds.size(), 2);
+	const auto& round{ rounds[1] };
 	ASSERT_EQ(round.m_map.m_name, "de_dust2");
 	ASSERT_FALSE(round.m_map.m_workshopId.has_value());
 	ASSERT_EQ(round.m_roundNumber, 2);
@@ -66,8 +81,8 @@ TEST(Cs2MatchLogParserTest, HandlesChunksSplitAnywhere)
 		}
 	}
 
-	ASSERT_EQ(events.size(), 4);
-	ASSERT_EQ(std::get<RoundStats>(events[2]).m_players.size(), 3);
+	ASSERT_EQ(events.size(), 7);
+	ASSERT_EQ(OfType<RoundStats>(events)[1].m_players.size(), 3);
 }
 
 TEST(Cs2MatchLogParserTest, ParsesFileLogFormatAndWorkshopMap)
@@ -122,4 +137,20 @@ TEST(Cs2MatchLogParserTest, ResetDropsUnfinishedJsonBlock)
 
 	ASSERT_EQ(events.size(), 1);
 	ASSERT_EQ(std::get<MatchStarted>(events[0]).m_map.m_name, "de_nuke");
+}
+
+TEST(Cs2MatchLogParserTest, ReportsRealPlayersAndSkipsBots)
+{
+	Cs2MatchLogParser parser;
+	const auto events{ parser.Feed(
+		"\"Slava <3<2><[U:1:123456]><CT>\" killed \"BOT Wesley<3><BOT><TERRORIST>\" with \"ak47\"\n"
+		"\"BOT York<5><BOT><TERRORIST>\" killed \"Friend<4><[U:1:3000000000]><CT>\" with "
+		"\"awp\"\n") };
+
+	const auto players{ OfType<PlayerSeen>(events) };
+	ASSERT_EQ(players.size(), 2);
+	ASSERT_EQ(players[0].m_accountId, 123456);
+	ASSERT_EQ(players[0].m_name, "Slava <3");
+	ASSERT_EQ(players[1].m_accountId, 3000000000u);
+	ASSERT_EQ(players[1].m_name, "Friend");
 }

@@ -3,6 +3,7 @@
 #include "Events.h"
 
 #include <cstdint>
+#include <string>
 
 //! Persists match stats.
 class MatchStatsStore
@@ -15,4 +16,6 @@ public:
 	//! Updates the match score and replaces the player totals with the ones from the snapshot.
 	virtual void SaveRound(std::int64_t matchId, const RoundStats& stats) = 0;
 	virtual void EndMatch(std::int64_t matchId) = 0;
+	//! Stores the latest known name of a player.
+	virtual void SavePlayerName(std::uint32_t accountId, const std::string& name) = 0;
 };

@@ -47,4 +47,11 @@ struct MatchEnded
 {
 };
 
-using MatchEvent = std::variant<MatchStarted, RoundStats, MatchEnded>;
+//! A real player appeared in the log. Names are not part of the round stats.
+struct PlayerSeen
+{
+	std::uint32_t m_accountId{ 0 };
+	std::string m_name;
+};
+
+using MatchEvent = std::variant<MatchStarted, RoundStats, MatchEnded, PlayerSeen>;

@@ -65,6 +65,16 @@ void MatchStatsService::Handle(const MatchEnded&)
 	}
 }
 
+void MatchStatsService::Handle(const PlayerSeen& event)
+{
+	auto& knownName{ m_knownNames[event.m_accountId] };
+	if (knownName != event.m_name)
+	{
+		m_store.SavePlayerName(event.m_accountId, event.m_name);
+		knownName = event.m_name;
+	}
+}
+
 bool MatchStatsService::BelongsToCurrentMatch(const RoundStats& event) const
 {
 	return event.m_map.m_name == m_currentMatch->m_mapName

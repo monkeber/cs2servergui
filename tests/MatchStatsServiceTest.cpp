@@ -38,7 +38,15 @@ public:
 		m_matches.at(matchId).m_isEnded = true;
 	}
 
+	void SavePlayerName(std::uint32_t accountId, const std::string& name) override
+	{
+		m_names[accountId] = name;
+		++m_nameWrites;
+	}
+
 	std::vector<Match> m_matches;
+	std::map<std::uint32_t, std::string> m_names;
+	int m_nameWrites{ 0 };
 };
 
 std::string RoundStatsLog(const std::string& map, int round, int kills)
@@ -80,6 +88,11 @@ TEST(MatchStatsServiceTest, ReplayOfSampleMatchStoresFinalTotalsOfRealPlayers)
 	ASSERT_EQ(players[0].m_accountId, 123456);
 	ASSERT_EQ(players[0].m_kills, 2);
 	ASSERT_EQ(players[1].m_accountId, 654321);
+
+	ASSERT_EQ(store.m_names.at(123456), "Slava");
+	ASSERT_EQ(store.m_names.at(654321), "Friend");
+	// Slava appears in two lines, the unchanged name is written once.
+	ASSERT_EQ(store.m_nameWrites, 2);
 }
 
 TEST(MatchStatsServiceTest, RoundWithoutMatchStartCreatesMatch)

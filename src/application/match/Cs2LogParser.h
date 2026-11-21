@@ -15,7 +15,7 @@ public:
 	void Reset() override;
 
 private:
-	std::optional<MatchEvent> ParseLine(std::string_view line);
+	void ParseLine(std::string_view line, std::vector<MatchEvent>& events);
 	std::optional<MatchEvent> FinishJsonBlock();
 
 private:

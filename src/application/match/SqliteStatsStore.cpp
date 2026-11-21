@@ -93,6 +93,19 @@ void SqliteMatchStatsStore::EndMatch(std::int64_t matchId)
 	query.exec();
 }
 
+void SqliteMatchStatsStore::SavePlayerName(std::uint32_t accountId, const std::string& name)
+{
+	SQLite::Statement query{ *m_db, R"__(
+	INSERT INTO player (account_id, name) VALUES (?, ?)
+	ON CONFLICT (account_id) DO UPDATE SET
+		name = excluded.name,
+		updated_at = datetime('now');
+	)__" };
+	query.bind(1, static_cast<std::int64_t>(accountId));
+	query.bind(2, name);
+	query.exec();
+}
+
 std::vector<MatchRecord> SqliteMatchStatsStore::SelectMatches() const
 {
 	SQLite::Statement query{ *m_db, R"__(
@@ -120,27 +133,33 @@ std::vector<MatchRecord> SqliteMatchStatsStore::SelectMatches() const
 	return result;
 }
 
-std::vector<PlayerStats> SqliteMatchStatsStore::SelectPlayerStats(std::int64_t matchId) const
+std::vector<PlayerMatchRecord> SqliteMatchStatsStore::SelectPlayerStats(std::int64_t matchId) const
 {
 	SQLite::Statement query{ *m_db, R"__(
-	SELECT account_id, team, kills, deaths, assists, damage, hs_pct, adr, mvp
-		FROM player_match_stats WHERE match_id = ? ORDER BY kills DESC, account_id;
+	SELECT stats.account_id, team, kills, deaths, assists, damage, hs_pct, adr, mvp, player.name
+		FROM player_match_stats stats
+		LEFT JOIN player ON player.account_id = stats.account_id
+		WHERE match_id = ? ORDER BY kills DESC, stats.account_id;
 	)__" };
 	query.bind(1, matchId);
 
-	std::vector<PlayerStats> result;
+	std::vector<PlayerMatchRecord> result;
 	while (query.executeStep())
 	{
-		result.push_back(PlayerStats{
-			.m_accountId = static_cast<std::uint32_t>(query.getColumn(0).getInt64()),
-			.m_team = query.getColumn(1).getInt(),
-			.m_kills = query.getColumn(2).getInt(),
-			.m_deaths = query.getColumn(3).getInt(),
-			.m_assists = query.getColumn(4).getInt(),
-			.m_damage = query.getColumn(5).getInt(),
-			.m_headshotPercent = query.getColumn(6).getDouble(),
-			.m_adr = query.getColumn(7).getDouble(),
-			.m_mvp = query.getColumn(8).getInt(),
+		result.push_back(PlayerMatchRecord{
+			.m_name = GetOptionalString(query, 9),
+			.m_stats =
+				PlayerStats{
+					.m_accountId = static_cast<std::uint32_t>(query.getColumn(0).getInt64()),
+					.m_team = query.getColumn(1).getInt(),
+					.m_kills = query.getColumn(2).getInt(),
+					.m_deaths = query.getColumn(3).getInt(),
+					.m_assists = query.getColumn(4).getInt(),
+					.m_damage = query.getColumn(5).getInt(),
+					.m_headshotPercent = query.getColumn(6).getDouble(),
+					.m_adr = query.getColumn(7).getDouble(),
+					.m_mvp = query.getColumn(8).getInt(),
+				},
 		});
 	}
 
@@ -159,6 +178,12 @@ void SqliteMatchStatsStore::InitSchema() const
 		ended_at DATETIME,
 		score_ct INTEGER NOT NULL DEFAULT 0,
 		score_t INTEGER NOT NULL DEFAULT 0
+	);
+
+	CREATE TABLE IF NOT EXISTS player(
+		account_id INTEGER PRIMARY KEY,
+		name TEXT NOT NULL,
+		updated_at DATETIME NOT NULL DEFAULT(datetime('now'))
 	);
 
 	CREATE TABLE IF NOT EXISTS player_match_stats(

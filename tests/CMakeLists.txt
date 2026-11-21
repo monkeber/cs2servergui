@@ -8,6 +8,7 @@ qt_add_executable(${PROJECT_NAME}
 	Cs2MatchLogParserTest.cpp
 	HttpMatchLogReceiverTest.cpp
 	MatchStatsServiceTest.cpp
+	RawLogWriterTest.cpp
 	SqliteMatchStatsStoreTest.cpp
 )
 

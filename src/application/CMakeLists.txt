@@ -23,6 +23,8 @@ set(${PROJECT_NAME}_SRC
 	match/HttpLogReceiver.h
 	match/LogParser.h
 	match/LogSource.h
+	match/RawLogWriter.cpp
+	match/RawLogWriter.h
 	match/SqliteStatsStore.cpp
 	match/SqliteStatsStore.h
 	match/StatsRecorder.cpp

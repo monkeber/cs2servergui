@@ -2,6 +2,7 @@
 #include "ProcessImpl.h"
 #include "AppData.h"
 #include "MapHistory.h"
+#include "MatchLogReceiver.h"
 
 #include <QFileInfo>
 #include <QRegularExpression>
@@ -9,6 +10,8 @@
 #include <QUrlQuery>
 
 #include <cpr/cpr.h>
+
+#include <format>
 
 ProcessHandler::ProcessHandler(QObject* parent)
 	: QObject{ parent }
@@ -107,8 +110,11 @@ void ProcessHandler::hostWorkshopMap(const QString& map)
 
 void ProcessHandler::start()
 {
-	if (!m_process->start(AppData::Instance().settings()->getExecutablePath().toStdString(),
-			AppData::Instance().settings()->getStartParameters().toStdString()))
+	const std::string startParams{ std::format("{} {}",
+		AppData::Instance().settings()->getStartParameters().toStdString(),
+		MatchLogServerParams()) };
+	if (!m_process->start(
+			AppData::Instance().settings()->getExecutablePath().toStdString(), startParams))
 	{
 		return;
 	}

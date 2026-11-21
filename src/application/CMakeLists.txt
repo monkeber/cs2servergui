@@ -16,6 +16,15 @@ set(${PROJECT_NAME}_SRC
 	MapHistoryDatabase.h
 	MapHistoryModel.cpp
 	MapHistoryModel.h
+	MatchEvents.h
+	MatchLogParser.cpp
+	MatchLogParser.h
+	MatchLogReceiver.cpp
+	MatchLogReceiver.h
+	MatchStatsDatabase.cpp
+	MatchStatsDatabase.h
+	MatchStatsService.cpp
+	MatchStatsService.h
 	ProcessHandler.cpp
 	ProcessHandler.h
 	ProcessImpl.h
@@ -51,6 +60,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
 	cpr::cpr
 	nlohmann_json::nlohmann_json
 	SQLiteCpp
+	httplib::httplib
 )
 
 target_compile_options(${PROJECT_NAME} PRIVATE

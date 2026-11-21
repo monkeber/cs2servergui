@@ -2,6 +2,8 @@
 
 #include "Log.h"
 #include "MapHistory.h"
+#include "MatchLogReceiver.h"
+#include "MatchStatsService.h"
 #include "ProcessHandler.h"
 #include "RCONClient.h"
 #include "Settings.h"
@@ -32,10 +34,17 @@ public:
 private:
 	AppData();
 
+	void StartMatchLogReceiver();
+	void HandleMatchLog(const std::string& chunk);
+
 private:
 	Log m_log;
 	MapHistory m_mapHistory;
 	ProcessHandler m_serverProcess;
 	RCONClient m_rconclient;
 	Settings m_settings;
+	MatchStatsDatabase m_matchStatsDb;
+	MatchStatsService m_matchStats;
+	//! Declared last so it stops before the components it feeds are destroyed.
+	std::unique_ptr<MatchLogReceiver> m_matchLogReceiver;
 };

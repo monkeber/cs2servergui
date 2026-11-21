@@ -18,6 +18,7 @@ class CS2ServerGUI(ConanFile):
         self.requires("libcurl/8.17.0")
         self.requires("sqlitecpp/3.3.3")
         self.requires("gtest/1.17.0")
+        self.requires("cpp-httplib/0.65.0")
 
     def layout(self):
         cmake_layout(self)

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "MatchLogParser.h"
-#include "MatchStatsDatabase.h"
+#include "LogParser.h"
+#include "StatsDatabase.h"
 
 #include <cstdint>
 #include <optional>

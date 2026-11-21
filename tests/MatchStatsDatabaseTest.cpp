@@ -1,6 +1,6 @@
 #include "gtest/gtest.h"
 
-#include <MatchStatsDatabase.h>
+#include <match/StatsDatabase.h>
 
 namespace
 {

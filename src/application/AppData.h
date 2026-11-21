@@ -2,8 +2,8 @@
 
 #include "Log.h"
 #include "MapHistory.h"
-#include "MatchLogReceiver.h"
-#include "MatchStatsService.h"
+#include "match/LogReceiver.h"
+#include "match/StatsService.h"
 #include "ProcessHandler.h"
 #include "RCONClient.h"
 #include "Settings.h"

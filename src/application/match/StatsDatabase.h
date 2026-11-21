@@ -1,6 +1,6 @@
 #pragma once
 
-#include "MatchEvents.h"
+#include "Events.h"
 
 #include <SQLiteCpp/SQLiteCpp.h>
 

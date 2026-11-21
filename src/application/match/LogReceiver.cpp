@@ -1,4 +1,4 @@
-#include "MatchLogReceiver.h"
+#include "LogReceiver.h"
 
 #include <httplib.h>
 

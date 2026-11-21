@@ -2,7 +2,7 @@
 #include "ProcessImpl.h"
 #include "AppData.h"
 #include "MapHistory.h"
-#include "MatchLogReceiver.h"
+#include "match/LogReceiver.h"
 
 #include <QFileInfo>
 #include <QRegularExpression>

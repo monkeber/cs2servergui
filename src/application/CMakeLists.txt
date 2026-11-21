@@ -16,15 +16,15 @@ set(${PROJECT_NAME}_SRC
 	MapHistoryDatabase.h
 	MapHistoryModel.cpp
 	MapHistoryModel.h
-	MatchEvents.h
-	MatchLogParser.cpp
-	MatchLogParser.h
-	MatchLogReceiver.cpp
-	MatchLogReceiver.h
-	MatchStatsDatabase.cpp
-	MatchStatsDatabase.h
-	MatchStatsService.cpp
-	MatchStatsService.h
+	match/Events.h
+	match/LogParser.cpp
+	match/LogParser.h
+	match/LogReceiver.cpp
+	match/LogReceiver.h
+	match/StatsDatabase.cpp
+	match/StatsDatabase.h
+	match/StatsService.cpp
+	match/StatsService.h
 	ProcessHandler.cpp
 	ProcessHandler.h
 	ProcessImpl.h

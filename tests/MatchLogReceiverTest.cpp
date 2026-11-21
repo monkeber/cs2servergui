@@ -1,6 +1,6 @@
 #include "gtest/gtest.h"
 
-#include <MatchLogReceiver.h>
+#include <match/LogReceiver.h>
 
 #include <httplib.h>
 

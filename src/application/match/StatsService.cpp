@@ -1,4 +1,4 @@
-#include "MatchStatsService.h"
+#include "StatsService.h"
 
 MatchStatsService::MatchStatsService(const MatchStatsDatabase& db)
 	: m_db{ db }

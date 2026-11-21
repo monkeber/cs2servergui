@@ -5,10 +5,10 @@ find_package(GTest REQUIRED)
 qt_add_executable(${PROJECT_NAME}
 	main.cpp
 	MapHistoryDatabaseTest.cpp
-	MatchLogParserTest.cpp
-	MatchLogReceiverTest.cpp
-	MatchStatsDatabaseTest.cpp
+	Cs2MatchLogParserTest.cpp
+	HttpMatchLogReceiverTest.cpp
 	MatchStatsServiceTest.cpp
+	SqliteMatchStatsStoreTest.cpp
 )
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE

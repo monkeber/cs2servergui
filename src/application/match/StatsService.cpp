@@ -1,7 +1,8 @@
 #include "StatsService.h"
 
-MatchStatsService::MatchStatsService(const MatchStatsDatabase& db)
-	: m_db{ db }
+MatchStatsService::MatchStatsService(MatchLogParser& parser, MatchStatsStore& store)
+	: m_parser{ parser }
+	, m_store{ store }
 {
 }
 
@@ -19,7 +20,7 @@ void MatchStatsService::HandleLog(std::string_view chunk)
 
 void MatchStatsService::Handle(const MatchStarted& event)
 {
-	m_currentMatchId = m_db.CreateMatch(event.m_mapName);
+	m_currentMatchId = m_store.CreateMatch(event.m_map);
 }
 
 void MatchStatsService::Handle(const RoundStats& event)
@@ -28,17 +29,23 @@ void MatchStatsService::Handle(const RoundStats& event)
 	// whole match totals.
 	if (!m_currentMatchId)
 	{
-		m_currentMatchId = m_db.CreateMatch(event.m_mapName);
+		m_currentMatchId = m_store.CreateMatch(event.m_map);
 	}
 
-	m_db.SaveRound(*m_currentMatchId, event);
+	// Bots all share account id 0, so they cannot be told apart.
+	RoundStats realPlayersOnly{ event };
+	std::erase_if(realPlayersOnly.m_players, [](const PlayerStats& player) {
+		return player.m_accountId == 0;
+	});
+
+	m_store.SaveRound(*m_currentMatchId, realPlayersOnly);
 }
 
 void MatchStatsService::Handle(const MatchEnded&)
 {
 	if (m_currentMatchId)
 	{
-		m_db.EndMatch(*m_currentMatchId);
+		m_store.EndMatch(*m_currentMatchId);
 		m_currentMatchId.reset();
 	}
 }

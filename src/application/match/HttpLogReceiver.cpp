@@ -1,18 +1,13 @@
-#include "LogReceiver.h"
+#include "HttpLogReceiver.h"
 
 #include <httplib.h>
 
 #include <format>
 #include <stdexcept>
 
-std::string MatchLogServerParams(std::uint16_t port)
-{
-	// The URL is quoted, otherwise the game console splits it on ':'.
-	return std::format(R"(+log on +logaddress_add_http "http://127.0.0.1:{}/log")", port);
-}
-
-MatchLogReceiver::MatchLogReceiver(std::uint16_t port, LogHandler handler)
-	: m_server{ std::make_unique<httplib::Server>() }
+HttpMatchLogReceiver::HttpMatchLogReceiver(std::uint16_t port, LogHandler handler)
+	: m_port{ port }
+	, m_server{ std::make_unique<httplib::Server>() }
 {
 	// A single worker keeps the chunks in the order the server sent them.
 	m_server->new_task_queue = [] {
@@ -42,8 +37,14 @@ MatchLogReceiver::MatchLogReceiver(std::uint16_t port, LogHandler handler)
 	} };
 }
 
-MatchLogReceiver::~MatchLogReceiver()
+HttpMatchLogReceiver::~HttpMatchLogReceiver()
 {
 	m_server->stop();
 	m_thread.join();
+}
+
+std::string HttpMatchLogReceiver::ServerStartParams() const
+{
+	// The URL is quoted, otherwise the game console splits it on ':'.
+	return std::format(R"(+log on +logaddress_add_http "http://127.0.0.1:{}/log")", m_port);
 }

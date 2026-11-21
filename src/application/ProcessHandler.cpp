@@ -2,7 +2,6 @@
 #include "ProcessImpl.h"
 #include "AppData.h"
 #include "MapHistory.h"
-#include "match/LogReceiver.h"
 
 #include <QFileInfo>
 #include <QRegularExpression>
@@ -23,6 +22,11 @@ ProcessHandler::ProcessHandler(QObject* parent)
 }
 
 ProcessHandler::~ProcessHandler() = default;
+
+void ProcessHandler::setExtraStartParams(const std::string& params)
+{
+	m_extraStartParams = params;
+}
 
 CommandHistory* ProcessHandler::getGeneralHistory()
 {
@@ -112,7 +116,7 @@ void ProcessHandler::start()
 {
 	const std::string startParams{ std::format("{} {}",
 		AppData::Instance().settings()->getStartParameters().toStdString(),
-		MatchLogServerParams()) };
+		m_extraStartParams) };
 	if (!m_process->start(
 			AppData::Instance().settings()->getExecutablePath().toStdString(), startParams))
 	{

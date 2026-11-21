@@ -1,13 +1,20 @@
 #pragma once
 
 #include <cstdint>
+#include <optional>
 #include <string>
 #include <variant>
 #include <vector>
 
+struct MapInfo
+{
+	std::string m_name;
+	std::optional<std::string> m_workshopId;
+};
+
 struct MatchStarted
 {
-	std::string m_mapName;
+	MapInfo m_map;
 };
 
 struct PlayerStats
@@ -29,7 +36,7 @@ struct PlayerStats
 //! whole match, so the latest snapshot replaces the previous one.
 struct RoundStats
 {
-	std::string m_mapName;
+	MapInfo m_map;
 	int m_roundNumber{ 0 };
 	int m_scoreCt{ 0 };
 	int m_scoreT{ 0 };

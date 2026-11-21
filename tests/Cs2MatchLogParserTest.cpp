@@ -1,6 +1,6 @@
 #include "gtest/gtest.h"
 
-#include <match/LogParser.h>
+#include <match/Cs2LogParser.h>
 
 #include <fstream>
 #include <sstream>
@@ -19,20 +19,21 @@ std::string ReadFixture(const std::string& name)
 
 }	 // namespace
 
-TEST(MatchLogParserTest, ParsesSampleMatch)
+TEST(Cs2MatchLogParserTest, ParsesSampleMatch)
 {
-	MatchLogParser parser;
+	Cs2MatchLogParser parser;
 	const auto events{ parser.Feed(ReadFixture("sample_match.log")) };
 
 	ASSERT_EQ(events.size(), 4);
 	ASSERT_TRUE(std::holds_alternative<MatchStarted>(events[0]));
-	ASSERT_EQ(std::get<MatchStarted>(events[0]).m_mapName, "de_dust2");
+	ASSERT_EQ(std::get<MatchStarted>(events[0]).m_map.m_name, "de_dust2");
 	ASSERT_TRUE(std::holds_alternative<RoundStats>(events[1]));
 	ASSERT_TRUE(std::holds_alternative<RoundStats>(events[2]));
 	ASSERT_TRUE(std::holds_alternative<MatchEnded>(events[3]));
 
 	const auto& round{ std::get<RoundStats>(events[2]) };
-	ASSERT_EQ(round.m_mapName, "de_dust2");
+	ASSERT_EQ(round.m_map.m_name, "de_dust2");
+	ASSERT_FALSE(round.m_map.m_workshopId.has_value());
 	ASSERT_EQ(round.m_roundNumber, 2);
 	ASSERT_EQ(round.m_scoreCt, 1);
 	ASSERT_EQ(round.m_scoreT, 1);
@@ -50,11 +51,11 @@ TEST(MatchLogParserTest, ParsesSampleMatch)
 	ASSERT_DOUBLE_EQ(round.m_players[2].m_adr, 72.5);
 }
 
-TEST(MatchLogParserTest, HandlesChunksSplitAnywhere)
+TEST(Cs2MatchLogParserTest, HandlesChunksSplitAnywhere)
 {
 	const std::string log{ ReadFixture("sample_match.log") };
 
-	MatchLogParser parser;
+	Cs2MatchLogParser parser;
 	std::vector<MatchEvent> events;
 	constexpr std::size_t chunkSize{ 7 };
 	for (std::size_t pos{ 0 }; pos < log.size(); pos += chunkSize)
@@ -69,19 +70,22 @@ TEST(MatchLogParserTest, HandlesChunksSplitAnywhere)
 	ASSERT_EQ(std::get<RoundStats>(events[2]).m_players.size(), 3);
 }
 
-TEST(MatchLogParserTest, ParsesFileLogFormat)
+TEST(Cs2MatchLogParserTest, ParsesFileLogFormatAndWorkshopMap)
 {
-	MatchLogParser parser;
+	Cs2MatchLogParser parser;
 	const auto events{ parser.Feed(
-		"L 11/21/2026 - 14:00:05: World triggered \"Match_Start\" on \"de_mirage\"\n") };
+		"L 11/21/2026 - 14:00:05: World triggered \"Match_Start\" on "
+		"\"workshop/3070284539/de_example\"\n") };
 
 	ASSERT_EQ(events.size(), 1);
-	ASSERT_EQ(std::get<MatchStarted>(events[0]).m_mapName, "de_mirage");
+	const auto& map{ std::get<MatchStarted>(events[0]).m_map };
+	ASSERT_EQ(map.m_name, "workshop/3070284539/de_example");
+	ASSERT_EQ(map.m_workshopId, "3070284539");
 }
 
-TEST(MatchLogParserTest, IgnoresOtherJsonBlocks)
+TEST(Cs2MatchLogParserTest, IgnoresOtherJsonBlocks)
 {
-	MatchLogParser parser;
+	Cs2MatchLogParser parser;
 	const auto events{ parser.Feed(
 		"JSON_BEGIN{\n"
 		"\"name\": \"something_else\",\n"

@@ -1,4 +1,4 @@
-#include "LogParser.h"
+#include "Cs2LogParser.h"
 
 #include <charconv>
 #include <locale>
@@ -71,6 +71,23 @@ std::string_view StripTimestamp(std::string_view line)
 	return line;
 }
 
+//! Workshop maps are logged with their workshop path.
+//! Before: `workshop/3070284539/de_example`
+//! After:  { name: `workshop/3070284539/de_example`, workshopId: `3070284539` }
+MapInfo ToMapInfo(std::string_view mapName)
+{
+	static const std::regex workshopPath{ R"re(workshop/(\d+)/)re" };
+
+	MapInfo map{ .m_name = std::string{ mapName } };
+	std::smatch match;
+	if (std::regex_search(map.m_name, match, workshopPath))
+	{
+		map.m_workshopId = match.str(1);
+	}
+
+	return map;
+}
+
 std::optional<PlayerStats> ToPlayerStats(
 	const std::vector<std::string_view>& columns, const std::vector<std::string_view>& values)
 {
@@ -125,7 +142,7 @@ std::optional<PlayerStats> ToPlayerStats(
 
 }	 // namespace
 
-std::vector<MatchEvent> MatchLogParser::Feed(std::string_view chunk)
+std::vector<MatchEvent> Cs2MatchLogParser::Feed(std::string_view chunk)
 {
 	m_pendingLine += chunk;
 
@@ -146,7 +163,7 @@ std::vector<MatchEvent> MatchLogParser::Feed(std::string_view chunk)
 	return events;
 }
 
-std::optional<MatchEvent> MatchLogParser::ParseLine(std::string_view line)
+std::optional<MatchEvent> Cs2MatchLogParser::ParseLine(std::string_view line)
 {
 	const std::string_view message{ Trim(StripTimestamp(line)) };
 
@@ -179,7 +196,7 @@ std::optional<MatchEvent> MatchLogParser::ParseLine(std::string_view line)
 	std::match_results<std::string_view::const_iterator> match;
 	if (std::regex_match(message.begin(), message.end(), match, matchStart))
 	{
-		return MatchStarted{ match.str(1) };
+		return MatchStarted{ ToMapInfo(match.str(1)) };
 	}
 
 	if (message.starts_with("Game Over:"))
@@ -190,7 +207,7 @@ std::optional<MatchEvent> MatchLogParser::ParseLine(std::string_view line)
 	return std::nullopt;
 }
 
-std::optional<MatchEvent> MatchLogParser::FinishJsonBlock()
+std::optional<MatchEvent> Cs2MatchLogParser::FinishJsonBlock()
 {
 	const auto value{ [this](std::string_view key) -> std::string_view {
 		const auto it{ m_jsonValues.find(key) };
@@ -203,7 +220,7 @@ std::optional<MatchEvent> MatchLogParser::FinishJsonBlock()
 	}
 
 	RoundStats stats;
-	stats.m_mapName = value("map");
+	stats.m_map = ToMapInfo(value("map"));
 	stats.m_roundNumber = ToInt(value("round_number"));
 	stats.m_scoreCt = ToInt(value("score_ct"));
 	stats.m_scoreT = ToInt(value("score_t"));

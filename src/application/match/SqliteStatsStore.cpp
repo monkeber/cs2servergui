@@ -1,25 +1,7 @@
-#include "StatsDatabase.h"
-
-#include <regex>
+#include "SqliteStatsStore.h"
 
 namespace
 {
-
-//! Workshop maps are logged with their workshop path.
-//! Before: `workshop/3070284539/de_example`
-//! After:  `3070284539`
-std::optional<std::string> ExtractWorkshopId(const std::string& mapName)
-{
-	static const std::regex workshopPath{ R"(workshop/(\d+)/)" };
-
-	std::smatch match;
-	if (std::regex_search(mapName, match, workshopPath))
-	{
-		return match.str(1);
-	}
-
-	return std::nullopt;
-}
 
 std::optional<std::string> GetOptionalString(const SQLite::Statement& query, int column)
 {
@@ -33,12 +15,12 @@ std::optional<std::string> GetOptionalString(const SQLite::Statement& query, int
 
 }	 // namespace
 
-MatchStatsDatabase::MatchStatsDatabase()
-	: MatchStatsDatabase{ "match_stats.db3" }
+SqliteMatchStatsStore::SqliteMatchStatsStore()
+	: SqliteMatchStatsStore{ "match_stats.db3" }
 {
 }
 
-MatchStatsDatabase::MatchStatsDatabase(const std::string& dbName)
+SqliteMatchStatsStore::SqliteMatchStatsStore(const std::string& dbName)
 	: m_db{ std::make_unique<SQLite::Database>(
 		  dbName, SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE) }
 {
@@ -46,20 +28,20 @@ MatchStatsDatabase::MatchStatsDatabase(const std::string& dbName)
 	InitSchema();
 }
 
-std::int64_t MatchStatsDatabase::CreateMatch(const std::string& mapName) const
+std::int64_t SqliteMatchStatsStore::CreateMatch(const MapInfo& map)
 {
 	SQLite::Statement query{ *m_db, "INSERT INTO match (map_name, workshop_id) VALUES (?, ?);" };
-	query.bind(1, mapName);
-	if (const auto workshopId{ ExtractWorkshopId(mapName) })
+	query.bind(1, map.m_name);
+	if (map.m_workshopId)
 	{
-		query.bind(2, *workshopId);
+		query.bind(2, *map.m_workshopId);
 	}
 	query.exec();
 
 	return m_db->getLastInsertRowid();
 }
 
-void MatchStatsDatabase::SaveRound(std::int64_t matchId, const RoundStats& stats) const
+void SqliteMatchStatsStore::SaveRound(std::int64_t matchId, const RoundStats& stats)
 {
 	SQLite::Transaction transaction{ *m_db };
 
@@ -87,11 +69,6 @@ void MatchStatsDatabase::SaveRound(std::int64_t matchId, const RoundStats& stats
 
 	for (const auto& player : stats.m_players)
 	{
-		if (player.m_accountId == 0)
-		{
-			continue;
-		}
-
 		playerQuery.bind(1, matchId);
 		playerQuery.bind(2, static_cast<std::int64_t>(player.m_accountId));
 		playerQuery.bind(3, player.m_team);
@@ -109,14 +86,14 @@ void MatchStatsDatabase::SaveRound(std::int64_t matchId, const RoundStats& stats
 	transaction.commit();
 }
 
-void MatchStatsDatabase::EndMatch(std::int64_t matchId) const
+void SqliteMatchStatsStore::EndMatch(std::int64_t matchId)
 {
 	SQLite::Statement query{ *m_db, "UPDATE match SET ended_at = datetime('now') WHERE id = ?;" };
 	query.bind(1, matchId);
 	query.exec();
 }
 
-std::vector<MatchRecord> MatchStatsDatabase::SelectMatches() const
+std::vector<MatchRecord> SqliteMatchStatsStore::SelectMatches() const
 {
 	SQLite::Statement query{ *m_db, R"__(
 	SELECT id, map_name, workshop_id, started_at, ended_at, score_ct, score_t
@@ -128,8 +105,11 @@ std::vector<MatchRecord> MatchStatsDatabase::SelectMatches() const
 	{
 		result.push_back(MatchRecord{
 			.m_id = query.getColumn(0).getInt64(),
-			.m_mapName = query.getColumn(1).getString(),
-			.m_workshopId = GetOptionalString(query, 2),
+			.m_map =
+				MapInfo{
+					.m_name = query.getColumn(1).getString(),
+					.m_workshopId = GetOptionalString(query, 2),
+				},
 			.m_startedAt = query.getColumn(3).getString(),
 			.m_endedAt = GetOptionalString(query, 4),
 			.m_scoreCt = query.getColumn(5).getInt(),
@@ -140,7 +120,7 @@ std::vector<MatchRecord> MatchStatsDatabase::SelectMatches() const
 	return result;
 }
 
-std::vector<PlayerStats> MatchStatsDatabase::SelectPlayerStats(std::int64_t matchId) const
+std::vector<PlayerStats> SqliteMatchStatsStore::SelectPlayerStats(std::int64_t matchId) const
 {
 	SQLite::Statement query{ *m_db, R"__(
 	SELECT account_id, team, kills, deaths, assists, damage, hs_pct, adr, mvp
@@ -167,7 +147,7 @@ std::vector<PlayerStats> MatchStatsDatabase::SelectPlayerStats(std::int64_t matc
 	return result;
 }
 
-void MatchStatsDatabase::InitSchema() const
+void SqliteMatchStatsStore::InitSchema() const
 {
 	SQLite::Transaction transaction{ *m_db };
 	m_db->exec(R"__(

@@ -1,10 +1,9 @@
 #pragma once
 
-#include "Events.h"
+#include "StatsStore.h"
 
 #include <SQLiteCpp/SQLiteCpp.h>
 
-#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>
@@ -13,29 +12,25 @@
 struct MatchRecord
 {
 	std::int64_t m_id{ 0 };
-	std::string m_mapName;
-	std::optional<std::string> m_workshopId;
+	MapInfo m_map;
 	std::string m_startedAt;
 	std::optional<std::string> m_endedAt;
 	int m_scoreCt{ 0 };
 	int m_scoreT{ 0 };
 };
 
-class MatchStatsDatabase
+class SqliteMatchStatsStore final : public MatchStatsStore
 {
 public:
 	//! Default constructor to use in the production code.
-	MatchStatsDatabase();
+	SqliteMatchStatsStore();
 	//! This constructor is mostly intended for tests.
-	explicit MatchStatsDatabase(const std::string& dbName);
+	explicit SqliteMatchStatsStore(const std::string& dbName);
 
 public:
-	//! Creates a match record and returns its id.
-	std::int64_t CreateMatch(const std::string& mapName) const;
-	//! Stores the round snapshot: updates the match score and replaces player totals. Bots are
-	//! skipped, they all share account id 0.
-	void SaveRound(std::int64_t matchId, const RoundStats& stats) const;
-	void EndMatch(std::int64_t matchId) const;
+	std::int64_t CreateMatch(const MapInfo& map) override;
+	void SaveRound(std::int64_t matchId, const RoundStats& stats) override;
+	void EndMatch(std::int64_t matchId) override;
 
 	std::vector<MatchRecord> SelectMatches() const;
 	std::vector<PlayerStats> SelectPlayerStats(std::int64_t matchId) const;

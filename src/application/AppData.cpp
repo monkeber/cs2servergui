@@ -9,6 +9,10 @@ AppData::AppData()
 	, m_matchStatsRecorder{}
 {
 	m_serverProcess.setExtraStartParams(m_matchStatsRecorder.ServerStartParams());
+	QObject::connect(
+		&m_serverProcess, &ProcessHandler::runningStateChanged, &m_matchStatsRecorder, [this] {
+			m_matchStatsRecorder.ResetSession();
+		});
 }
 
 AppData& AppData::Instance()

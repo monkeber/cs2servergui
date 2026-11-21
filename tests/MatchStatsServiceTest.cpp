@@ -3,6 +3,7 @@
 #include <match/Cs2LogParser.h>
 #include <match/StatsService.h>
 
+#include <format>
 #include <fstream>
 #include <map>
 #include <sstream>
@@ -39,6 +40,21 @@ public:
 
 	std::vector<Match> m_matches;
 };
+
+std::string RoundStatsLog(const std::string& map, int round, int kills)
+{
+	return std::format(
+		"JSON_BEGIN{{\n"
+		"\"name\": \"round_stats\",\n"
+		"\"round_number\" : \"{}\",\n"
+		"\"map\" : \"{}\",\n"
+		"\"fields\" : \"accountid, kills\",\n"
+		"\"player_0\" : \"42, {}\"\n"
+		"}}}}JSON_END\n",
+		round,
+		map,
+		kills);
+}
 
 }	 // namespace
 
@@ -83,4 +99,55 @@ TEST(MatchStatsServiceTest, RoundWithoutMatchStartCreatesMatch)
 	ASSERT_EQ(store.m_matches.front().m_map.m_name, "de_inferno");
 	ASSERT_EQ(store.m_matches.front().m_lastRound->m_players.front().m_kills, 7);
 	ASSERT_FALSE(store.m_matches.front().m_isEnded);
+}
+
+TEST(MatchStatsServiceTest, MapChangeWithoutMatchStartStartsNewMatch)
+{
+	Cs2MatchLogParser parser;
+	FakeStore store;
+	MatchStatsService service{ parser, store };
+	service.HandleLog(RoundStatsLog("de_dust2", 1, 3));
+	service.HandleLog(RoundStatsLog("de_mirage", 1, 1));
+
+	ASSERT_EQ(store.m_matches.size(), 2);
+	ASSERT_EQ(store.m_matches[0].m_lastRound->m_players.front().m_kills, 3);
+	ASSERT_FALSE(store.m_matches[0].m_isEnded);
+	ASSERT_EQ(store.m_matches[1].m_map.m_name, "de_mirage");
+}
+
+TEST(MatchStatsServiceTest, RoundNumberGoingBackStartsNewMatch)
+{
+	Cs2MatchLogParser parser;
+	FakeStore store;
+	MatchStatsService service{ parser, store };
+	service.HandleLog(RoundStatsLog("de_dust2", 1, 1));
+	service.HandleLog(RoundStatsLog("de_dust2", 2, 2));
+	service.HandleLog(RoundStatsLog("de_dust2", 1, 0));
+
+	ASSERT_EQ(store.m_matches.size(), 2);
+	ASSERT_EQ(store.m_matches[0].m_lastRound->m_roundNumber, 2);
+}
+
+TEST(MatchStatsServiceTest, MatchStartWithoutRoundsStoresNothing)
+{
+	Cs2MatchLogParser parser;
+	FakeStore store;
+	MatchStatsService service{ parser, store };
+	service.HandleLog("World triggered \"Match_Start\" on \"de_dust2\"\n");
+	service.HandleLog("World triggered \"Match_Start\" on \"de_dust2\"\n");
+
+	ASSERT_TRUE(store.m_matches.empty());
+}
+
+TEST(MatchStatsServiceTest, ResetStartsNewMatchOnSameMap)
+{
+	Cs2MatchLogParser parser;
+	FakeStore store;
+	MatchStatsService service{ parser, store };
+	service.HandleLog(RoundStatsLog("de_dust2", 1, 1));
+	service.Reset();
+	service.HandleLog(RoundStatsLog("de_dust2", 2, 5));
+
+	ASSERT_EQ(store.m_matches.size(), 2);
+	ASSERT_EQ(store.m_matches[0].m_lastRound->m_players.front().m_kills, 1);
 }

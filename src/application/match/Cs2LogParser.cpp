@@ -1,10 +1,9 @@
 #include "Cs2LogParser.h"
 
+#include <algorithm>
 #include <charconv>
-#include <locale>
 #include <ranges>
 #include <regex>
-#include <sstream>
 
 namespace
 {
@@ -32,24 +31,28 @@ std::vector<std::string_view> SplitCsv(std::string_view text)
 	return result;
 }
 
-int ToInt(std::string_view text)
+//! `from_chars` ignores the locale, so a decimal comma in the system locale does not matter.
+template<typename T>
+std::optional<T> ParseNumber(std::string_view text)
 {
-	int value{ 0 };
-	std::from_chars(text.data(), text.data() + text.size(), value);
+	T value{};
+	const auto [end, error]{ std::from_chars(text.data(), text.data() + text.size(), value) };
+	if (error != std::errc{} || end != text.data() + text.size())
+	{
+		return std::nullopt;
+	}
 
 	return value;
 }
 
+int ToInt(std::string_view text)
+{
+	return ParseNumber<int>(text).value_or(0);
+}
+
 double ToDouble(std::string_view text)
 {
-	// Classic locale, because Qt applies the system locale, where the decimal separator may be a
-	// comma.
-	std::istringstream stream{ std::string{ text } };
-	stream.imbue(std::locale::classic());
-	double value{ 0.0 };
-	stream >> value;
-
-	return value;
+	return ParseNumber<double>(text).value_or(0.0);
 }
 
 //! Removes the timestamp prefix. File logs and HTTP logs format it differently:
@@ -58,14 +61,33 @@ double ToDouble(std::string_view text)
 //! After:  `World triggered "Round_Start"`
 std::string_view StripTimestamp(std::string_view line)
 {
-	static const std::regex prefix{
-		R"re(^(?:L )?\d{2}/\d{2}/\d{4} - \d{2}:\d{2}:\d{2}(?:\.\d+)?(?::| -) )re"
-	};
-
-	std::match_results<std::string_view::const_iterator> match;
-	if (std::regex_search(line.begin(), line.end(), match, prefix))
+	std::string_view rest{ line };
+	if (rest.starts_with("L "))
 	{
-		return line.substr(match.length(0));
+		rest.remove_prefix(2);
+	}
+
+	// `MM/DD/YYYY - HH:MM:SS` has a fixed length. Checked by hand, because this runs for every
+	// line and a regex is too slow for that.
+	constexpr std::size_t dateTimeLength{ 21 };
+	if (rest.size() < dateTimeLength || rest[2] != '/' || rest[5] != '/'
+		|| rest.substr(10, 3) != " - " || rest[15] != ':' || rest[18] != ':')
+	{
+		return line;
+	}
+	rest.remove_prefix(dateTimeLength);
+
+	if (rest.starts_with('.'))
+	{
+		rest.remove_prefix(std::min(rest.find_first_not_of("0123456789", 1), rest.size()));
+	}
+
+	for (const std::string_view separator : { ": ", " - " })
+	{
+		if (rest.starts_with(separator))
+		{
+			return rest.substr(separator.size());
+		}
 	}
 
 	return line;
@@ -101,7 +123,13 @@ std::optional<PlayerStats> ToPlayerStats(
 	{
 		if (column == "accountid")
 		{
-			player.m_accountId = static_cast<std::uint32_t>(ToInt(value));
+			// Without a valid id the player cannot be stored, and must not look like a bot.
+			const auto accountId{ ParseNumber<std::uint32_t>(value) };
+			if (!accountId)
+			{
+				return std::nullopt;
+			}
+			player.m_accountId = *accountId;
 		}
 		else if (column == "team")
 		{
@@ -141,6 +169,13 @@ std::optional<PlayerStats> ToPlayerStats(
 }
 
 }	 // namespace
+
+void Cs2MatchLogParser::Reset()
+{
+	m_pendingLine.clear();
+	m_isInsideJson = false;
+	m_jsonValues.clear();
+}
 
 std::vector<MatchEvent> Cs2MatchLogParser::Feed(std::string_view chunk)
 {
@@ -192,11 +227,12 @@ std::optional<MatchEvent> Cs2MatchLogParser::ParseLine(std::string_view line)
 		return std::nullopt;
 	}
 
-	static const std::regex matchStart{ R"re(^World triggered "Match_Start" on "([^"]+)")re" };
-	std::match_results<std::string_view::const_iterator> match;
-	if (std::regex_match(message.begin(), message.end(), match, matchStart))
+	// Before: `World triggered "Match_Start" on "de_dust2"`
+	constexpr std::string_view matchStart{ R"(World triggered "Match_Start" on ")" };
+	if (message.starts_with(matchStart))
 	{
-		return MatchStarted{ ToMapInfo(match.str(1)) };
+		const auto mapName{ message.substr(matchStart.size()) };
+		return MatchStarted{ ToMapInfo(mapName.substr(0, mapName.find('"'))) };
 	}
 
 	if (message.starts_with("Game Over:"))

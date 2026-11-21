@@ -18,18 +18,32 @@ void MatchStatsService::HandleLog(std::string_view chunk)
 	}
 }
 
-void MatchStatsService::Handle(const MatchStarted& event)
+void MatchStatsService::Reset()
 {
-	m_currentMatchId = m_store.CreateMatch(event.m_map);
+	m_parser.Reset();
+	m_currentMatch.reset();
+}
+
+void MatchStatsService::Handle(const MatchStarted&)
+{
+	// The match is stored with its first round, so a restart before any round leaves no record.
+	m_currentMatch.reset();
 }
 
 void MatchStatsService::Handle(const RoundStats& event)
 {
-	// The app may start listening in the middle of a match, the round snapshot still has the
-	// whole match totals.
-	if (!m_currentMatchId)
+	// Covers a missed Match_Start, e.g. a map change or a game restart.
+	if (m_currentMatch && !BelongsToCurrentMatch(event))
 	{
-		m_currentMatchId = m_store.CreateMatch(event.m_map);
+		m_currentMatch.reset();
+	}
+
+	if (!m_currentMatch)
+	{
+		m_currentMatch = CurrentMatch{
+			.m_id = m_store.CreateMatch(event.m_map),
+			.m_mapName = event.m_map.m_name,
+		};
 	}
 
 	// Bots all share account id 0, so they cannot be told apart.
@@ -38,14 +52,21 @@ void MatchStatsService::Handle(const RoundStats& event)
 		return player.m_accountId == 0;
 	});
 
-	m_store.SaveRound(*m_currentMatchId, realPlayersOnly);
+	m_store.SaveRound(m_currentMatch->m_id, realPlayersOnly);
+	m_currentMatch->m_lastRound = event.m_roundNumber;
 }
 
 void MatchStatsService::Handle(const MatchEnded&)
 {
-	if (m_currentMatchId)
+	if (m_currentMatch)
 	{
-		m_store.EndMatch(*m_currentMatchId);
-		m_currentMatchId.reset();
+		m_store.EndMatch(m_currentMatch->m_id);
+		m_currentMatch.reset();
 	}
+}
+
+bool MatchStatsService::BelongsToCurrentMatch(const RoundStats& event) const
+{
+	return event.m_map.m_name == m_currentMatch->m_mapName
+		&& event.m_roundNumber > m_currentMatch->m_lastRound;
 }

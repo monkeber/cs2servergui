@@ -42,8 +42,21 @@ std::string MatchStatsRecorder::ServerStartParams() const
 	return m_source ? m_source->ServerStartParams() : std::string{};
 }
 
+void MatchStatsRecorder::ResetSession()
+{
+	if (m_service)
+	{
+		m_service->Reset();
+	}
+}
+
 void MatchStatsRecorder::HandleLog(const std::string& chunk)
 {
+	if (!m_service)
+	{
+		return;
+	}
+
 	try
 	{
 		m_service->HandleLog(chunk);

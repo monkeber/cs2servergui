@@ -13,4 +13,6 @@ public:
 	virtual ~MatchLogParser() = default;
 
 	virtual std::vector<MatchEvent> Feed(std::string_view chunk) = 0;
+	//! Drops incomplete data, for when the log stream starts over.
+	virtual void Reset() = 0;
 };

@@ -10,8 +10,6 @@
 
 #include <cpr/cpr.h>
 
-#include <format>
-
 ProcessHandler::ProcessHandler(QObject* parent)
 	: QObject{ parent }
 	, m_isRunning{ false }
@@ -114,9 +112,11 @@ void ProcessHandler::hostWorkshopMap(const QString& map)
 
 void ProcessHandler::start()
 {
-	const std::string startParams{ std::format("{} {}",
-		AppData::Instance().settings()->getStartParameters().toStdString(),
-		m_extraStartParams) };
+	std::string startParams{ AppData::Instance().settings()->getStartParameters().toStdString() };
+	if (!m_extraStartParams.empty())
+	{
+		startParams += ' ' + m_extraStartParams;
+	}
 	if (!m_process->start(
 			AppData::Instance().settings()->getExecutablePath().toStdString(), startParams))
 	{

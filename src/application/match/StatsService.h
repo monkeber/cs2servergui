@@ -5,9 +5,11 @@
 
 #include <cstdint>
 #include <optional>
+#include <string>
 #include <string_view>
 
-//! Tracks the current match and stores the stats of real players from the log stream.
+//! Tracks the current match and stores the stats of real players from the log stream. A match is
+//! stored with its first round, and one that never reaches Game Over keeps no end time.
 class MatchStatsService
 {
 public:
@@ -15,14 +17,25 @@ public:
 
 public:
 	void HandleLog(std::string_view chunk);
+	//! Starts over, for when the game server starts or stops.
+	void Reset();
 
 private:
 	void Handle(const MatchStarted& event);
 	void Handle(const RoundStats& event);
 	void Handle(const MatchEnded& event);
 
+	bool BelongsToCurrentMatch(const RoundStats& event) const;
+
 private:
+	struct CurrentMatch
+	{
+		std::int64_t m_id{ 0 };
+		std::string m_mapName;
+		int m_lastRound{ 0 };
+	};
+
 	MatchLogParser& m_parser;
 	MatchStatsStore& m_store;
-	std::optional<std::int64_t> m_currentMatchId;
+	std::optional<CurrentMatch> m_currentMatch;
 };

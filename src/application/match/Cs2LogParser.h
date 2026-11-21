@@ -12,6 +12,7 @@ class Cs2MatchLogParser final : public MatchLogParser
 {
 public:
 	std::vector<MatchEvent> Feed(std::string_view chunk) override;
+	void Reset() override;
 
 private:
 	std::optional<MatchEvent> ParseLine(std::string_view line);

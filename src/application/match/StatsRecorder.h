@@ -19,6 +19,8 @@ public:
 
 	//! Game server start parameters that enable recording, empty when recording is disabled.
 	std::string ServerStartParams() const;
+	//! Starts over, for when the game server starts or stops.
+	void ResetSession();
 
 private:
 	void HandleLog(const std::string& chunk);

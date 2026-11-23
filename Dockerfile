@@ -125,10 +125,9 @@ CMD ["sh", "-c", "\
     cat /qt_version.txt && \
     cmake --version && \
     conan --version && \
-    cmake --preset release -DQt6_ROOT=/qtroot/install && \
-    cmake --build --preset release && \
-    cd build/release && \
-    cmake --install . && \
+    cmake --preset release -B build/docker/release -DQt6_ROOT=/qtroot/install && \
+    cmake --build build/docker/release --target cs2guiserver && \
+    cmake --install build/docker/release && \
     chown -R ${USER_ID}:${GROUP_ID} /build && \
     chown -R ${USER_ID}:${GROUP_ID} /install \
 "]

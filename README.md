@@ -30,7 +30,7 @@ Written in C++ and QML as an exercise.
 
 ## Build
 
-### Prerequisits
+### Windows prerequisites
 
 The project uses Conan 2 package manager, so make sure Conan is installed and is invokable, e.g.:
 ```
@@ -70,40 +70,29 @@ Open Native x64 development tools that are provided by the MSVC compiler, start 
 
 Open the project in Qt Creator, make sure that in the `Projects` pane one of the detected or configured Kits is selected (not the cmake presets one) and hit build. The kit from cmake presets does not work currently.
 
-### Build Process Linux
+### Linux Dev Container on Wayland
 
-For building on linux I am using static build of QT to ease the deployment process. Quick info on how to build QT for static linking, for more up to date commands see the Dockerfile:
-1. Check out QT repo in any directory of your choosing:
-    ```
-    git clone --branch v6.10.2 https://code.qt.io/qt/qt5.git qt
-    cd qt
-    ./init-repository -submodules qtwayland,qtdeclarative,qtbase,qtsvg
-    ```
-2. Configure:
-    ```
-    mkdir -p /qtroot/install
-    mkdir -p /qtroot/build
-    cd /qtroot/build
-    ../qt/configure -submodules qtwayland,qtdeclarative,qtbase,qtsvg -skip qtimageformats -static -feature-freetype -fontconfig -prefix /qtroot/install
-    ```
-3. Build:
-    ```
-    cd /qtroot/build
-    cmake --build . --parallel
-    cmake --install .
-    ```
+On a Linux Wayland desktop with local Docker and the VS Code Dev Containers extension, open the repository from your desktop session and run **Dev Containers: Reopen in Container**. The Ubuntu 24.04 image includes GCC, Ninja, Conan, Qt 6.10.2, and Rust stable via rustup with Cargo, rustfmt, and Clippy. It installs CMake from Kitware’s stable APT repository. [Kitware APT repository](https://apt.kitware.com/)
 
-After doing that, create `.env` file in the project root directory to set `Qt6_ROOT` CMake variable, example of file contents (the variable can also be passed for the build step to CMake, but it's more convenient to use the file):
-```
-Qt6_ROOT=/mnt/btrwdblack/Programs/Qt/Sources/install
+Select the `debug` or `release` configure preset in CMake Tools. From the container terminal, the `debug` preset builds the app and tests.
+
+```bash
+cmake --preset debug
+cmake --build --preset debug
+cd build/devcontainer/debug/src
+./cs2guiserver
 ```
 
-For building the application you can use these commands:
+From the repository root in the container, build an optimized release with the `release` preset. The executable is at `build/devcontainer/release/src/cs2guiserver`.
 
 ```bash
 cmake --preset release
 cmake --build --preset release
 ```
+
+The app opens on the host desktop through the Wayland socket. The container defaults to Qt Quick software rendering, so the app can run without GPU passthrough. File dialogs use the host desktop portal through the session D-Bus socket and browse the host filesystem. A selected path must also be visible at that path in the container for the app to use it. To run CS2 on the host, start the server there and connect from the containerized app over RCON.
+
+Run `wayland-info` in the container terminal to check the compositor connection. If the host Wayland session restarts, run **Dev Containers: Rebuild Container** from the new desktop session to pick up the new socket.
 
 ## Deploy
 
@@ -129,7 +118,7 @@ For convenience there is also a combined script:
 
 ### Linux
 
-I use Docker to build the app on an older system (Ubuntu 24 for now) in order for it to link to library versions that are present on other systems so it's usable not only on my Arch.
+The Docker release builder uses Ubuntu 24.04 and links Qt statically for distribution.
 ```
 docker build --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) -t app-builder .
 docker run --rm -v $(pwd):/build -v $(pwd)/install:/install app-builder
@@ -141,4 +130,4 @@ After that you can just copy the binary from `install/bin` folder and distribute
 
 Windows: Tested on Windows 10 22H2 (19045.4412), but in theory should work on any version of Win10 and above.
 
-Linux: Can be built and used on Linux as well, tested on EndeavourOS (6.18.7-arch1-1), but there shouldn't be problems building it on other or older systems.
+The Linux executable was tested on EndeavourOS (6.18.7-arch1-1).

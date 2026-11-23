@@ -116,7 +116,16 @@ QString Settings::getTheme() const
 void Settings::setExecutablePath(QString fileUrl)
 {
 	const std::filesystem::path path{ fileUrl.toStdString() };
-	m_executablePath = QString::fromStdString(std::filesystem::canonical(path).string());
+	std::error_code error;
+	const auto resolvedPath = std::filesystem::canonical(path, error);
+	if (error)
+	{
+		qWarning("Cannot resolve the server executable path '%s': %s",
+			qPrintable(fileUrl), error.message().c_str());
+		return;
+	}
+
+	m_executablePath = QString::fromStdString(resolvedPath.string());
 
 	emit executablePathChanged(m_executablePath);
 }

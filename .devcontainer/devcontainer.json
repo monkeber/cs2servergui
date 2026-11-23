@@ -1,0 +1,38 @@
+{
+  "name": "CS2 Server Manager (Ubuntu 24.04)",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "workspaceMount": "type=bind,source=${localWorkspaceFolder},target=/workspaces/${localWorkspaceFolderBasename}",
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+  "containerUser": "ubuntu",
+  "updateRemoteUserUID": true,
+  "mounts": [
+    "type=bind,source=${localEnv:XDG_RUNTIME_DIR}/${localEnv:WAYLAND_DISPLAY:wayland-0},target=/home/ubuntu/.xdg-runtime/wayland-0,readonly",
+    "type=bind,source=${localEnv:XDG_RUNTIME_DIR}/bus,target=/home/ubuntu/.xdg-runtime/bus,readonly"
+  ],
+  "containerEnv": {
+    "XDG_RUNTIME_DIR": "/home/ubuntu/.xdg-runtime",
+    "XDG_SESSION_TYPE": "wayland",
+    "WAYLAND_DISPLAY": "wayland-0",
+    "DBUS_SESSION_BUS_ADDRESS": "unix:path=/home/ubuntu/.xdg-runtime/bus",
+    "QT_QPA_PLATFORM": "wayland",
+    "QT_QUICK_BACKEND": "software"
+  },
+  "remoteEnv": {
+    "WAYLAND_DISPLAY": "${containerEnv:WAYLAND_DISPLAY}"
+  },
+  "postCreateCommand": "git -c url.https://github.com/.insteadOf=git@github.com: submodule update --init --recursive",
+  "waitFor": "postCreateCommand",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-vscode.cpptools",
+        "ms-vscode.cmake-tools",
+        "openai.chatgpt",
+        "rust-lang.rust-analyzer",
+        "vadimcn.vscode-lldb"
+      ]
+    }
+  }
+}

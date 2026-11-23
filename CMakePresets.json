@@ -3,19 +3,18 @@
   "configurePresets": [
     {
       "name": "base",
-      "description": "Sets build directory and generator",
       "hidden": true,
-      "binaryDir": "${sourceDir}/build/${presetName}",
+      "binaryDir": "${sourceDir}/build/devcontainer/${presetName}",
       "generator": "Ninja",
       "cacheVariables": {
         "CMAKE_EXPORT_COMPILE_COMMANDS": true,
         "CMAKE_PROJECT_TOP_LEVEL_INCLUDES": "cmake/conan_provider.cmake",
-        "CMAKE_INSTALL_PREFIX": "${sourceDir}/install"
+        "CMAKE_INSTALL_PREFIX": "${sourceDir}/install",
+        "Qt6_ROOT": "$penv{Qt6_ROOT}"
       }
     },
     {
       "name": "debug",
-      "displayName": "Debug Build",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
         "BUILD_TESTS": "ON"
@@ -24,9 +23,9 @@
     },
     {
       "name": "release",
-      "displayName": "Release Build",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release"
+        "CMAKE_BUILD_TYPE": "Release",
+        "BUILD_TESTS": "OFF"
       },
       "inherits": [ "base" ]
     }

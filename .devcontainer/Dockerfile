@@ -46,8 +46,6 @@ RUN case "${TARGETARCH}" in \
     && test -f "${Qt6_ROOT}/lib/cmake/Qt6/Qt6Config.cmake" \
     && test -f "${Qt6_ROOT}/lib/cmake/Qt6WaylandClient/Qt6WaylandClientConfig.cmake"
 
-RUN install -d -m 0700 -o ubuntu -g ubuntu /home/ubuntu/.codex
-
 USER ubuntu
 
 RUN curl --fail --silent --show-error --location https://sh.rustup.rs -o /tmp/rustup-init.sh \

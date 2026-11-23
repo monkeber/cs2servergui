@@ -9,7 +9,8 @@
   "updateRemoteUserUID": true,
   "mounts": [
     "type=bind,source=${localEnv:XDG_RUNTIME_DIR}/${localEnv:WAYLAND_DISPLAY:wayland-0},target=/home/ubuntu/.xdg-runtime/wayland-0,readonly",
-    "type=bind,source=${localEnv:XDG_RUNTIME_DIR}/bus,target=/home/ubuntu/.xdg-runtime/bus,readonly"
+    "type=bind,source=${localEnv:XDG_RUNTIME_DIR}/bus,target=/home/ubuntu/.xdg-runtime/bus,readonly",
+    "type=bind,source=${localEnv:HOME}/.codex,target=/home/ubuntu/.codex"
   ],
   "containerEnv": {
     "XDG_RUNTIME_DIR": "/home/ubuntu/.xdg-runtime",

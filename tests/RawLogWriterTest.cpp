@@ -19,9 +19,15 @@ TEST(RawLogWriterTest, KeepsChunksUnchangedWithMarkers)
 		writer.WriteChunk("line 3\n");
 	}
 
-	std::ifstream file{ filePath, std::ios::binary };
 	std::stringstream content;
-	content << file.rdbuf();
+	{
+		// Must be closed before the cleanup below, Windows cannot delete files that are still open.
+		std::ifstream file{ filePath, std::ios::binary };
+		content << file.rdbuf();
+	}
+
+	// Clean up before asserting, so a failed assertion doesn't leave the directory behind.
+	std::filesystem::remove_all(directory);
 
 	ASSERT_EQ(content.str(),
 		"### chunk 1 | 13 bytes | ends with newline: no\n"
@@ -29,6 +35,4 @@ TEST(RawLogWriterTest, KeepsChunksUnchangedWithMarkers)
 		"### game server started or stopped\n"
 		"### chunk 2 | 7 bytes | ends with newline: yes\n"
 		"line 3\n");
-
-	std::filesystem::remove_all(directory);
 }

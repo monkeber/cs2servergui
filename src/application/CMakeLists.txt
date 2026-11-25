@@ -1,5 +1,7 @@
 project(applicationlib LANGUAGES CXX)
 
+add_subdirectory(match)
+
 set(${PROJECT_NAME}_SRC
 	app_environment.h
 	AppData.cpp
@@ -16,22 +18,6 @@ set(${PROJECT_NAME}_SRC
 	MapHistoryDatabase.h
 	MapHistoryModel.cpp
 	MapHistoryModel.h
-	match/Cs2LogParser.cpp
-	match/Cs2LogParser.h
-	match/Events.h
-	match/HttpLogReceiver.cpp
-	match/HttpLogReceiver.h
-	match/LogParser.h
-	match/LogSource.h
-	match/RawLogWriter.cpp
-	match/RawLogWriter.h
-	match/SqliteStatsStore.cpp
-	match/SqliteStatsStore.h
-	match/StatsRecorder.cpp
-	match/StatsRecorder.h
-	match/StatsService.cpp
-	match/StatsService.h
-	match/StatsStore.h
 	ProcessHandler.cpp
 	ProcessHandler.h
 	ProcessImpl.h
@@ -55,6 +41,7 @@ qt_add_qml_module(${PROJECT_NAME}
 	VERSION 1.0
 	SOURCES
 		${${PROJECT_NAME}_SRC}
+		${${PROJECT_NAME}_APP_MATCH_SRC}
 )
 
 target_link_libraries(${PROJECT_NAME} PUBLIC

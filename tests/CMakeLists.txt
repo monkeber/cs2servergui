@@ -7,9 +7,9 @@ qt_add_executable(${PROJECT_NAME}
 	MapHistoryDatabaseTest.cpp
 	Cs2MatchLogParserTest.cpp
 	HttpMatchLogReceiverTest.cpp
-	MatchStatsServiceTest.cpp
+	MatchLogSplitterTest.cpp
 	RawLogWriterTest.cpp
-	SqliteMatchStatsStoreTest.cpp
+	RoundStatsExtractorTest.cpp
 )
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE

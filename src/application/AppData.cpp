@@ -1,14 +1,12 @@
 #include "AppData.h"
 
-#include <QCoreApplication>
-
 AppData::AppData()
 	: m_log{}
 	, m_mapHistory{}
 	, m_serverProcess{}
 	, m_rconclient{}
 	, m_settings{}
-	, m_matchStatsRecorder{ QCoreApplication::arguments().contains("--raw-logs") }
+	, m_matchStatsRecorder{}
 {
 	m_serverProcess.setExtraStartParams(m_matchStatsRecorder.ServerStartParams());
 	QObject::connect(

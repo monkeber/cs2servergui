@@ -105,6 +105,15 @@ cmake --preset release
 cmake --build --preset release
 ```
 
+## Match logs
+
+When the game server is started from the app, it also sends its log to the app (with `mp_logdetail 3` so damage is logged too). The app writes one file per match to `raw_logs/` in the working directory, roughly 250-500 KB per match. The lines are kept exactly as the game server sent them, with a `### chunk` marker in front of each received chunk. Two kinds of lines are added:
+
+- `ROUND_STATS {...}`: the game logs each `round_stats` block as many lines (`JSON_BEGIN`, one line per player, `JSON_END`), this is the same data as one JSON line: `<date> - <time> - ROUND_STATS {"round_number":15,"score_t":8,...,"players":[{"userid":2,"team":2,"kills":6,...}]}`. It is written after the chunk the block arrived in. A block is logged when a round starts, so the last round of a match has none.
+- `### check: ...`: written after `Game Over`, says whether a `ROUND_STATS` line was found for every round of the match.
+
+The app only logs what the game server sends, so the server needs to be started with the Start button. If you start it yourself, add `+log on +logaddress_add_http http://127.0.0.1:27500/log +mp_logdetail 3` to its parameters.
+
 ## Deploy
 
 ### Windows

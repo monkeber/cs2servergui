@@ -1,23 +1,24 @@
 #pragma once
 
-#include "LogParser.h"
 #include "LogSource.h"
+#include "MatchLogSplitter.h"
 #include "RawLogWriter.h"
-#include "StatsService.h"
-#include "StatsStore.h"
+#include "RoundStatsExtractor.h"
 
 #include <QObject>
 
 #include <memory>
 #include <string>
+#include <vector>
 
-//! Composition root of match stats recording. Picks the implementations, moves received logs to
-//! the main thread and keeps failures away from the rest of the app.
+//! Composition root of match log recording. Writes the log of the game server to `raw_logs/`, one
+//! file per match, as it is received. The only lines added are one-line `ROUND_STATS` versions of
+//! the round statistics and a check that none is missing. Moves received logs to the main thread
+//! and keeps failures away from the rest of the app.
 class MatchStatsRecorder : public QObject
 {
 public:
-	//! With `saveRawLogs` every received chunk is also written to a file, for dev tests only.
-	explicit MatchStatsRecorder(bool saveRawLogs, QObject* parent = nullptr);
+	explicit MatchStatsRecorder(QObject* parent = nullptr);
 
 	//! Game server start parameters that enable recording, empty when recording is disabled.
 	std::string ServerStartParams() const;
@@ -26,11 +27,12 @@ public:
 
 private:
 	void HandleLog(const std::string& chunk);
+	void WritePieces(const std::vector<MatchLogSplitter::Piece>& pieces);
+	void StartNewMatchFile();
 
 private:
-	std::unique_ptr<MatchStatsStore> m_store;
-	std::unique_ptr<MatchLogParser> m_parser;
-	std::unique_ptr<MatchStatsService> m_service;
+	MatchLogSplitter m_splitter;
+	RoundStatsExtractor m_roundStats;
 	std::unique_ptr<RawLogWriter> m_rawLog;
 	//! Declared last so it stops before the components it feeds are destroyed.
 	std::unique_ptr<MatchLogSource> m_source;

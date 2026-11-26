@@ -6,15 +6,14 @@ set(${PROJECT_NAME}_APP_MATCH_SRC
 	${CMAKE_CURRENT_SOURCE_DIR}/HttpLogReceiver.h
 	${CMAKE_CURRENT_SOURCE_DIR}/LogParser.h
 	${CMAKE_CURRENT_SOURCE_DIR}/LogSource.h
+	${CMAKE_CURRENT_SOURCE_DIR}/MatchLogSplitter.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/MatchLogSplitter.h
 	${CMAKE_CURRENT_SOURCE_DIR}/RawLogWriter.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/RawLogWriter.h
-	${CMAKE_CURRENT_SOURCE_DIR}/SqliteStatsStore.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/SqliteStatsStore.h
+	${CMAKE_CURRENT_SOURCE_DIR}/RoundStatsExtractor.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/RoundStatsExtractor.h
 	${CMAKE_CURRENT_SOURCE_DIR}/StatsRecorder.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/StatsRecorder.h
-	${CMAKE_CURRENT_SOURCE_DIR}/StatsService.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/StatsService.h
-	${CMAKE_CURRENT_SOURCE_DIR}/StatsStore.h
 )
 
 # Make the list visible to the parent CMakeLists.txt.

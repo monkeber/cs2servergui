@@ -1,8 +1,6 @@
 #include "StatsRecorder.h"
 
-#include "Cs2LogParser.h"
 #include "HttpLogReceiver.h"
-#include "SqliteStatsStore.h"
 
 #include <QtLogging>
 
@@ -13,43 +11,24 @@ constexpr std::uint16_t kLogPort{ 27500 };
 
 }	 // namespace
 
-MatchStatsRecorder::MatchStatsRecorder(bool saveRawLogs, QObject* parent)
+MatchStatsRecorder::MatchStatsRecorder(QObject* parent)
 	: QObject{ parent }
 {
-	if (saveRawLogs)
-	{
-		try
-		{
-			m_rawLog = std::make_unique<RawLogWriter>("raw_logs");
-			qInfo("Raw match logs are written to %s", m_rawLog->FilePath().string().c_str());
-		}
-		catch (const std::exception& e)
-		{
-			qWarning("Raw match logs are disabled: %s", e.what());
-		}
-	}
-
 	try
 	{
-		m_store = std::make_unique<SqliteMatchStatsStore>();
-		m_parser = std::make_unique<Cs2MatchLogParser>();
-		m_service = std::make_unique<MatchStatsService>(*m_parser, *m_store);
+		m_rawLog = std::make_unique<RawLogWriter>("raw_logs");
+		qInfo("Match logs are written to %s", m_rawLog->FilePath().string().c_str());
 	}
 	catch (const std::exception& e)
 	{
-		qWarning("Match stats storage is disabled: %s", e.what());
-	}
-
-	// Raw logs are still worth receiving when the storage failed.
-	if (!m_service && !m_rawLog)
-	{
+		qWarning("Match logs are disabled: %s", e.what());
 		return;
 	}
 
 	try
 	{
 		m_source = std::make_unique<HttpMatchLogReceiver>(kLogPort, [this](std::string chunk) {
-			// The source calls us from its own thread, the stats are handled on the main one.
+			// The source calls us from its own thread, the logs are written on the main one.
 			QMetaObject::invokeMethod(
 				this,
 				[this, chunk = std::move(chunk)] {
@@ -60,7 +39,7 @@ MatchStatsRecorder::MatchStatsRecorder(bool saveRawLogs, QObject* parent)
 	}
 	catch (const std::exception& e)
 	{
-		qWarning("Match stats recording is disabled: %s", e.what());
+		qWarning("Match log recording is disabled: %s", e.what());
 	}
 }
 
@@ -71,42 +50,66 @@ std::string MatchStatsRecorder::ServerStartParams() const
 		return {};
 	}
 
-	// Damage lines are only logged with this detail level, raw logs should show everything.
-	return m_rawLog ? m_source->ServerStartParams() + " +mp_logdetail 3"
-					: m_source->ServerStartParams();
+	// Damage lines are only logged with this detail level.
+	return m_source->ServerStartParams() + " +mp_logdetail 3";
 }
 
 void MatchStatsRecorder::ResetSession()
 {
+	// Nothing more is expected of the previous session, so a held back block is complete as it is.
+	WritePieces(m_splitter.Flush());
+	m_splitter.Reset();
+	m_roundStats.Reset();
+
 	if (m_rawLog)
 	{
 		m_rawLog->WriteNote("game server started or stopped");
-	}
-
-	if (m_service)
-	{
-		m_service->Reset();
 	}
 }
 
 void MatchStatsRecorder::HandleLog(const std::string& chunk)
 {
-	if (m_rawLog)
-	{
-		m_rawLog->WriteChunk(chunk);
-	}
+	WritePieces(m_splitter.Split(chunk));
+}
 
-	if (!m_service)
+void MatchStatsRecorder::WritePieces(const std::vector<MatchLogSplitter::Piece>& pieces)
+{
+	if (!m_rawLog)
 	{
 		return;
 	}
 
+	for (const auto& piece : pieces)
+	{
+		if (piece.m_startsNewMatch)
+		{
+			StartNewMatchFile();
+		}
+
+		m_rawLog->WriteChunk(piece.m_text);
+		for (const auto& line : m_roundStats.Feed(piece.m_text))
+		{
+			m_rawLog->WriteLine(line);
+			if (line.starts_with("### check: missing"))
+			{
+				qWarning("Match log %s: %s", m_rawLog->FilePath().string().c_str(), line.c_str());
+			}
+		}
+	}
+}
+
+void MatchStatsRecorder::StartNewMatchFile()
+{
+	m_roundStats.StartNewMatch();
+
 	try
 	{
-		m_service->HandleLog(chunk);
+		m_rawLog->StartNewFile();
+		qInfo("Match logs are written to %s", m_rawLog->FilePath().string().c_str());
 	}
 	catch (const std::exception& e)
 	{
-		qWarning("Failed to record match stats: %s", e.what());
+		// The log of this match is lost, the rest of the app is not affected.
+		qWarning("Cannot start a log file for the new match: %s", e.what());
 	}
 }

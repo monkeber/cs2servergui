@@ -1,2 +1,5 @@
 # Normalize line endings: LF in the repo, platform-native in the working tree.
 * text=auto
+
+# Shell hooks must keep LF even on Windows checkouts.
+.githooks/* text eol=lf

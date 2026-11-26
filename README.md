@@ -105,6 +105,18 @@ cmake --preset release
 cmake --build --preset release
 ```
 
+## Git hooks
+
+The repo ships a pre-commit hook in `.githooks/` that runs `git clang-format` on staged C/C++ files. Git doesn't use that directory by default, so enable it once per clone:
+
+```bash
+git config core.hooksPath .githooks
+```
+
+The hook needs `git-clang-format` (part of LLVM) on your `PATH`; if it's missing or can't run, formatting is skipped with a warning.
+
+On Windows, `git-clang-format` needs a working `python3`; the Microsoft Store stub doesn't count. Copy `python.exe` to `python3.exe` next to your real Python install.
+
 ## Deploy
 
 ### Windows

@@ -1,4 +1,12 @@
 {
     "cmake.useCMakePresets": "always",
     "cmake.copyCompileCommands": "${workspaceFolder}/compile_commands.json",
+    "editor.formatOnSave": true,
+    "[cpp]": {
+        "editor.defaultFormatter": "llvm-vs-code-extensions.vscode-clangd"
+    },
+    "clangd.arguments": [
+        "--background-index",
+        "--header-insertion=never"
+    ]
 }

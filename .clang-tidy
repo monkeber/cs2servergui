@@ -1,0 +1,27 @@
+---
+Checks: >
+  -*,
+  clang-analyzer-*,
+  bugprone-*,
+  concurrency-*,
+  google-*,
+  modernize-*,
+  performance-*,
+  portability-*,
+  readability-*,
+  -bugprone-easily-swappable-parameters,
+  -readability-function-cognitive-complexity,
+  -readability-identifier-length,
+  -readability-magic-numbers,
+  -modernize-use-trailing-return-type,
+  -google-runtime-int,
+  -google-readability-todo,
+  -google-build-using-namespace,
+  -google-default-arguments,
+  -readability-named-parameter,
+  -readability-trailing-comma
+WarningsAsErrors: ''
+# Only report diagnostics from our own headers (not Qt, Conan or third_party).
+# Add more directories here as they are brought under analysis, e.g. tests.
+HeaderFilterRegex: '(^|.*/)src/.*'
+FormatStyle: file

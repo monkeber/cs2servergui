@@ -12,6 +12,10 @@
     "type=bind,source=${localEnv:XDG_RUNTIME_DIR}/bus,target=/home/ubuntu/.xdg-runtime/bus,readonly",
     "type=bind,source=${localEnv:HOME}/.codex,target=/home/ubuntu/.codex"
   ],
+  // Allow MESA to discover host GPU.
+  "runArgs": [
+    "--device=/dev/dri:/dev/dri"
+  ],
   "containerEnv": {
     "XDG_RUNTIME_DIR": "/home/ubuntu/.xdg-runtime",
     "XDG_SESSION_TYPE": "wayland",
@@ -28,7 +32,7 @@
   "customizations": {
     "vscode": {
       "extensions": [
-        "ms-vscode.cpptools",
+        "llvm-vs-code-extensions.vscode-clangd",
         "ms-vscode.cmake-tools",
         "openai.chatgpt",
         "rust-lang.rust-analyzer",

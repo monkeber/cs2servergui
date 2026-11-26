@@ -1,0 +1,34 @@
+#!/bin/sh
+# Formats staged C/C++ files with git clang-format and restages the result.
+# Enable once per clone: git config core.hooksPath .githooks
+
+if ! git-clang-format -h >/dev/null 2>&1; then
+    echo "pre-commit: git-clang-format not found or not runnable, skipping formatting." >&2
+    exit 0
+fi
+
+# Only look at files under src/ and tests/ (skips third_party/ and others).
+files=$(git diff --cached --name-only --diff-filter=ACMR -- 'src/*' 'tests/*' \
+    | grep -E '\.(c|cc|cpp|cxx|h|hh|hpp|hxx)$')
+[ -z "$files" ] && exit 0
+
+# Only reformat staged hunks; unstaged changes are left untouched.
+output=$(git clang-format --extensions c,cc,cpp,cxx,h,hh,hpp,hxx -- $files 2>&1)
+status=$?
+
+# git-clang-format may exit non-zero after successfully rewriting files,
+# so look at its output before treating the status as a failure.
+case "$output" in
+    *"changed files"*)
+        echo "pre-commit: formatted staged files with clang-format:"
+        echo "$output"
+        git add -- $files
+        exit 0
+        ;;
+esac
+
+if [ $status -ne 0 ]; then
+    echo "$output" >&2
+    exit $status
+fi
+exit 0

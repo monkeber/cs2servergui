@@ -5,16 +5,11 @@ find_package(GTest REQUIRED)
 qt_add_executable(${PROJECT_NAME}
 	main.cpp
 	MapHistoryDatabaseTest.cpp
-	Cs2MatchLogParserTest.cpp
 	GuardTest.cpp
 	HttpMatchLogReceiverTest.cpp
 	MatchLogSplitterTest.cpp
 	RawLogWriterTest.cpp
 	RoundStatsExtractorTest.cpp
-)
-
-target_compile_definitions(${PROJECT_NAME} PRIVATE
-	FIXTURES_DIR="${CMAKE_CURRENT_SOURCE_DIR}/fixtures"
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE

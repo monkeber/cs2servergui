@@ -14,7 +14,7 @@ RawLogWriter::RawLogWriter(const std::filesystem::path& directory)
 void RawLogWriter::OpenFile()
 {
 	const auto now{ std::chrono::floor<std::chrono::seconds>(std::chrono::system_clock::now()) };
-	const auto baseName{ std::format("match_log_{:%Y%m%d_%H%M%S}_utc", now) };
+	const auto baseName{ std::format("{:%Y%m%d_%H%M%S}_utc", now) };
 
 	// Two files can start within the same second.
 	m_filePath = m_directory / (baseName + ".log");

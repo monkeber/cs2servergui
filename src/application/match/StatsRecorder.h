@@ -11,10 +11,10 @@
 #include <string>
 #include <vector>
 
-//! Composition root of match log recording. Writes the log of the game server to `raw_logs/`, one
-//! file per match, as it is received. The only lines added are one-line `ROUND_STATS` versions of
-//! the round statistics and a check that none is missing. Moves received logs to the main thread
-//! and keeps failures away from the rest of the app.
+//! Composition root of match log recording. Writes the log of the game server to `matches/` next
+//! to the executable, one file per match, as it is received. The only lines added are one-line
+//! `ROUND_STATS` versions of the round statistics and a check that none is missing. Moves
+//! received logs to the main thread and keeps failures away from the rest of the app.
 class MatchStatsRecorder : public QObject
 {
 public:

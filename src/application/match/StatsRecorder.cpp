@@ -2,6 +2,7 @@
 
 #include "HttpLogReceiver.h"
 
+#include <QCoreApplication>
 #include <QtLogging>
 
 namespace
@@ -16,7 +17,8 @@ MatchStatsRecorder::MatchStatsRecorder(QObject* parent)
 {
 	try
 	{
-		m_rawLog = std::make_unique<RawLogWriter>("raw_logs");
+		m_rawLog = std::make_unique<RawLogWriter>(
+			std::filesystem::path{ QCoreApplication::applicationDirPath().toStdWString() } / "matches");
 		qInfo("Match logs are written to %s", m_rawLog->FilePath().string().c_str());
 	}
 	catch (const std::exception& e)

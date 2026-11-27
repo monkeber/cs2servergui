@@ -71,8 +71,11 @@ void ProcessHandler::resetRconConnection()
 	AppData::Instance().rconclient()->Reset();
 }
 
-void ProcessHandler::hostWorkshopMap(const QString& map)
+void ProcessHandler::hostWorkshopMap(const QString& rawMap)
 {
+	// Pasted ids and links often carry leading or trailing whitespace.
+	const QString map{ rawMap.trimmed() };
+
 	constexpr qsizetype sizeLimit{ 1000 };
 	if (map.size() > sizeLimit)
 	{

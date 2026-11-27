@@ -114,6 +114,18 @@ When the game server is started from the app, it also sends its log to the app (
 
 The app only logs what the game server sends, so the server needs to be started with the Start button. If you start it yourself, add `+log on +logaddress_add_http http://127.0.0.1:27500/log +mp_logdetail 3` to its parameters.
 
+## Git hooks
+
+The repo ships a pre-commit hook in `.githooks/` that runs `git clang-format` on staged C/C++ files. Git doesn't use that directory by default, so enable it once per clone:
+
+```bash
+git config core.hooksPath .githooks
+```
+
+The hook needs `git-clang-format` (part of LLVM) on your `PATH`; if it's missing or can't run, formatting is skipped with a warning.
+
+On Windows, `git-clang-format` needs a working `python3`; the Microsoft Store stub doesn't count. Copy `python.exe` to `python3.exe` next to your real Python install.
+
 ## Deploy
 
 ### Windows

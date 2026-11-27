@@ -1,5 +1,7 @@
 project(applicationlib LANGUAGES CXX)
 
+add_subdirectory(match)
+
 set(${PROJECT_NAME}_SRC
 	app_environment.h
 	AppData.cpp
@@ -39,6 +41,7 @@ qt_add_qml_module(${PROJECT_NAME}
 	VERSION 1.0
 	SOURCES
 		${${PROJECT_NAME}_SRC}
+		${${PROJECT_NAME}_APP_MATCH_SRC}
 )
 
 target_link_libraries(${PROJECT_NAME} PUBLIC
@@ -51,6 +54,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
 	cpr::cpr
 	nlohmann_json::nlohmann_json
 	SQLiteCpp
+	httplib::httplib
 )
 
 target_compile_options(${PROJECT_NAME} PRIVATE

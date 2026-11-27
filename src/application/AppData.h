@@ -5,6 +5,7 @@
 #include "ProcessHandler.h"
 #include "RCONClient.h"
 #include "Settings.h"
+#include "match/StatsRecorder.h"
 
 #include <QObject>
 
@@ -38,4 +39,5 @@ private:
 	ProcessHandler m_serverProcess;
 	RCONClient m_rconclient;
 	Settings m_settings;
+	MatchStatsRecorder m_matchStatsRecorder;
 };

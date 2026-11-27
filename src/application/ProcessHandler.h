@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <string>
 
 #include <QObject>
 #include <QQmlEngine>
@@ -20,6 +21,9 @@ signals:
 public:
 	ProcessHandler(QObject* parent = nullptr);
 	~ProcessHandler();
+
+	//! Parameters appended to the user's start parameters on every start.
+	void setExtraStartParams(const std::string& params);
 
 public slots:
 	CommandHistory* getGeneralHistory();
@@ -43,6 +47,7 @@ public slots:
 
 private:
 	bool m_isRunning;
+	std::string m_extraStartParams;
 	CommandHistory m_generalHistory;
 	CommandHistory m_scriptHistory;
 

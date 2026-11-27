@@ -21,6 +21,11 @@ ProcessHandler::ProcessHandler(QObject* parent)
 
 ProcessHandler::~ProcessHandler() = default;
 
+void ProcessHandler::setExtraStartParams(const std::string& params)
+{
+	m_extraStartParams = params;
+}
+
 CommandHistory* ProcessHandler::getGeneralHistory()
 {
 	return &m_generalHistory;
@@ -66,8 +71,11 @@ void ProcessHandler::resetRconConnection()
 	AppData::Instance().rconclient()->Reset();
 }
 
-void ProcessHandler::hostWorkshopMap(const QString& map)
+void ProcessHandler::hostWorkshopMap(const QString& rawMap)
 {
+	// Pasted ids and links often carry leading or trailing whitespace.
+	const QString map{ rawMap.trimmed() };
+
 	constexpr qsizetype sizeLimit{ 1000 };
 	if (map.size() > sizeLimit)
 	{
@@ -107,8 +115,13 @@ void ProcessHandler::hostWorkshopMap(const QString& map)
 
 void ProcessHandler::start()
 {
-	if (!m_process->start(AppData::Instance().settings()->getExecutablePath().toStdString(),
-			AppData::Instance().settings()->getStartParameters().toStdString()))
+	std::string startParams{ AppData::Instance().settings()->getStartParameters().toStdString() };
+	if (!m_extraStartParams.empty())
+	{
+		startParams += ' ' + m_extraStartParams;
+	}
+	if (!m_process->start(
+			AppData::Instance().settings()->getExecutablePath().toStdString(), startParams))
 	{
 		return;
 	}

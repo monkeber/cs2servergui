@@ -6,6 +6,7 @@ qt_add_executable(${PROJECT_NAME}
 	main.cpp
 	MapHistoryDatabaseTest.cpp
 	Cs2MatchLogParserTest.cpp
+	GuardTest.cpp
 	HttpMatchLogReceiverTest.cpp
 	MatchLogSplitterTest.cpp
 	RawLogWriterTest.cpp

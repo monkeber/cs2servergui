@@ -102,3 +102,18 @@ TEST(RoundStatsExtractorTest, ResetDropsBlockThatWasCutByARestart)
 
 	EXPECT_TRUE(lines.empty());
 }
+
+TEST(RoundStatsExtractorTest, SurvivesInvalidUtf8InABlock)
+{
+	// Recording must never throw into the app, a string the game logs is not always valid UTF-8.
+	RoundStatsExtractor extractor;
+
+	std::vector<std::string> lines;
+	ASSERT_NO_THROW(lines = extractor.Feed("t - JSON_BEGIN{\nt - \"name\": \"round_stats\",\n"
+										   "t - \"round_number\" : \"1\",\n"
+										   "t - \"map\" : \"de_\xff\xfe\",\n"
+										   "t - }}JSON_END\n"));
+
+	ASSERT_EQ(lines.size(), 1u);
+	EXPECT_NE(lines[0].find("ROUND_STATS"), std::string::npos);
+}

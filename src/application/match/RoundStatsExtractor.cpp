@@ -214,7 +214,9 @@ std::string RoundStatsExtractor::RoundStatsLine()
 		m_seenRounds.insert(block["round_number"].get<int>());
 	}
 
-	return std::format("{}{}{}", m_blockPrefix, kRoundStatsPrefix, block.dump());
+	// Bytes that are not UTF-8 are replaced, dump() would throw on them.
+	const auto json{ block.dump(-1, ' ', false, nlohmann::ordered_json::error_handler_t::replace) };
+	return std::format("{}{}{}", m_blockPrefix, kRoundStatsPrefix, json);
 }
 
 //! Before: `Game Over: competitive  de_dust2 score 9:6 after 38 min`, blocks for rounds 1..14

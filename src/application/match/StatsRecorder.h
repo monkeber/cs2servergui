@@ -34,6 +34,8 @@ private:
 	MatchLogSplitter m_splitter;
 	RoundStatsExtractor m_roundStats;
 	std::unique_ptr<RawLogWriter> m_rawLog;
+	//! Whether the current streak of failures is already in the app log.
+	bool m_hasReportedFailure{ false };
 	//! Declared last so it stops before the components it feeds are destroyed.
 	std::unique_ptr<MatchLogSource> m_source;
 };

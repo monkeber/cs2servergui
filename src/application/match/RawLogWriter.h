@@ -25,6 +25,7 @@ public:
 private:
 	void OpenFile();
 	void StartMarkerLine();
+	void CheckStream() const;
 
 private:
 	std::filesystem::path m_directory;

@@ -66,6 +66,7 @@ void RawLogWriter::WriteChunk(std::string_view chunk)
 	m_hasChunks = true;
 
 	m_isAtLineStart = chunk.empty() || endsWithNewline;
+	CheckStream();
 }
 
 void RawLogWriter::WriteLine(std::string_view line)
@@ -75,6 +76,7 @@ void RawLogWriter::WriteLine(std::string_view line)
 	m_file.flush();
 
 	m_isAtLineStart = true;
+	CheckStream();
 }
 
 void RawLogWriter::WriteNote(std::string_view note)
@@ -84,6 +86,16 @@ void RawLogWriter::WriteNote(std::string_view note)
 	m_file.flush();
 
 	m_isAtLineStart = true;
+	CheckStream();
+}
+
+//! A stream that went bad (disk full, file removed) only sets a flag, make it visible.
+void RawLogWriter::CheckStream() const
+{
+	if (!m_file)
+	{
+		throw std::runtime_error{ std::format("Cannot write to {}", m_filePath.string()) };
+	}
 }
 
 void RawLogWriter::StartMarkerLine()
